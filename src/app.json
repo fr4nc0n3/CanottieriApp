@@ -1,0 +1,50 @@
+{
+    "expo": {
+        "name": "Canottieri Pallanza",
+        "slug": "CanottieriApp",
+        "version": "0.1.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/icon_app.png",
+        "scheme": "canottieriapp",
+        "userInterfaceStyle": "automatic",
+        "newArchEnabled": true,
+        "ios": {
+            "supportsTablet": true,
+            "buildNumber": "1",
+            "bundleIdentifier": "com.fr4nc0n3.CanottieriApp"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/icon_adaptive_app.png",
+                "backgroundColor": "#ffffff"
+            },
+            "edgeToEdgeEnabled": true,
+            "package": "com.fr4nc0n3.CanottieriApp",
+            "versionCode": 1
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "plugins": [
+            "expo-router",
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/images/icon_splash_app.png",
+                    "imageWidth": 200,
+                    "resizeMode": "contain",
+                    "backgroundColor": "#ffffff"
+                }
+            ]
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "author": "Francesco Mariotti",
+            "privacyPolicyURL": "https://example.com/privacy"
+        }
+    }
+}

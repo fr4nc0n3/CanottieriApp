@@ -1,0 +1,16 @@
+---------- TODO ----------
+- Sistemare la navigazione app.
+Se si va nel menu principale lo stack deve essere limitato a quella sola pagina.
+Le altre pagine invece dovrebbero avere la possibilita' di tornare indietro 
+(quindi vanno "impilate" sullo stack) 
+almeno con il tasto del sistema operativo.
+
+- Fare repository github e sincronizzarlo con quello locale
+
+------- PRIMA DI CARICARE SU STORE --------
+- Fare privacy policy
+
+----------- SPUNTI PER FUTURO ----------
+- Permettere a chi usa l' app di inviare dei feedback per bug o suggerimenti tramite email od altro mezzo.
+Per queste richieste sarebbe bello avere dei dati di contorno come il sistema operativo e il modello di cellulare
+che invia tale feedback ed altri dati di telemetria
