@@ -25,4 +25,4 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 ## Licenza
 
 Questo progetto è distribuito sotto licenza **GNU GPL v3**.  
-Vedi il file [LICENSE](./LICENSE) per i dettagli.
+Vedi il file [LICENSE](./LICENSE.txt) per i dettagli.
