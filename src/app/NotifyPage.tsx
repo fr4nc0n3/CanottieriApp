@@ -1,7 +1,8 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
     Button,
     Card,
@@ -25,6 +26,8 @@ type NotificationItem = {
 };
 
 export default function NotifyPage() {
+    const router = useRouter();
+
     const [notification, setNotification] = useState("");
     const [category, setCategory] = useState("tutti");
     const [sentNotifications, setSentNotifications] = useState<
@@ -63,9 +66,9 @@ export default function NotifyPage() {
                         numberOfLines={5}
                         placeholder="Scrivi la notifica qui..."
                         value={notification}
-                        //onChangeText={setNotification}
                         style={styles.input}
-                        onPress={openModal}
+                        onPressIn={openModal}
+                        onChangeText={(_) => {}}
                     />
                 </Card.Content>
             </Card>
@@ -96,33 +99,19 @@ export default function NotifyPage() {
             <View style={styles.historyButtonContainer}>
                 <Button
                     mode="contained"
-                    onPress={() => {}}
+                    onPress={() => {
+                        router.push("/HistoryNotifications");
+                    }}
                     style={styles.historyButton}
                 >
                     Storico notifiche
                 </Button>
             </View>
-            {/*sentNotifications.length > 0 && (
-                <Card style={{ marginTop: 32 }}>
-                    <Card.Content>
-                        <Text variant="titleLarge">Storico Notifiche</Text>
-                        {sentNotifications.map((item) => (
-                            <View key={item.id} style={{ marginTop: 12 }}>
-                                <Text style={{ fontWeight: "bold" }}>
-                                    {item.date}
-                                </Text>
-                                <Text>Categoria: {item.category}</Text>
-                                <Text>{item.notification}</Text>
-                                <Divider style={{ marginVertical: 8 }} />
-                            </View>
-                        ))}
-                    </Card.Content>
-                </Card>
-            )*/}
             <Portal>
                 <Modal
                     visible={visibleModal}
                     onDismiss={closeModal}
+                    dismissable={false}
                     contentContainerStyle={{
                         backgroundColor: "white",
                         margin: 20,
@@ -131,10 +120,21 @@ export default function NotifyPage() {
                         maxHeight: "90%",
                     }}
                 >
-                    {/**TODO deve essere un area input text che cambia notification */}
-                    <Text>
-                        Example Modal. Click outside this area to dismiss.
-                    </Text>
+                    <ScrollView style={{ padding: 16 }}>
+                        <TextInput
+                            label={"Notifica"}
+                            value={notification}
+                            onChangeText={(text) => {
+                                setNotification(text);
+                            }}
+                            multiline
+                            numberOfLines={25}
+                            mode="outlined"
+                            placeholder="Inserisci qui il testo ..."
+                            autoFocus
+                        />
+                    </ScrollView>
+                    <Button onPress={closeModal}>OK</Button>
                 </Modal>
             </Portal>
         </View>
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     card: { marginBottom: 16 },
     input: { marginTop: 8 },
     historyButtonContainer: {
-        justifyContent: "flex-end",
+        justifyContent: "center",
         flex: 1,
     },
     historyButton: { width: "50%", alignSelf: "center" },

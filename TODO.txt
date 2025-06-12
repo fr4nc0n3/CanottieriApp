@@ -1,11 +1,17 @@
 ---------- TODO ----------
+- Creare db ed app flask con gunicorn WSGI e conneterlo all' app (solo ambiente di sviluppo locale al momento)
+    Avevo chiesto a chatGPT, mi sembra che la sua soluzione con Nginx per fare da web server che gestisce
+    HTTPS con il server gunicorn che usa l' app flask + sqlite mi sembra lightweight. Usando un dominio gratis
+    con duckDNS ho gratis la certificazione HTTPS (siccome necessita' di un dominio)
+    Inoltre suggeriva che Oracle Cloud provvede dei servizi di VPS gratuiti per sempre (solo con piano free)
+
 - Sistemare la navigazione app.
 Se si va nel menu principale lo stack deve essere limitato a quella sola pagina.
 Le altre pagine invece dovrebbero avere la possibilita' di tornare indietro 
 (quindi vanno "impilate" sullo stack) 
 almeno con il tasto del sistema operativo.
 
-- Fare repository github e sincronizzarlo con quello locale
+- Nella pagina "Profilo" bisogna mettere il tasto per fare il logout
 
 ------- PRIMA DI CARICARE SU STORE --------
 - Fare privacy policy
