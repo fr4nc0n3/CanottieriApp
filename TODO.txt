@@ -11,6 +11,8 @@ Le altre pagine invece dovrebbero avere la possibilita' di tornare indietro
 (quindi vanno "impilate" sullo stack) 
 almeno con il tasto del sistema operativo.
 
+- Fare pagina di login
+
 - Nella pagina "Profilo" bisogna mettere il tasto per fare il logout
 
 ------- PRIMA DI CARICARE SU STORE --------
