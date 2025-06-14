@@ -1,1 +1,4 @@
 dev_db/CanottieriAppDB.db
+venv/
+__pycache__/
+.env*
