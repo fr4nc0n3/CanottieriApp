@@ -39,11 +39,11 @@ INSERT INTO AccountType (
     type, created_at, updated_at
 ) VALUES
 (
-    'Free',
+    'atleta',
     datetime('now'), datetime('now')
 ),
 (
-    'Premium',
+    'staff',
     datetime('now'), datetime('now')
 );
 
@@ -62,24 +62,34 @@ INSERT INTO UserAccountType (
 
 -- Esempio per News
 INSERT INTO News (
-    id_user_recipient, id_user_sender,
+    id_user_sender,
     message, title, data_publish,
-    created_at, updated_at, deleted_at, is_deleted
+    created_at, updated_at, deleted_at, is_deleted,
+    target_name
 ) VALUES
 (
-    1, 2,
+    2,
     'Benvenuto su piattaforma!',
     'Saluti',
     date('2025-06-12'),
     datetime('now'), datetime('now'),
-    NULL, 0
+    NULL, 0, 'user 1'
 ),
 (
-    2, 1,
+    1,
     'La tua sottoscrizione è scaduta.',
     'Avviso sottoscrizione',
     date('2025-06-10'),
     datetime('now'), datetime('now'),
-    NULL, 0
+    NULL, 0, 'user 2' 
 );
+
+-- Esempio per UserNews
+INSERT INTO UserNews (
+    id_news, id_user, created_at
+) VALUES (
+    1,
+    1,
+    datetime('now')
+)
 

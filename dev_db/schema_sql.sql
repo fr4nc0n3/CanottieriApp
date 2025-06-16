@@ -37,7 +37,6 @@ CREATE TABLE UserAccountType (
 -- Table: News
 CREATE TABLE News (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_user_recipient INTEGER DEFAULT NULL,
     id_user_sender INTEGER DEFAULT NULL,
     message TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -46,7 +45,17 @@ CREATE TABLE News (
     updated_at DATETIME NOT NULL,
     deleted_at DATETIME DEFAULT NULL,
     is_deleted INTEGER NOT NULL,
-    FOREIGN KEY (id_user_recipient) REFERENCES User(id) ON DELETE SET NULL,
+    target_name TEXT DEFAULT NULL,
     FOREIGN KEY (id_user_sender) REFERENCES User(id) ON DELETE SET NULL
 );
+
+-- Table: UserNews
+CREATE TABLE UserNews (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_news INTEGER NOT NULL,
+    id_user INTEGER DEFAULT NULL,
+    created_at DATETIME NOT NULL,
+    FOREIGN KEY (id_news) REFERENCES News(id),
+    FOREIGN KEY (id_user) REFERENCES User(id) ON DELETE SET NULL
+)
 

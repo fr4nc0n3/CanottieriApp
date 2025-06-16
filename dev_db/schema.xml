@@ -124,11 +124,6 @@
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
-<row name="id_user_recipient" null="1" autoincrement="0">
-<datatype>INTEGER</datatype>
-<default>NULL</default><relation table="User" row="id" />
-<comment>on delete set null (su eliminazione dell' utente, non della notifica)</comment>
-</row>
 <row name="id_user_sender" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default><relation table="User" row="id" />
@@ -155,6 +150,29 @@
 <row name="is_deleted" null="0" autoincrement="0">
 <datatype>bit</datatype>
 </row>
+<row name="target_name" null="1" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="202" y="530" name="UserNews">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="id_news" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="News" row="id" />
+</row>
+<row name="id_user" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="User" row="id" />
+<comment>on delete set null (su eliminazione dell' utente, non della notifica)</comment>
+</row>
+<row name="created_at" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>

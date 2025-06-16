@@ -16,8 +16,14 @@ almeno con il tasto del sistema operativo.
 
 - Nella pagina "Profilo" bisogna mettere il tasto per fare il logout
 
+- In produzione impostare tramite .env app.run(debug=False) per lanciare flask
+
 ------- PRIMA DI CARICARE SU STORE --------
 - Fare privacy policy
+
+------ TODO FUTURI --------
+- Per la tabella News il campo target_name dovrebbe essere preso da una nuova tabella che specifica
+i possibili valori disponibili 
 
 ----------- SPUNTI PER FUTURO ----------
 - Permettere a chi usa l' app di inviare dei feedback per bug o suggerimenti tramite email od altro mezzo.
