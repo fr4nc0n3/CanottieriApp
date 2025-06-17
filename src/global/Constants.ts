@@ -7,3 +7,4 @@ export const API_GET_USER_NEWS_RECEIVED =
     API_ENDPOINT + "get-user-news-received";
 export const API_GET_USER_NEWS_SENDED = API_ENDPOINT + "get-user-news-sended";
 export const API_SEND_NEWS_TO_GROUPS = API_ENDPOINT + "send-news-to-groups";
+export const API_DELETE_NEWS = API_ENDPOINT + "delete-news";

@@ -142,4 +142,26 @@ def sendNewsToGroup():
 
     return jsonify({"status": "ok"})
 
-#TODO api anche per soft delete della news
+#soft delete di una news
+@api.route('/delete-news', methods=['POST'])
+def deleteNews():
+    data = request.json
+
+    id = data.get('id', None)
+
+    if (data is None):
+        return jsonify({"error": "Bad request"}), 400
+
+    #eliminazione DB News by id
+    execute_ops_db([
+        {
+            "query": (
+                "UPDATE News "
+                "SET is_deleted = 1 "
+                "WHERE id = ?"
+            ),
+            "args": tuple([id])
+        }])
+
+
+    return jsonify({"status": "ok"})

@@ -29,6 +29,11 @@ in modo da poter inviare a piu' gruppi contemporaneamente
 
 - Nel metodo getUserInfo non dovrei restituire l' hash password
 
+--------- TODO Refactoring ------------
+- Modulare grafica
+- Creare funzioni di fetch API per ogni chiamata
+- Creare un context per alcune info globali (informazioni utente, altro)
+
 ------- PRIMA DI CARICARE SU STORE --------
 - Fare privacy policy
 

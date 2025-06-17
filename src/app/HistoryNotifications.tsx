@@ -1,11 +1,19 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import { API_GET_USER_NEWS_SENDED } from "@/global/Constants";
+import { API_DELETE_NEWS, API_GET_USER_NEWS_SENDED } from "@/global/Constants";
 import { UserNewsTx } from "@/global/Types";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { Card, Divider, Modal, Portal, Text } from "react-native-paper";
+import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+    Button,
+    Card,
+    Divider,
+    IconButton,
+    Modal,
+    Portal,
+    Text,
+} from "react-native-paper";
 
 const MAX_PREVIEW_LEN = 120;
 
@@ -16,8 +24,11 @@ export default function HistoryNotification() {
 
     const [news, setNews] = useState<UserNewsTx[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [deletion, setDeletion] = useState<boolean>(false);
 
     const fetchNews = async () => {
+        setLoading(true);
+
         try {
             const req = API_GET_USER_NEWS_SENDED + "?id-user=1"; //TODO id user dinamico
             console.log("fetch: ", req);
@@ -32,9 +43,43 @@ export default function HistoryNotification() {
         }
     };
 
+    const deleteNews = async (id: number) => {
+        try {
+            const req = API_DELETE_NEWS;
+            console.log("fetch: ", req);
+
+            const res = await fetch(req, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id }),
+            });
+            if (res.ok) {
+                Alert.alert("Eliminazione avvenuta con successo");
+            } else {
+                Alert.alert(
+                    "Non e' stato possibile eliminare la news con id: " + id
+                );
+            }
+
+            setDeletion(true);
+        } catch (error) {
+            console.error("Error delete: ", error);
+            Alert.alert("Qualcosa e' andato storto durante l' eliminazione.");
+        }
+    };
+
     useEffect(() => {
         fetchNews();
     }, []);
+
+    useEffect(() => {
+        if (deletion) {
+            fetchNews();
+            setDeletion(false);
+        }
+    }, [deletion]);
 
     if (loading) {
         return <Text>Caricamento ...</Text>;
@@ -59,7 +104,7 @@ export default function HistoryNotification() {
 
     return (
         <View style={styles.container}>
-            {news.length > 0 && (
+            {news.length > 0 ? (
                 <Card style={{ marginTop: 32 }}>
                     <Card.Content>
                         <Text variant="titleLarge">Storico Notifiche</Text>
@@ -75,6 +120,7 @@ export default function HistoryNotification() {
                                         style={{
                                             flexDirection: "row",
                                             justifyContent: "space-between",
+                                            alignItems: "baseline",
                                         }}
                                     >
                                         <Text style={{ fontWeight: "bold" }}>
@@ -83,6 +129,34 @@ export default function HistoryNotification() {
                                         <Text style={{ fontWeight: "bold" }}>
                                             Categoria: {item.target_name}
                                         </Text>
+                                        <IconButton
+                                            icon="delete"
+                                            iconColor="red"
+                                            size={24}
+                                            onPress={() => {
+                                                //richiesta conferma eliminazione della news
+                                                Alert.alert(
+                                                    "Conferma eliminazione",
+                                                    "Sei sicuro di voler eliminare la richiesta con data: " +
+                                                        item.data_publish +
+                                                        "?",
+                                                    [
+                                                        {
+                                                            text: "Annulla",
+                                                            style: "cancel",
+                                                        },
+                                                        {
+                                                            text: "OK",
+                                                            onPress: () => {
+                                                                deleteNews(
+                                                                    item.id
+                                                                );
+                                                            },
+                                                        },
+                                                    ]
+                                                );
+                                            }}
+                                        />
                                     </View>
                                     <Text>
                                         {getPreviewNotification(item.message)}
@@ -93,6 +167,8 @@ export default function HistoryNotification() {
                         ))}
                     </Card.Content>
                 </Card>
+            ) : (
+                <Text>Nessuna notifica inviata</Text>
             )}
             <Portal>
                 <Modal
