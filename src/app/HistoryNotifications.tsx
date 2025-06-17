@@ -1,42 +1,44 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { API_GET_USER_NEWS_SENDED } from "@/global/Constants";
+import { UserNewsTx } from "@/global/Types";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Card, Divider, Modal, Portal, Text } from "react-native-paper";
 
-//TODO fare file per i tipi
-type NotificationItem = {
-    id: string;
-    notification: string;
-    category: string;
-    date: string;
-};
-
-const notificationsItems: NotificationItem[] = [
-    {
-        id: "1",
-        notification:
-            "What is Lorem Ipsum?Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        category: "tutti",
-        date: "04-06-2025",
-    },
-    {
-        id: "2",
-        notification:
-            "notifica 2, prova 2 " +
-            "What is Lorem Ipsum?Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-        category: "atleti",
-        date: "03-06-2025",
-    },
-];
-
 const MAX_PREVIEW_LEN = 120;
 
-export default function NotifyPage() {
+export default function HistoryNotification() {
     const router = useRouter();
     const [visibleModal, setVisibleModal] = useState<boolean>(false);
     const [modalText, setModalText] = useState<string>("");
+
+    const [news, setNews] = useState<UserNewsTx[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const fetchNews = async () => {
+        try {
+            const req = API_GET_USER_NEWS_SENDED + "?id-user=1"; //TODO id user dinamico
+            console.log("fetch: ", req);
+
+            const res = await fetch(req);
+            const news = await res.json();
+            setNews(news);
+        } catch (error) {
+            console.error("Error fetch: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchNews();
+    }, []);
+
+    if (loading) {
+        return <Text>Caricamento ...</Text>;
+    }
 
     const openModal = (notification: string) => {
         setModalText(notification);
@@ -57,15 +59,15 @@ export default function NotifyPage() {
 
     return (
         <View style={styles.container}>
-            {notificationsItems.length > 0 && (
+            {news.length > 0 && (
                 <Card style={{ marginTop: 32 }}>
                     <Card.Content>
                         <Text variant="titleLarge">Storico Notifiche</Text>
-                        {notificationsItems.map((item) => (
+                        {news.map((item) => (
                             <Pressable
                                 key={item.id}
                                 onPress={() => {
-                                    openModal(item.notification);
+                                    openModal(item.message);
                                 }}
                             >
                                 <View style={{ marginTop: 12 }}>
@@ -76,16 +78,14 @@ export default function NotifyPage() {
                                         }}
                                     >
                                         <Text style={{ fontWeight: "bold" }}>
-                                            {item.date}
+                                            {item.data_publish}
                                         </Text>
                                         <Text style={{ fontWeight: "bold" }}>
-                                            Categoria: {item.category}
+                                            Categoria: {item.target_name}
                                         </Text>
                                     </View>
                                     <Text>
-                                        {getPreviewNotification(
-                                            item.notification
-                                        )}
+                                        {getPreviewNotification(item.message)}
                                     </Text>
                                     <Divider style={{ marginVertical: 8 }} />
                                 </View>

@@ -1,5 +1,6 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { API_ENDPOINT } from "@/global/Constants";
 import ExpoConstants from "expo-constants";
 import React from "react";
 import { Alert, Linking, Platform, ScrollView } from "react-native";
@@ -78,6 +79,17 @@ export default function SettingsPage() {
                             Alert.alert("Privacy policy non disponibile");
                         }
                     }}
+                />
+            </List.Section>
+
+            <Divider />
+
+            <List.Section>
+                <List.Subheader>Debug info</List.Subheader>
+                <List.Item
+                    title="API endpoint"
+                    description={API_ENDPOINT}
+                    left={() => <List.Icon icon="server" />}
                 />
             </List.Section>
         </ScrollView>

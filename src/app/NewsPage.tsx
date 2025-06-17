@@ -1,41 +1,43 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import React, { useState } from "react";
+import { API_GET_USER_NEWS_RECEIVED } from "@/global/Constants";
+import { emptyUserNewsRx, UserNewsRx } from "@/global/Types";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Modal, Portal, Text } from "react-native-paper";
 
-//TODO aggiungere una data pubblicazione per notifica
-
-type NewsItem = {
-    id: string;
-    title: string;
-    content: string;
-    publishDate: string;
-};
-
-//TODO usare dati recepiti da database
-const mockNews: NewsItem[] = [
-    {
-        id: "1",
-        title: "Aggiornamento Servizio",
-        content:
-            "Il nostro servizio sarà in manutenzione il 10 giugno dalle 22:00 alle 02:00. Questo aggiornamento migliorerà la stabilità del sistema e introdurrà nuove funzionalità future. Grazie per la vostra pazienza.",
-        publishDate: "30/10/2025",
-    },
-    {
-        id: "2",
-        title: "Nuova funzionalità",
-        content:
-            "Abbiamo aggiunto una nuova funzionalità per facilitare la gestione del tuo profilo. Puoi trovarla nella sezione Impostazioni. Questa modifica è stata richiesta da molti utenti e speriamo che semplifichi la tua esperienza.",
-        publishDate: "25/10/2025",
-    },
-];
-
 export default function NewsPage() {
     const [visible, setVisible] = useState(false);
-    const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+    const [selectedNews, setSelectedNews] =
+        useState<UserNewsRx>(emptyUserNewsRx);
 
-    const openModal = (news: NewsItem) => {
+    const [news, setNews] = useState<UserNewsRx[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const fetchNews = async () => {
+        try {
+            const req = API_GET_USER_NEWS_RECEIVED + "?id-user=1"; //TODO id user dinamico
+            console.log("fetch: ", req);
+
+            const res = await fetch(req);
+            const news = await res.json();
+            setNews(news);
+        } catch (error) {
+            console.error("Error fetch: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchNews();
+    }, []);
+
+    if (loading) {
+        return <Text>Caricamento ...</Text>;
+    }
+
+    const openModal = (news: UserNewsRx) => {
         setSelectedNews(news);
         setVisible(true);
     };
@@ -45,18 +47,18 @@ export default function NewsPage() {
     return (
         <>
             <ScrollView style={styles.container}>
-                {mockNews.map((news) => (
+                {news.map((n, idx) => (
                     <Card
-                        key={news.id}
+                        key={idx}
                         style={styles.card}
-                        onPress={() => openModal(news)}
+                        onPress={() => openModal(n)}
                     >
                         <Card.Content>
                             <View style={styles.headerCard}>
-                                <Text variant="titleLarge">{news.title}</Text>
-                                <Text>{news.publishDate}</Text>
+                                <Text variant="titleLarge">{n.title}</Text>
+                                <Text>{n.data_publish}</Text>
                             </View>
-                            <Text numberOfLines={2}>{news.content}</Text>
+                            <Text numberOfLines={2}>{n.message}</Text>
                         </Card.Content>
                     </Card>
                 ))}
@@ -74,7 +76,7 @@ export default function NewsPage() {
                                 {selectedNews.title}
                             </Text>
                             <ScrollView style={{ maxHeight: "90%" }}>
-                                <Text>{selectedNews.content}</Text>
+                                <Text>{selectedNews.message}</Text>
                             </ScrollView>
                             <Button
                                 onPress={closeModal}

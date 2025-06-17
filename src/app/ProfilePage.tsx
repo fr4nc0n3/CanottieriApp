@@ -1,20 +1,46 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import React from "react";
+import { API_GET_USER_INFO } from "@/global/Constants";
+import { emptyUser, User } from "@/global/Types";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Card, Chip, Text } from "react-native-paper";
 
-//TODO change with database info
-const user = {
-    photoUrl: "https://randomuser.me/api/portraits/men/99.jpg",
-    nome: "Francesco",
-    cognome: "Mariotti",
-    dataNascita: "13/11/2001",
-    categoria: "Amministratore", //spunti tipi di account: amministratore, allenatore, staff, atleta, genitore
-    scadenzaIscrizione: "25/10/2025",
-};
-
 export default function ProfiloPage() {
+    const [user, setUser] = useState<User>(emptyUser);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [isImageUrl, setIsImageUrl] = useState<boolean>(false);
+
+    const fetchUser = async () => {
+        try {
+            const req = API_GET_USER_INFO + "?id-user=1"; //TODO id user dinamico
+            console.log("fetch: ", req);
+
+            const res = await fetch(req);
+            const user = await res.json();
+            console.log("user fetched from API ", user);
+            setUser(user);
+
+            const resImg = await fetch(user.profile_img_url, {
+                method: "HEAD",
+            });
+
+            setIsImageUrl(resImg.ok);
+        } catch (error) {
+            console.error("Error fetch: ", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    if (loading) {
+        return <Text>Caricamento ...</Text>;
+    }
+
     return (
         <View style={styles.container}>
             <Text variant="titleLarge" style={styles.header}>
@@ -22,20 +48,27 @@ export default function ProfiloPage() {
             </Text>
             <Card style={styles.card}>
                 <Card.Content style={styles.cardContent}>
-                    <Avatar.Image size={100} source={{ uri: user.photoUrl }} />
+                    {isImageUrl ? (
+                        <Avatar.Image
+                            size={100}
+                            source={{ uri: user.profile_img_url }}
+                        />
+                    ) : (
+                        <Avatar.Text size={100} label="N/A" />
+                    )}
                     <View style={styles.infoContainer}>
-                        <Text variant="titleMedium">{`${user.nome} ${user.cognome}`}</Text>
+                        <Text variant="titleMedium">{`${user.name}`}</Text>
                         <Text style={styles.label}>Data di nascita</Text>
-                        <Text variant="bodyMedium">{user.dataNascita}</Text>
+                        <Text variant="bodyMedium">{user.birthday}</Text>
 
                         <Text style={styles.label}>Tipo Account</Text>
                         <Chip icon="account" style={styles.chip}>
-                            {user.categoria}
+                            {/*TODO*/}TODO
                         </Chip>
 
                         <Text style={styles.label}>Scadenza iscrizione</Text>
                         <Text variant="bodyMedium">
-                            {user.scadenzaIscrizione}
+                            {user.expiration_sub_date}
                         </Text>
                     </View>
                 </Card.Content>

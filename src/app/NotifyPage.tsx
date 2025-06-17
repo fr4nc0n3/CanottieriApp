@@ -1,8 +1,10 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { API_SEND_NEWS_TO_GROUPS } from "@/global/Constants";
+import { emptyNewsToSend, NewsToSend } from "@/global/Types";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import {
     Button,
     Card,
@@ -13,27 +15,14 @@ import {
     TextInput,
 } from "react-native-paper";
 
-//TODO Quando vado a scrivere il messaggio deve comparirmi un grosso modale
-//TODO Lo storico delle notifiche inviate dovrebbe essere mostrato in una nuova pagina
-//con magari in futuro dei filtri
-
-//TODO fare file per i tipi
-type NotificationItem = {
-    id: string;
-    notification: string;
-    category: string;
-    date: string;
-};
-
 export default function NotifyPage() {
     const router = useRouter();
 
-    const [notification, setNotification] = useState("");
-    const [category, setCategory] = useState("tutti");
-    const [sentNotifications, setSentNotifications] = useState<
-        NotificationItem[]
-    >([]);
     const [visibleModal, setVisibleModal] = useState<boolean>(false);
+    const [newsToSend, setNewsToSend] = useState<NewsToSend>({
+        ...emptyNewsToSend,
+        "id-user": 1,
+    }); //TODO dinamicizzare idUser
 
     const openModal = () => {
         setVisibleModal(true);
@@ -43,21 +32,62 @@ export default function NotifyPage() {
         setVisibleModal(false);
     };
 
-    const handleSend = () => {
-        const newNotification: NotificationItem = {
-            id: Date.now().toString(),
-            notification,
-            category,
-            date: new Date().toLocaleString(),
-        };
+    const checkNews = () => {
+        return (
+            newsToSend.groups.length > 0 &&
+            newsToSend.message.trim() !== "" &&
+            newsToSend.title.trim() !== ""
+        );
+    };
 
-        setSentNotifications([newNotification, ...sentNotifications]);
-        setNotification("");
+    const handleSend = async () => {
+        const url = API_SEND_NEWS_TO_GROUPS;
+        const data = newsToSend;
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            console.log("API response send news:", result);
+
+            if (response.ok) {
+                Alert.alert("Notifica inviata con successo");
+            }
+        } catch (error) {
+            console.error("Errore durante la richiesta POST:", error);
+            Alert.alert("Errore durante l' invio");
+        }
+
+        //TODO avviso di invio con successo o errore
+
+        setNewsToSend(emptyNewsToSend);
     };
 
     return (
         <View style={styles.container}>
             <Card style={styles.card}>
+                <Card.Content>
+                    <Text variant="titleMedium">Titolo</Text>
+                    <TextInput
+                        mode="outlined"
+                        multiline
+                        numberOfLines={2}
+                        placeholder="Scrivi il titolo qui..."
+                        value={newsToSend.title}
+                        style={styles.input}
+                        onChangeText={(t) => {
+                            setNewsToSend((cur) => {
+                                return { ...cur, title: t };
+                            });
+                        }}
+                    />
+                </Card.Content>
                 <Card.Content>
                     <Text variant="titleMedium">Notifica</Text>
                     <TextInput
@@ -65,7 +95,7 @@ export default function NotifyPage() {
                         multiline
                         numberOfLines={5}
                         placeholder="Scrivi la notifica qui..."
-                        value={notification}
+                        value={newsToSend.message}
                         style={styles.input}
                         onPressIn={openModal}
                         onChangeText={(_) => {}}
@@ -77,12 +107,16 @@ export default function NotifyPage() {
                 <Card.Content>
                     <Text variant="titleMedium">Categoria destinatari</Text>
                     <RadioButton.Group
-                        onValueChange={setCategory}
-                        value={category}
+                        onValueChange={(v) => {
+                            setNewsToSend((cur) => {
+                                return { ...cur, groups: [v] };
+                            });
+                        }}
+                        value={newsToSend.groups[0]}
                     >
-                        <RadioButton.Item label="Tutti" value="tutti" />
-                        <RadioButton.Item label="Atleti" value="clienti" />
-                        <RadioButton.Item label="Genitori" value="genitori" />
+                        <RadioButton.Item label="Tutti" value="all" />
+                        <RadioButton.Item label="Atleti" value="atleta" />
+                        <RadioButton.Item label="Genitori" value="parent" />
                         <RadioButton.Item label="Staff" value="staff" />
                     </RadioButton.Group>
                 </Card.Content>
@@ -91,7 +125,7 @@ export default function NotifyPage() {
             <Button
                 mode="contained"
                 onPress={handleSend}
-                disabled={!notification.trim()}
+                disabled={!checkNews()}
             >
                 Invia Notifica
             </Button>
@@ -123,9 +157,11 @@ export default function NotifyPage() {
                     <ScrollView style={{ padding: 16 }}>
                         <TextInput
                             label={"Notifica"}
-                            value={notification}
+                            value={newsToSend.message}
                             onChangeText={(text) => {
-                                setNotification(text);
+                                setNewsToSend((cur) => {
+                                    return { ...cur, message: text };
+                                });
                             }}
                             multiline
                             numberOfLines={25}

@@ -6,17 +6,28 @@
     con duckDNS ho gratis la certificazione HTTPS (siccome necessita' di un dominio)
     Inoltre suggeriva che Oracle Cloud provvede dei servizi di VPS gratuiti per sempre (solo con piano free)
 
+- Provare expo-notifications
+
+- Autenticazione JWT (JSON Web Token)
+
 - Sistemare la navigazione app.
 Se si va nel menu principale lo stack deve essere limitato a quella sola pagina.
 Le altre pagine invece dovrebbero avere la possibilita' di tornare indietro 
 (quindi vanno "impilate" sullo stack) 
 almeno con il tasto del sistema operativo.
 
+- Nell' app quando si vuole inviare un messaggio bisogna mettere delle check box e non radio
+in modo da poter inviare a piu' gruppi contemporaneamente
+
+- Nell' index bisogna fare un controllo se l' endpoint API e' online
+
 - Fare pagina di login
 
 - Nella pagina "Profilo" bisogna mettere il tasto per fare il logout
 
 - In produzione impostare tramite .env app.run(debug=False) per lanciare flask
+
+- Nel metodo getUserInfo non dovrei restituire l' hash password
 
 ------- PRIMA DI CARICARE SU STORE --------
 - Fare privacy policy

@@ -53,7 +53,7 @@ def getUserNewsSended():
     limit = 10
 
     news = query_db('SELECT * FROM News ' +
-        'WHERE id_user_sender = ? AND is_deleted = 0' +
+        'WHERE id_user_sender = ? AND is_deleted = 0 ' +
         'LIMIT ? OFFSET ?', tuple([idUser, limit, offset]))
 
     return jsonify([dict(n) for n in news])
