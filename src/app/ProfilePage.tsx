@@ -1,9 +1,10 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { apiGetUserInfo } from "@/global/APICalls";
 import { API_GET_USER_INFO } from "@/global/Constants";
 import { emptyUser, User } from "@/global/Types";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { Avatar, Card, Chip, Text } from "react-native-paper";
 
 export default function ProfiloPage() {
@@ -12,22 +13,17 @@ export default function ProfiloPage() {
     const [isImageUrl, setIsImageUrl] = useState<boolean>(false);
 
     const fetchUser = async () => {
+        setLoading(true);
         try {
-            const req = API_GET_USER_INFO + "?id-user=1"; //TODO id user dinamico
-            console.log("fetch: ", req);
-
-            const res = await fetch(req);
-            const user = await res.json();
-            console.log("user fetched from API ", user);
-            setUser(user);
-
+            const user = await apiGetUserInfo(1); //TODO dinamicizzare idUser
             const resImg = await fetch(user.profile_img_url, {
                 method: "HEAD",
             });
 
             setIsImageUrl(resImg.ok);
+            setUser(user);
         } catch (error) {
-            console.error("Error fetch: ", error);
+            Alert.alert("Errore ricezione dati");
         } finally {
             setLoading(false);
         }

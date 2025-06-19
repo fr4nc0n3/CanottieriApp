@@ -1,9 +1,10 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { apiGetUserNewsReceived } from "@/global/APICalls";
 import { API_GET_USER_NEWS_RECEIVED } from "@/global/Constants";
 import { emptyUserNewsRx, UserNewsRx } from "@/global/Types";
 import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Modal, Portal, Text } from "react-native-paper";
 
 export default function NewsPage() {
@@ -15,15 +16,12 @@ export default function NewsPage() {
     const [loading, setLoading] = useState<boolean>(true);
 
     const fetchNews = async () => {
+        setLoading(true);
         try {
-            const req = API_GET_USER_NEWS_RECEIVED + "?id-user=1"; //TODO id user dinamico
-            console.log("fetch: ", req);
-
-            const res = await fetch(req);
-            const news = await res.json();
+            const news = await apiGetUserNewsReceived(1); //TODO dinamicizzare id user
             setNews(news);
         } catch (error) {
-            console.error("Error fetch: ", error);
+            Alert.alert("Errore ricezione dati");
         } finally {
             setLoading(false);
         }

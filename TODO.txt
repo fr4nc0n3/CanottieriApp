@@ -1,4 +1,5 @@
 ---------- TODO ----------
+- Da fare prova caricando il backend su un cloud (Per questa prova non fare https e quindi non usare nginx, ma server wsgi di produzione)
 - Connettere flask e sqlite3: https://flask.palletsprojects.com/en/stable/patterns/sqlite3/?utm_source=chatgpt.com
 - Creare db ed app flask con gunicorn WSGI e conneterlo all' app (solo ambiente di sviluppo locale al momento)
     Avevo chiesto a chatGPT, mi sembra che la sua soluzione con Nginx per fare da web server che gestisce
@@ -28,6 +29,9 @@ in modo da poter inviare a piu' gruppi contemporaneamente
 - In produzione impostare tramite .env app.run(debug=False) per lanciare flask
 
 - Nel metodo getUserInfo non dovrei restituire l' hash password
+
+- Per fare i test finche' non ci si decide con hosting usare una raspberry pi
+blindata e supersicura che emetta il servizio web attraverso port forwarding
 
 --------- TODO Refactoring ------------
 - Modulare grafica

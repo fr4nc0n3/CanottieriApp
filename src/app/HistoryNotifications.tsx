@@ -1,5 +1,10 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import {
+    apiDeleteNews,
+    apiGetUserNewsReceived,
+    apiGetUserNewsSended,
+} from "@/global/APICalls";
 import { API_DELETE_NEWS, API_GET_USER_NEWS_SENDED } from "@/global/Constants";
 import { UserNewsTx } from "@/global/Types";
 import { useRouter } from "expo-router";
@@ -30,14 +35,10 @@ export default function HistoryNotification() {
         setLoading(true);
 
         try {
-            const req = API_GET_USER_NEWS_SENDED + "?id-user=1"; //TODO id user dinamico
-            console.log("fetch: ", req);
-
-            const res = await fetch(req);
-            const news = await res.json();
+            const news = await apiGetUserNewsSended(1); //TODO da dinamicizzare userid
             setNews(news);
         } catch (error) {
-            console.error("Error fetch: ", error);
+            Alert.alert("Errore ricezione dati");
         } finally {
             setLoading(false);
         }
@@ -45,27 +46,9 @@ export default function HistoryNotification() {
 
     const deleteNews = async (id: number) => {
         try {
-            const req = API_DELETE_NEWS;
-            console.log("fetch: ", req);
-
-            const res = await fetch(req, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ id }),
-            });
-            if (res.ok) {
-                Alert.alert("Eliminazione avvenuta con successo");
-            } else {
-                Alert.alert(
-                    "Non e' stato possibile eliminare la news con id: " + id
-                );
-            }
-
-            setDeletion(true);
+            await apiDeleteNews(id);
+            Alert.alert("Eliminazione avvenuta con successo");
         } catch (error) {
-            console.error("Error delete: ", error);
             Alert.alert("Qualcosa e' andato storto durante l' eliminazione.");
         }
     };

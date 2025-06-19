@@ -1,5 +1,6 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { apiSendNewsToGroups } from "@/global/APICalls";
 import { API_SEND_NEWS_TO_GROUPS } from "@/global/Constants";
 import { emptyNewsToSend, NewsToSend } from "@/global/Types";
 import { useRouter } from "expo-router";
@@ -41,30 +42,12 @@ export default function NotifyPage() {
     };
 
     const handleSend = async () => {
-        const url = API_SEND_NEWS_TO_GROUPS;
-        const data = newsToSend;
-
         try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            const result = await response.json();
-            console.log("API response send news:", result);
-
-            if (response.ok) {
-                Alert.alert("Notifica inviata con successo");
-            }
+            await apiSendNewsToGroups(newsToSend);
+            Alert.alert("Notifica inviata con successo");
         } catch (error) {
-            console.error("Errore durante la richiesta POST:", error);
             Alert.alert("Errore durante l' invio");
         }
-
-        //TODO avviso di invio con successo o errore
 
         setNewsToSend(emptyNewsToSend);
     };
