@@ -3,5 +3,6 @@
 import { Redirect } from "expo-router";
 
 export default function Index() {
-    return <Redirect href="/MenuPage" />;
+    //return <Redirect href="/MenuPage" />;
+    return <Redirect href="/LoginPage" />;
 }

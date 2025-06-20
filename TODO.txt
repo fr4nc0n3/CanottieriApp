@@ -35,7 +35,6 @@ blindata e supersicura che emetta il servizio web attraverso port forwarding
 
 --------- TODO Refactoring ------------
 - Modulare grafica
-- Creare funzioni di fetch API per ogni chiamata
 - Creare un context per alcune info globali (informazioni utente, altro)
 
 ------- PRIMA DI CARICARE SU STORE --------

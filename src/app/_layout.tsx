@@ -28,7 +28,7 @@ export default function RootLayout() {
                             >
                                 <TouchableOpacity
                                     onPress={() => {
-                                        router.replace("/MenuPage");
+                                        router.dismissTo("/MenuPage");
                                     }}
                                 >
                                     <Ionicons
@@ -52,7 +52,7 @@ export default function RootLayout() {
                                 </Text>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        router.replace("/SettingsPage");
+                                        router.dismissTo("/SettingsPage");
                                     }}
                                 >
                                     <Ionicons
@@ -65,7 +65,12 @@ export default function RootLayout() {
                         ),
                         headerStyle: { backgroundColor: "#fff" },
                     }}
-                />
+                >
+                    <Stack.Screen
+                        name="LoginPage"
+                        options={{ headerShown: false }}
+                    />
+                </Stack>
             </SafeAreaProvider>
         </PaperProvider>
     );

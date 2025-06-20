@@ -5,7 +5,7 @@ import { API_GET_USER_INFO } from "@/global/Constants";
 import { emptyUser, User } from "@/global/Types";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
-import { Avatar, Card, Chip, Text } from "react-native-paper";
+import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
 
 export default function ProfiloPage() {
     const [user, setUser] = useState<User>(emptyUser);
@@ -69,6 +69,22 @@ export default function ProfiloPage() {
                     </View>
                 </Card.Content>
             </Card>
+            <View
+                style={{
+                    flex: 1,
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Button
+                    mode="contained"
+                    onPress={() => {
+                        //TODO
+                    }}
+                >
+                    LOGOUT
+                </Button>
+            </View>
         </View>
     );
 }

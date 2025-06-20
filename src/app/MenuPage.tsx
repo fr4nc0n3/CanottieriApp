@@ -19,7 +19,7 @@ export default function MenuPage() {
                         active={active === "profile"}
                         onPress={() => {
                             setActive("profile");
-                            router.replace("/ProfilePage");
+                            router.push("/ProfilePage");
                         }}
                         icon="account"
                     />
@@ -28,7 +28,7 @@ export default function MenuPage() {
                         active={active === "news"}
                         onPress={() => {
                             setActive("news");
-                            router.replace("/NewsPage");
+                            router.push("/NewsPage");
                         }}
                         icon="bell"
                     />
@@ -45,7 +45,7 @@ export default function MenuPage() {
                             active={active === "trainingDay"}
                             onPress={() => {
                                 setActive("trainingDay");
-                                router.replace("/TrainingDayPage");
+                                router.push("/TrainingDayPage");
                             }}
                             icon="dumbbell"
                         />
@@ -63,7 +63,7 @@ export default function MenuPage() {
                             active={active === "manageTraining"}
                             onPress={() => {
                                 setActive("manageTraining");
-                                router.replace("/ManageTrainingPage");
+                                router.push("/ManageTrainingPage");
                             }}
                             icon="view-grid"
                         />
@@ -79,7 +79,7 @@ export default function MenuPage() {
                         active={active === "notify"}
                         onPress={() => {
                             setActive("notify");
-                            router.replace("/NotifyPage");
+                            router.push("/NotifyPage");
                         }}
                         icon="view-grid"
                     />
