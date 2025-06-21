@@ -2,9 +2,31 @@ from flask import Flask
 from .routes import api
 from .config import Config
 from .db import close_connection
+from flask_cors import CORS
+import os
 
 def create_app():
     app = Flask(__name__)
+
+    FLASK_ENV = os.getenv("FLASK_ENV", "prod") 
+
+    #per sviluppo
+    if(FLASK_ENV == "dev"):
+        CORS(app)
+
+    #per produzione
+    elif(FLASK_ENV == "prod"): 
+     CORS(app, resources={
+        r"/api/*": {
+            "origins": ["https://tuo-sito.com"], 
+            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+            "allow_headers": ["Authorization", "Content-Type"],
+        }
+     })
+    else:
+        print("Errore: FLASK_ENV non valido, FLASK_ENV = " + FLASK_ENV)
+        exit(1)
+
     app.config.from_object(Config)
 
     # Blueprint registration

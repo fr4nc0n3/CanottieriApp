@@ -16,12 +16,13 @@ export default function ProfiloPage() {
         setLoading(true);
         try {
             const user = await apiGetUserInfo(1); //TODO dinamicizzare idUser
+            setUser(user);
+
             const resImg = await fetch(user.profile_img_url, {
                 method: "HEAD",
             });
 
             setIsImageUrl(resImg.ok);
-            setUser(user);
         } catch (error) {
             Alert.alert("Errore ricezione dati");
         } finally {

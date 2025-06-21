@@ -26,3 +26,7 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 Questo progetto è distribuito sotto licenza **GNU GPL v3**.  
 Vedi il file [LICENSE](./LICENSE.txt) per i dettagli.
+
+### Note sviluppo
+
+La psw di test per utente: "Mario Rossi" e' "prova_password"

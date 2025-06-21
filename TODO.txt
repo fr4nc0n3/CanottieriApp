@@ -9,6 +9,9 @@
 
 - Provare expo-notifications
 
+- Le chiamate Alert... del modulo react-native devono essere sostituite
+con dei dialog di react-native-paper per la compatibilita' con il web
+
 - Autenticazione JWT (JSON Web Token)
 
 - Sistemare la navigazione app.

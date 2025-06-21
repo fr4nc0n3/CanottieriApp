@@ -13,7 +13,7 @@ export default function MenuPage() {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <Drawer.Section style={styles.sidebar} title="">
+                <Drawer.Section style={styles.sidebar}>
                     <Drawer.Item
                         label="Profilo"
                         active={active === "profile"}
