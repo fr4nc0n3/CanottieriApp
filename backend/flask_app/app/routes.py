@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .db import query_db, execute_ops_db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 api = Blueprint('main', __name__)
 
@@ -165,3 +166,26 @@ def deleteNews():
 
 
     return jsonify({"status": "ok"})
+
+# -------------- AUTENTICATIONS -----------
+@api.route('/login', methods=['POST'])
+def login():
+    data = request.json
+
+    username = data.get('username', "")
+    password = data.get('password', "")
+    
+    #Ottenere utente tramite nome
+    user = query_db("SELECT id, password_hash FROM User WHERE name = ?", tuple([username]))
+
+    if(len(user) <= 0):
+        return jsonify({"message": "user_not_found"})
+
+    id = user[0][0]
+    psw_db = user[0][1] #e' hashata nel DB
+
+    #verificare che combaci la password hashata
+    if(check_password_hash(psw_db, password)):
+        return jsonify({"message": "loggedIn", "token": ""})
+    else:
+        return jsonify({"message": "login_failed", "token": ""})

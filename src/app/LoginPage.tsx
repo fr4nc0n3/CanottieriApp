@@ -1,6 +1,7 @@
+import { apiLogin } from "@/global/APICalls";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, Alert } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 
 export default function LoginPage() {
@@ -10,16 +11,20 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (username.trim() === "" || password.trim() === "") {
             setError("Inserisci username e password.");
         } else {
             setError("");
 
-            //TODO ottenere token e fare login oppure se fallisce segnalare in error
-            console.log("Effettua login con", username, password);
-
-            router.dismissTo("/MenuPage");
+            try {
+                //TODO ottenere token e fare login oppure se fallisce segnalare in error
+                const jsonRes = await apiLogin(username, password);
+                console.log("response login:", jsonRes);
+                router.dismissTo("/MenuPage");
+            } catch (error) {
+                Alert.alert("Errore durante il login");
+            }
         }
     };
 

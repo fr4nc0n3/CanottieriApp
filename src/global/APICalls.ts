@@ -3,6 +3,7 @@ import {
     API_GET_USER_INFO,
     API_GET_USER_NEWS_RECEIVED,
     API_GET_USER_NEWS_SENDED,
+    API_LOGIN,
     API_SEND_NEWS_TO_GROUPS,
 } from "./Constants";
 import { NewsToSend, User, UserNewsRx, UserNewsTx } from "./Types";
@@ -115,6 +116,31 @@ export const apiGetUserInfo = async (idUser: number): Promise<User> => {
         return user;
     } catch (error) {
         console.error(`Error fetch user with id: ${idUser}`, error);
+        throw error;
+    }
+};
+
+export const apiLogin = async (username: string, psw: string) => {
+    try {
+        const req = API_LOGIN;
+        console.log("fetch: ", req);
+
+        const res = await fetch(req, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password: psw }),
+        });
+
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
+        const jsonRes = await res.json();
+        return jsonRes;
+    } catch (error) {
+        console.error(`Error login for user: ${username}`, error);
         throw error;
     }
 };
