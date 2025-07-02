@@ -6,7 +6,9 @@ import {
     apiGetUserNewsSended,
 } from "@/global/APICalls";
 import { API_DELETE_NEWS, API_GET_USER_NEWS_SENDED } from "@/global/Constants";
+import { getJWT } from "@/global/jwtStorage";
 import { UserNewsTx } from "@/global/Types";
+import { alert, confirm } from "@/global/UniversalPopups";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -35,10 +37,10 @@ export default function HistoryNotification() {
         setLoading(true);
 
         try {
-            const news = await apiGetUserNewsSended(1); //TODO da dinamicizzare userid
+            const news = await apiGetUserNewsSended(1, await getJWT()); //TODO da dinamicizzare userid
             setNews(news);
         } catch (error) {
-            Alert.alert("Errore ricezione dati");
+            alert("Errore ricezione dati");
         } finally {
             setLoading(false);
         }
@@ -46,10 +48,10 @@ export default function HistoryNotification() {
 
     const deleteNews = async (id: number) => {
         try {
-            await apiDeleteNews(id);
-            Alert.alert("Eliminazione avvenuta con successo");
+            await apiDeleteNews(id, await getJWT());
+            alert("Eliminazione avvenuta con successo");
         } catch (error) {
-            Alert.alert("Qualcosa e' andato storto durante l' eliminazione.");
+            alert("Qualcosa e' andato storto durante l' eliminazione.");
         }
     };
 
@@ -118,25 +120,14 @@ export default function HistoryNotification() {
                                             size={24}
                                             onPress={() => {
                                                 //richiesta conferma eliminazione della news
-                                                Alert.alert(
+                                                confirm(
                                                     "Conferma eliminazione",
                                                     "Sei sicuro di voler eliminare la richiesta con data: " +
                                                         item.data_publish +
                                                         "?",
-                                                    [
-                                                        {
-                                                            text: "Annulla",
-                                                            style: "cancel",
-                                                        },
-                                                        {
-                                                            text: "OK",
-                                                            onPress: () => {
-                                                                deleteNews(
-                                                                    item.id
-                                                                );
-                                                            },
-                                                        },
-                                                    ]
+                                                    () => {
+                                                        deleteNews(item.id);
+                                                    }
                                                 );
                                             }}
                                         />

@@ -4,12 +4,14 @@ from .config import Config
 from .db import close_connection
 from flask_cors import CORS
 import os
+from flask_jwt_extended import JWTManager
 
 def create_app():
     app = Flask(__name__)
 
     FLASK_ENV = os.getenv("FLASK_ENV", "prod") 
 
+    #-------- IMPOSTAZIONE CORS ----------
     #per sviluppo
     if(FLASK_ENV == "dev"):
         CORS(app)
@@ -29,9 +31,14 @@ def create_app():
 
     app.config.from_object(Config)
 
+    #configurazione JWT
+    jwt = JWTManager(app) 
+
     # Blueprint registration
     app.register_blueprint(api, url_prefix='/api')
 
+    # In questo modo alla fine di ogni api viene chiamato automaticamente
+    # close_connection
     app.teardown_appcontext(close_connection)
 
     return app

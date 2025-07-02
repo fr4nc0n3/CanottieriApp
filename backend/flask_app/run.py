@@ -6,4 +6,5 @@ app = create_app()
 if __name__ == "__main__":
     load_dotenv()
 
+    #TODO debug
     app.run(debug=True, host='0.0.0.0')

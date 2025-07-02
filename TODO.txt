@@ -1,4 +1,12 @@
+- FARE REFACTORING BACKEND
+- Nel frontend bisogna fare controllo token usando magari una route creata solo per verificare se il token
+e' accettato (riutilizzare get-info-user?)
+
 ---------- TODO ----------
+- La funzionalita' che ha interessato maggiormente il Sola e': 
+Dare la possibilita' agli atleti di caricare gli allenamenti fatti e che quindi
+lui possa vedere gli allenamenti fatti giorno per giorno
+
 - Da fare prova caricando il backend su un cloud (Per questa prova non fare https e quindi non usare nginx, ma server wsgi di produzione)
 - Connettere flask e sqlite3: https://flask.palletsprojects.com/en/stable/patterns/sqlite3/?utm_source=chatgpt.com
 - Creare db ed app flask con gunicorn WSGI e conneterlo all' app (solo ambiente di sviluppo locale al momento)
@@ -12,22 +20,9 @@
 - Le chiamate Alert... del modulo react-native devono essere sostituite
 con dei dialog di react-native-paper per la compatibilita' con il web
 
-- Autenticazione JWT (JSON Web Token)
-
-- Sistemare la navigazione app.
-Se si va nel menu principale lo stack deve essere limitato a quella sola pagina.
-Le altre pagine invece dovrebbero avere la possibilita' di tornare indietro 
-(quindi vanno "impilate" sullo stack) 
-almeno con il tasto del sistema operativo.
-
-- Nell' app quando si vuole inviare un messaggio bisogna mettere delle check box e non radio
-in modo da poter inviare a piu' gruppi contemporaneamente
-
 - Nell' index bisogna fare un controllo se l' endpoint API e' online
 
-- Fare pagina di login
-
-- Nella pagina "Profilo" bisogna mettere il tasto per fare il logout
+- Nella pagina "Profilo" bisogna sistemare logica logout
 
 - In produzione impostare tramite .env app.run(debug=False) per lanciare flask
 

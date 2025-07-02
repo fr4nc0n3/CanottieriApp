@@ -2,7 +2,9 @@
 
 import { apiGetUserNewsReceived } from "@/global/APICalls";
 import { API_GET_USER_NEWS_RECEIVED } from "@/global/Constants";
+import { getJWT } from "@/global/jwtStorage";
 import { emptyUserNewsRx, UserNewsRx } from "@/global/Types";
+import { alert } from "@/global/UniversalPopups";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Card, Modal, Portal, Text } from "react-native-paper";
@@ -18,10 +20,10 @@ export default function NewsPage() {
     const fetchNews = async () => {
         setLoading(true);
         try {
-            const news = await apiGetUserNewsReceived(1); //TODO dinamicizzare id user
+            const news = await apiGetUserNewsReceived(1, await getJWT()); //TODO dinamicizzare id user
             setNews(news);
         } catch (error) {
-            Alert.alert("Errore ricezione dati");
+            alert("Errore ricezione dati");
         } finally {
             setLoading(false);
         }

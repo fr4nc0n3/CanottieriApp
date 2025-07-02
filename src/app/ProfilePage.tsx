@@ -2,7 +2,10 @@
 
 import { apiGetUserInfo } from "@/global/APICalls";
 import { API_GET_USER_INFO } from "@/global/Constants";
+import { deleteJWT, getJWT } from "@/global/jwtStorage";
 import { emptyUser, User } from "@/global/Types";
+import { confirm } from "@/global/UniversalPopups";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
@@ -15,7 +18,9 @@ export default function ProfiloPage() {
     const fetchUser = async () => {
         setLoading(true);
         try {
-            const user = await apiGetUserInfo(1); //TODO dinamicizzare idUser
+            const jwt = await getJWT();
+
+            const user = await apiGetUserInfo(1, jwt ?? ""); //TODO dinamicizzare idUser
             setUser(user);
 
             const resImg = await fetch(user.profile_img_url, {
@@ -24,9 +29,20 @@ export default function ProfiloPage() {
 
             setIsImageUrl(resImg.ok);
         } catch (error) {
-            Alert.alert("Errore ricezione dati");
+            alert("Errore ricezione dati");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const logout = async () => {
+        await deleteJWT();
+
+        if (router.canDismiss()) {
+            router.dismissAll();
+            router.replace("/");
+        } else {
+            router.replace("/");
         }
     };
 
@@ -80,7 +96,11 @@ export default function ProfiloPage() {
                 <Button
                     mode="contained"
                     onPress={() => {
-                        //TODO
+                        confirm(
+                            "LOGOUT",
+                            "Sei sicuro di voler eseguire il logout?",
+                            logout
+                        );
                     }}
                 >
                     LOGOUT

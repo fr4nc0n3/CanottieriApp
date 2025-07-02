@@ -76,7 +76,7 @@ export default function SettingsPage() {
                         if (privacyPolicyUrl) {
                             openLink(privacyPolicyUrl);
                         } else {
-                            Alert.alert("Privacy policy non disponibile");
+                            alert("Privacy policy non disponibile");
                         }
                     }}
                 />

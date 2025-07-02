@@ -2,7 +2,9 @@
 
 import { apiSendNewsToGroups } from "@/global/APICalls";
 import { API_SEND_NEWS_TO_GROUPS } from "@/global/Constants";
+import { getJWT } from "@/global/jwtStorage";
 import { emptyNewsToSend, NewsToSend } from "@/global/Types";
+import { alert } from "@/global/UniversalPopups";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
@@ -43,10 +45,10 @@ export default function NotifyPage() {
 
     const handleSend = async () => {
         try {
-            await apiSendNewsToGroups(newsToSend);
-            Alert.alert("Notifica inviata con successo");
+            await apiSendNewsToGroups(newsToSend, await getJWT());
+            alert("Notifica inviata con successo");
         } catch (error) {
-            Alert.alert("Errore durante l' invio");
+            alert("Errore durante l' invio");
         }
 
         setNewsToSend(emptyNewsToSend);
@@ -80,7 +82,9 @@ export default function NotifyPage() {
                         placeholder="Scrivi la notifica qui..."
                         value={newsToSend.message}
                         style={styles.input}
-                        onPressIn={openModal}
+                        onPress={() => {
+                            openModal();
+                        }}
                         onChangeText={(_) => {}}
                     />
                 </Card.Content>

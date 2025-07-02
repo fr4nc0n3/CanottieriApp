@@ -1,6 +1,11 @@
 from flask import Blueprint, jsonify, request
-from .db import query_db, execute_ops_db
+from .db import (query_db, execute_ops_db, dbUserAccountTypes, dbUserNewsRx, 
+    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews )
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import (create_access_token, jwt_required, get_jwt_identity, get_jwt)
+import json
+
+#TODO refactoring query 
 
 api = Blueprint('main', __name__)
 
@@ -10,60 +15,91 @@ def index():
 
 #--------- GET DATA ------------
 @api.route('/get-users', methods=['GET'])
+@jwt_required()
 def getUsers():
+        identity = get_jwt_identity()
+        claims = get_jwt()
+
+        if(not is_admin(claims)):
+            return permission_denied()
+
         users = query_db('SELECT * FROM User')
         return jsonify([dict(u) for u in users])
 
 @api.route('/get-user-info', methods=['GET'])
+@jwt_required()
 def getUserInfo():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
     idUser = request.args.get("id-user", "-1")
+
+    if(idUser != identity and not is_admin(claims)):
+        return permission_denied()
     
     user = query_db("SELECT * FROM User WHERE id = ?", tuple([idUser]))
 
     if(len(user) > 0):
         return jsonify(dict(user[0]))
     else:
-        return ""
+        return jsonify({"message": "user not found"}), 404 
 
 @api.route('/get-user-account-types', methods=['GET'])
+@jwt_required()
 def getUserAccountTypes():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
     idUser = request.args.get('id-user', '-1')
 
-    accountTypes = query_db('SELECT type FROM UserAccountType, AccountType ' +
-        'WHERE id_account_type = AccountType.id and id_user = ?', tuple([idUser]))
+    if(idUser != identity and not is_admin(claims)):
+        return permission_denied()
 
-    return jsonify([a['type'] for a in accountTypes])
+    accountTypes = dbUserAccountTypes(idUser)
+
+    return jsonify(accountTypes)
 
 @api.route('/get-user-news-received', methods=['GET'])
+@jwt_required()
 def getUserNews():
+    identity = get_jwt_identity()
+
     idUser = request.args.get('id-user', '-1')
     offset = request.args.get('offset-sql', '0')
     limit = 10
 
-    news = query_db('SELECT n.title, n.message, n.data_publish, n.target_name ' +
-        'FROM UserNews un, News n ' +
-        'WHERE un.id_news = n.id AND un.id_user = ? AND n.is_deleted = 0 ' +
-        'LIMIT ? OFFSET ?', tuple([idUser, limit, offset]))
+    #autenticazione
+    if(idUser != identity):
+        return permission_denied()
 
-    return jsonify([dict(n) for n in news])
+    news = dbUserNewsRx(idUser, limit, offset)
+
+    return jsonify(news)
 
 @api.route('/get-user-news-sended', methods=['GET'])
+@jwt_required()
 def getUserNewsSended():
+    identity = get_jwt_identity()
+
     idUser = request.args.get('id-user', '-1')
     offset = request.args.get('offset-sql', '0')
     limit = 10
 
-    news = query_db('SELECT * FROM News ' +
-        'WHERE id_user_sender = ? AND is_deleted = 0 ' +
-        'LIMIT ? OFFSET ?', tuple([idUser, limit, offset]))
+    if(identity != idUser):
+        return permission_denied()
 
-    return jsonify([dict(n) for n in news])
+    news = dbUserNewsTx(idUser, limit, offset)
+
+    return jsonify(news)
 
 #-------------- PROCEDURES ---------------
 #TODO qui bisogna anche mettere una notifica ai vari account
 #potrei dover aggiungere una colonna per i token expo-notifications agli utenti
 @api.route('/send-news-to-groups', methods=['POST'])
+@jwt_required()
 def sendNewsToGroup():
+    identity = get_jwt_identity()
+
     data = request.json
 
     # group e' un array di account type, se contiene "all" allora invia a tutti utenti
@@ -71,6 +107,9 @@ def sendNewsToGroup():
     idUser = data.get('id-user', None) # id user sender
     title = data.get('title', '')
     message = data.get('message', None)
+
+    if(idUser != identity):
+        return permission_denied()
 
     if (groups is None or idUser is None or message is None):
         return jsonify({"error": "Bad request"}), 400
@@ -92,32 +131,9 @@ def sendNewsToGroup():
 
     print("Send to userIds:", targetIdUsers)
 
+    insertNews(idUser, message, title, groups)
+
     query_ops = []
-
-    #inserimento DB News
-    query_ops.append(
-        {
-            "query": (
-                "INSERT INTO News ("
-                "id_user_sender, "
-                "message, "
-                "title, "
-                "data_publish, "
-                "created_at, "
-                "updated_at, "
-                "deleted_at, "
-                "is_deleted, "
-                "target_name"
-                ") VALUES ("
-                "?, ?, ?, date('now'), datetime('now'), datetime('now'), NULL, 0, ?"
-                ")"
-            ),
-            "args": tuple([idUser, message, title, ','.join(groups)])
-        })
-
-    execute_ops_db(query_ops)
-
-    query_ops = [] #resetto lista query operazionali
 
     #get last id news
     lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
@@ -126,26 +142,25 @@ def sendNewsToGroup():
     print("last id news: ", lastIdNews)
 
     #inserimento DB UserNews
-    query = (
-        "INSERT INTO UserNews ("
-        "id_news, id_user, created_at"
-        ") VALUES ("
-        "?,"
-        "?,"
-        "datetime('now')"
-        ")"
-    )
-
     for id in targetIdUsers:
-        execute_ops_db([{"query": query, "args": tuple([lastIdNews, id])}])
+        #execute_ops_db([{"query": query, "args": tuple([lastIdNews, id])}])
+        execute_ops_db([queryInsertUserNews(lastIdNews, id)]) #TO TEST TODO
 
-    #invio notifiche
+    #invio notifiche TODO
 
     return jsonify({"status": "ok"})
 
 #soft delete di una news
 @api.route('/delete-news', methods=['POST'])
+@jwt_required()
 def deleteNews():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    # solo admin puo' eliminare news
+    if(not is_admin(claims)):
+        return permission_denied()
+
     data = request.json
 
     id = data.get('id', None)
@@ -154,16 +169,7 @@ def deleteNews():
         return jsonify({"error": "Bad request"}), 400
 
     #eliminazione DB News by id
-    execute_ops_db([
-        {
-            "query": (
-                "UPDATE News "
-                "SET is_deleted = 1 "
-                "WHERE id = ?"
-            ),
-            "args": tuple([id])
-        }])
-
+    deleteNews(id)
 
     return jsonify({"status": "ok"})
 
@@ -184,8 +190,26 @@ def login():
     id = user[0][0]
     psw_db = user[0][1] #e' hashata nel DB
 
+    #get user account types
+    accountTypes = dbUserAccountTypes(id) #TODO TO TEST
+    #accountTypes = query_db("SELECT at.type FROM AccountType AS at JOIN UserAccountType AS uat "
+    # "ON at.id = uat.id_account_type WHERE uat.id_user = ?", tuple([id]))
+    #accountTypes = [at[0] for at in accountTypes]
+
     #verificare che combaci la password hashata
     if(check_password_hash(psw_db, password)):
-        return jsonify({"message": "loggedIn", "token": ""})
+        access_token = create_access_token(
+            identity=str(id),
+            additional_claims={"username": username, "accountTypes": accountTypes}
+        )
+
+        return jsonify({"message": "loggedIn", "token": access_token })
     else:
-        return jsonify({"message": "login_failed", "token": ""})
+        return jsonify({"message": "login_failed", "token": ""}), 401
+
+# -------------------- HELPERS -----------------
+def is_admin(claims):
+    return "admin" in claims.get("accountTypes", [])
+
+def permission_denied():
+    return jsonify({"message": "Permission denied"}), 403

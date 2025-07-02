@@ -1,4 +1,6 @@
 import { apiLogin } from "@/global/APICalls";
+import { saveJWT } from "@/global/jwtStorage";
+import { alert } from "@/global/UniversalPopups";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet, Image, Alert } from "react-native";
@@ -17,13 +19,19 @@ export default function LoginPage() {
         } else {
             setError("");
 
+            //ricezione jwt login
             try {
-                //TODO ottenere token e fare login oppure se fallisce segnalare in error
                 const jsonRes = await apiLogin(username, password);
                 console.log("response login:", jsonRes);
-                router.dismissTo("/MenuPage");
+
+                if (jsonRes.token) {
+                    await saveJWT(jsonRes.token);
+                    router.dismissTo("/MenuPage");
+                } else {
+                    setError("Credenziali errate");
+                }
             } catch (error) {
-                Alert.alert("Errore durante il login");
+                alert("Errore durante il login");
             }
         }
     };
