@@ -1,8 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-//TODO to test
-
 const TOKEN_KEY = "jwt_token";
 
 export async function saveJWT(token: string) {

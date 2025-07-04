@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from .db import (query_db, execute_ops_db, dbUserAccountTypes, dbUserNewsRx, 
-    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews )
+    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews )
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt_identity, get_jwt)
 import json
@@ -122,9 +122,11 @@ def sendNewsToGroup():
 
     if ("all" not in groups):
         placeholders = ','.join(['?'] * len(groups))
-        query += f"AND at.type in ({placeholders})"
+        query += f"AND at.type in ({placeholders}) "
+        query += "GROUP BY u.id "
         targetIdUsers = query_db(query, tuple(groups))
     else:
+        query += "GROUP BY u.id "
         targetIdUsers = query_db(query)
 
     targetIdUsers = [t[0] for t in targetIdUsers]
@@ -143,8 +145,7 @@ def sendNewsToGroup():
 
     #inserimento DB UserNews
     for id in targetIdUsers:
-        #execute_ops_db([{"query": query, "args": tuple([lastIdNews, id])}])
-        execute_ops_db([queryInsertUserNews(lastIdNews, id)]) #TO TEST TODO
+        execute_ops_db([queryInsertUserNews(lastIdNews, id)])
 
     #invio notifiche TODO
 
@@ -169,7 +170,7 @@ def deleteNews():
         return jsonify({"error": "Bad request"}), 400
 
     #eliminazione DB News by id
-    deleteNews(id)
+    dbDeleteNews(id)
 
     return jsonify({"status": "ok"})
 
@@ -191,10 +192,7 @@ def login():
     psw_db = user[0][1] #e' hashata nel DB
 
     #get user account types
-    accountTypes = dbUserAccountTypes(id) #TODO TO TEST
-    #accountTypes = query_db("SELECT at.type FROM AccountType AS at JOIN UserAccountType AS uat "
-    # "ON at.id = uat.id_account_type WHERE uat.id_user = ?", tuple([id]))
-    #accountTypes = [at[0] for at in accountTypes]
+    accountTypes = dbUserAccountTypes(id)
 
     #verificare che combaci la password hashata
     if(check_password_hash(psw_db, password)):

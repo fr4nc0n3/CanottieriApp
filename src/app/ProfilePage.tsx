@@ -5,6 +5,7 @@ import { API_GET_USER_INFO } from "@/global/Constants";
 import { deleteJWT, getJWT } from "@/global/jwtStorage";
 import { emptyUser, User } from "@/global/Types";
 import { confirm } from "@/global/UniversalPopups";
+import { getJWTIdentity } from "@/global/Utils";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -19,8 +20,8 @@ export default function ProfiloPage() {
         setLoading(true);
         try {
             const jwt = await getJWT();
-
-            const user = await apiGetUserInfo(1, jwt); //TODO dinamicizzare idUser
+            const userId = getJWTIdentity(jwt);
+            const user = await apiGetUserInfo(userId, jwt);
             setUser(user);
 
             /*const resImg = await fetch(user.profile_img_url, {
@@ -116,9 +117,6 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     card: {
-        //TODO commentando questo diventa un pelo rosa, invece dovrebbe essere comunque bianco
-        //utilizzando il theme custom AppThemePaper.tsx
-        //backgroundColor: "#fff",
         padding: 16,
     },
     cardContent: {

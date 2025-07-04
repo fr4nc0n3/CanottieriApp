@@ -9,3 +9,10 @@ export const decodeJWT = (token: string) => {
     );
     return JSON.parse(jsonPayload);
 };
+
+export const getJWTIdentity = (token: string) => {
+    const jwt = decodeJWT(token);
+    const identity = jwt.sub;
+
+    return identity;
+};

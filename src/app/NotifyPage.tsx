@@ -5,6 +5,7 @@ import { API_SEND_NEWS_TO_GROUPS } from "@/global/Constants";
 import { getJWT } from "@/global/jwtStorage";
 import { emptyNewsToSend, NewsToSend } from "@/global/Types";
 import { alert } from "@/global/UniversalPopups";
+import { getJWTIdentity } from "@/global/Utils";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, ScrollView, StyleSheet, View } from "react-native";
@@ -24,8 +25,20 @@ export default function NotifyPage() {
     const [visibleModal, setVisibleModal] = useState<boolean>(false);
     const [newsToSend, setNewsToSend] = useState<NewsToSend>({
         ...emptyNewsToSend,
-        "id-user": 1,
-    }); //TODO dinamicizzare idUser
+        "id-user": 0,
+    });
+
+    useEffect(() => {
+        getJWT()
+            .then((token) => {
+                setNewsToSend((cur) => {
+                    return { ...cur, "id-user": getJWTIdentity(token) };
+                });
+            })
+            .catch((error) => {
+                alert(`c'e' stato un problema: ${error}`);
+            });
+    }, []);
 
     const openModal = () => {
         setVisibleModal(true);
@@ -51,7 +64,9 @@ export default function NotifyPage() {
             alert("Errore durante l' invio");
         }
 
-        setNewsToSend(emptyNewsToSend);
+        setNewsToSend((cur) => {
+            return { ...cur, title: "", message: "", groups: [] };
+        });
     };
 
     return (
@@ -82,7 +97,7 @@ export default function NotifyPage() {
                         placeholder="Scrivi la notifica qui..."
                         value={newsToSend.message}
                         style={styles.input}
-                        onPress={() => {
+                        onFocus={() => {
                             openModal();
                         }}
                         onChangeText={(_) => {}}

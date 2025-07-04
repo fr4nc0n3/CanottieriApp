@@ -7,7 +7,7 @@ export type User = {
     email_verified: number;
     enable: number;
     expiration_sub_date: string;
-    id: number;
+    id: string;
     last_sub_date: string;
     name: string;
     //password_hash: string; //TODO il backend non deve inviarla
@@ -23,7 +23,7 @@ export const emptyUser: User = {
     email_verified: 0,
     enable: 0,
     expiration_sub_date: "",
-    id: 0,
+    id: "0",
     last_sub_date: "",
     name: "",
     phone: "",

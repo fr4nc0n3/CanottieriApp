@@ -4,7 +4,6 @@ import * as React from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
-//TODO dati DB
 const trainingText = `
 Obiettivo: Resistenza aerobica e tecnica di voga
 

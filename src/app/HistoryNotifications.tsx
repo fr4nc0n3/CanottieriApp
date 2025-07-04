@@ -9,6 +9,7 @@ import { API_DELETE_NEWS, API_GET_USER_NEWS_SENDED } from "@/global/Constants";
 import { getJWT } from "@/global/jwtStorage";
 import { UserNewsTx } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
+import { decodeJWT, getJWTIdentity } from "@/global/Utils";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
@@ -37,7 +38,9 @@ export default function HistoryNotification() {
         setLoading(true);
 
         try {
-            const news = await apiGetUserNewsSended(1, await getJWT()); //TODO da dinamicizzare userid
+            const jwt = await getJWT();
+            const userId = getJWTIdentity(jwt);
+            const news = await apiGetUserNewsSended(userId, jwt);
             setNews(news);
         } catch (error) {
             alert("Errore ricezione dati");
@@ -52,7 +55,10 @@ export default function HistoryNotification() {
             alert("Eliminazione avvenuta con successo");
         } catch (error) {
             alert("Qualcosa e' andato storto durante l' eliminazione.");
+            return;
         }
+
+        await fetchNews();
     };
 
     useEffect(() => {

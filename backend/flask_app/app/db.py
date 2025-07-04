@@ -138,4 +138,4 @@ def queryInsertUserNews(idNews, idUser) -> QueryOp:
         ")"
     )
 
-    return {"query": query, "args": tuple([lastIdNews, id])}
+    return {"query": query, "args": tuple([idNews, idUser])}
