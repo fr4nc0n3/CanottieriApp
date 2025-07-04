@@ -20,14 +20,14 @@ export default function ProfiloPage() {
         try {
             const jwt = await getJWT();
 
-            const user = await apiGetUserInfo(1, jwt ?? ""); //TODO dinamicizzare idUser
+            const user = await apiGetUserInfo(1, jwt); //TODO dinamicizzare idUser
             setUser(user);
 
-            const resImg = await fetch(user.profile_img_url, {
+            /*const resImg = await fetch(user.profile_img_url, {
                 method: "HEAD",
             });
 
-            setIsImageUrl(resImg.ok);
+            setIsImageUrl(resImg.ok);*/
         } catch (error) {
             alert("Errore ricezione dati");
         } finally {
