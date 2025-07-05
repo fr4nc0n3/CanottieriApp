@@ -1,10 +1,12 @@
 from app import create_app
 from dotenv import load_dotenv
-
-app = create_app()
+from waitress import serve
+import os
 
 if __name__ == "__main__":
     load_dotenv()
 
+    app = create_app()
+
     #TODO debug
-    app.run(debug=True, host='0.0.0.0')
+    serve(app, host='0.0.0.0', port=5000)

@@ -3,3 +3,4 @@ flask-cors
 Flask-JWT-Extended
 python-dotenv
 cryptography
+waitress
