@@ -11,6 +11,9 @@ def create_app():
 
     FLASK_ENV = os.getenv("FLASK_ENV", "prod") 
 
+    print("FLASK_ENV:")
+    print(FLASK_ENV)
+
     #-------- IMPOSTAZIONE CORS ----------
     #per sviluppo
     if(FLASK_ENV == "dev"):
@@ -29,7 +32,13 @@ def create_app():
         print("Errore: FLASK_ENV non valido, FLASK_ENV = " + FLASK_ENV)
         exit(1)
 
-    app.config.from_object(Config)
+    config = Config()
+
+    print("config flask: ")
+    for key, value in config.__dict__.items():
+        print(f"{key}: {value}")
+
+    app.config.from_object(config)
 
     #configurazione JWT
     jwt = JWTManager(app) 
