@@ -118,7 +118,17 @@ const apiFetch = async (input: RequestInfo, init?: RequestInit) => {
     try {
         console.log("fetch: ", input);
 
-        const res = await fetch(input, init);
+        const res = await Promise.race([
+            fetch(input, init),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("fetch timeout")), 5000)
+            ),
+        ]);
+
+        if (!(res instanceof Response)) {
+            throw new Error("Error during fetch");
+        }
+
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
