@@ -34,23 +34,17 @@ export default function MenuPage() {
                     />
                 </Drawer.Section>
 
-                {/*Al momento non viene mostrato */}
-                {false && (
-                    <Drawer.Section
-                        style={styles.sidebar}
-                        title="Sezione Atleta"
-                    >
-                        <Drawer.Item
-                            label="Allenamento giornaliero"
-                            active={active === "trainingDay"}
-                            onPress={() => {
-                                setActive("trainingDay");
-                                router.push("/TrainingDayPage");
-                            }}
-                            icon="dumbbell"
-                        />
-                    </Drawer.Section>
-                )}
+                <Drawer.Section style={styles.sidebar} title="Sezione Atleta">
+                    <Drawer.Item
+                        label="Registro allenamenti"
+                        active={active === "workoutsRegister"}
+                        onPress={() => {
+                            setActive("workoutsRegister");
+                            router.push("/WorkoutsRegisterPage");
+                        }}
+                        icon="calendar"
+                    />
+                </Drawer.Section>
 
                 {/*Al momento non viene mostrato */}
                 {false && (
