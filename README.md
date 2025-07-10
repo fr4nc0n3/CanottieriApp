@@ -30,3 +30,4 @@ Vedi il file [LICENSE](./LICENSE.txt) per i dettagli.
 ### Note sviluppo
 
 La psw di test per utente: "Mario Rossi" e' "prova_password"
+hashata e': scrypt:32768:8:1$tFSrqLzArVIfcZt9$de3f1b854a3e49c9fa966dd02a4f151b0af08feb8415647b0b2ea7ee609306abfbfc6850095db363fed017b355b1bd48ab964d74e462fbc1a5c9f033ffc3907e

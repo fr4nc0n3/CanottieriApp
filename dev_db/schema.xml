@@ -98,7 +98,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="317" y="10" name="UserAccountType">
+<table x="515" y="14" name="UserAccountType">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
@@ -173,6 +173,30 @@
 <row name="created_at" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="848" y="312" name="Workout">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+<relation table="User" row="id" />
+</row>
+<row name="id_user" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="date" null="0" autoincrement="0">
+<datatype>DATE</datatype>
+</row>
+<row name="description" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<row name="updated_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
 <key type="PRIMARY" name="">
 <part>id</part>
 </key>

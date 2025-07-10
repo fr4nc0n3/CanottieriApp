@@ -91,6 +91,40 @@ def dbUserNewsTx(idUser, limit, offset):
 
     return [dict(n) for n in news]
 
+#ritorna list dict
+#endDate e' estremo escluso
+#startDate e' estremo incluso
+def dbUserWorkouts(idUser, startDate, endDate): 
+    workouts = query_db('SELECT * FROM Workout ' +
+        'WHERE id_user = ? AND date >= ? AND date < ?'
+        , tuple([idUser, startDate, endDate]))
+
+    return [dict(w) for w in workouts]
+
+# aggiorna il workout di un utente filtrando sia per id utente che per id workout
+# in genere verra' passato l' identity del JWT come idUser in modo da verificare
+# che l' utente sia autorizzato
+def updateUserWorkout(idWorkout, idUser, description):
+    execute_ops_db([
+        {
+            "query": (
+                "UPDATE Workout "
+                "SET description = ? "
+                "WHERE id = ? AND id_user = ? "
+            ),
+            "args": tuple([description, idWorkout, idUser])
+        }])
+
+def deleteUserWorkout(idWorkout, idUser):
+    execute_ops_db([
+        {
+            "query": (
+                "DELETE FROM Workout "
+                "WHERE id = ? AND id_user = ? "
+            ),
+            "args": tuple([idWorkout, idUser])
+        }])
+
 def insertNews(idUser, message, title, groups):
     query_ops = []
     query_ops.append(
@@ -139,3 +173,16 @@ def queryInsertUserNews(idNews, idUser) -> QueryOp:
     )
 
     return {"query": query, "args": tuple([idNews, idUser])}
+
+def insertWorkout(idUser, date, description):
+    query = (
+        "INSERT INTO Workout ("
+        "id_user, date, description"
+        ") VALUES ("
+        "?,"
+        "?,"
+        "?"
+        ")"
+    )
+
+    execute_ops_db([{"query": query, "args": tuple([idUser, date, description])}])

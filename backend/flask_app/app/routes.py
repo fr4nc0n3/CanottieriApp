@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify, request
 from .db import (query_db, execute_ops_db, dbUserAccountTypes, dbUserNewsRx, 
-    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews )
+    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews,
+    insertWorkout, dbUserWorkouts, updateUserWorkout, deleteUserWorkout )
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt_identity, get_jwt)
 import json
-
-#TODO refactoring query 
+import datetime
 
 api = Blueprint('main', __name__)
 
@@ -93,8 +93,6 @@ def getUserNewsSended():
     return jsonify(news)
 
 #-------------- PROCEDURES ---------------
-#TODO qui bisogna anche mettere una notifica ai vari account
-#potrei dover aggiungere una colonna per i token expo-notifications agli utenti
 @api.route('/send-news-to-groups', methods=['POST'])
 @jwt_required()
 def sendNewsToGroup():
@@ -135,8 +133,6 @@ def sendNewsToGroup():
 
     insertNews(idUser, message, title, groups)
 
-    query_ops = []
-
     #get last id news
     lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
     lastIdNews = lastIdNews[0][0]
@@ -146,8 +142,6 @@ def sendNewsToGroup():
     #inserimento DB UserNews
     for id in targetIdUsers:
         execute_ops_db([queryInsertUserNews(lastIdNews, id)])
-
-    #invio notifiche TODO
 
     return jsonify({"status": "ok"})
 
@@ -166,11 +160,91 @@ def deleteNews():
 
     id = data.get('id', None)
 
-    if (data is None):
+    if (id is None):
         return jsonify({"error": "Bad request"}), 400
 
     #eliminazione DB News by id
     dbDeleteNews(id)
+
+    return jsonify({"status": "ok"})
+
+# ########## TODO DA TESTARE ###############
+# ----------- CRUD Workout ------------ 
+@api.route('workout', methods=["POST"])
+@jwt_required()
+def createWorkout():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    data = request.json
+
+    idUser = data.get("id_user", None)
+    date = data.get("date", None)
+    description = data.get("description", None)
+
+    # controllo che il jwt combaci con l' id utente del workout
+    if(idUser != identity):
+        return permission_denied()
+
+    insertWorkout(idUser, date, description)
+
+    return jsonify({"status": "ok"})
+
+@api.route('workout', methods=['GET'])
+@jwt_required()
+def getWorkout():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    idUser = request.args.get("id_user", None)
+    year = request.args.get('year', None)
+    month = request.args.get('month', None) # indice tra 0 e 11
+
+    year = int(year)
+    month = int(month)
+
+    month = month + 1 # converto l' indice tra 1 e 12 per lib datetime 
+
+    if(idUser != identity and not is_admin(claims)):
+        return permission_denied()
+
+    startDate = datetime.date(year, month, 1).isoformat()
+
+    endDate = None
+    if(month == 12):
+        endDate = datetime.date(year + 1, 1, 1).isoformat()
+    else:
+        endDate = datetime.date(year, month + 1, 1).isoformat()
+
+    workouts = dbUserWorkouts(idUser, startDate, endDate)
+    return jsonify(workouts)
+
+@api.route('workout/<int:workout_id>', methods=['PUT'])
+@jwt_required()
+def update_user(workout_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    data = request.json
+
+    description = data.get('description', None)
+
+    if(description is None):
+        return jsonify({"error": "Bad request"}), 400
+
+    # aggiorno la descrizione controllando anche che l' identity del JWT
+    # combaci con l' id_user del workout
+    updateUserWorkout(workout_id, identity, description)
+
+    return jsonify({"status": "ok"})
+
+@api.route('/workout/<int:workout_id>', methods=['DELETE'])
+@jwt_required()
+def delete_user(workout_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    deleteUserWorkout(workout_id, identity)
 
     return jsonify({"status": "ok"})
 
