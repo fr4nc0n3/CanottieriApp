@@ -178,6 +178,8 @@ def createWorkout():
 
     data = request.json
 
+    print("data json: ", data)
+
     idUser = data.get("id_user", None)
     date = data.get("date", None)
     description = data.get("description", None)
@@ -199,6 +201,8 @@ def getWorkout():
     idUser = request.args.get("id_user", None)
     year = request.args.get('year', None)
     month = request.args.get('month', None) # indice tra 0 e 11
+
+    print("request.args: ", request.args)
 
     year = int(year)
     month = int(month)
@@ -224,6 +228,8 @@ def getWorkout():
 def update_user(workout_id):
     identity = get_jwt_identity()
     claims = get_jwt()
+
+    print("request URL:", request.url)
 
     data = request.json
 

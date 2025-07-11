@@ -5,8 +5,19 @@ import {
     API_GET_USER_NEWS_SENDED,
     API_LOGIN,
     API_SEND_NEWS_TO_GROUPS,
+    API_WORKOUT,
 } from "./Constants";
-import { NewsToSend, User, UserNewsRx, UserNewsTx } from "./Types";
+import {
+    ApiInputCreateWorkout,
+    ApiInputDeleteWorkout,
+    ApiInputGetWorkout,
+    ApiInputUpdateWorkout,
+    ApiOutputCreateWorkout,
+    NewsToSend,
+    User,
+    UserNewsRx,
+    UserNewsTx,
+} from "./Types";
 
 //TODO fare refactoring per standardizzarle (magari provare a mettere anche timeout per fetch con Promise race)
 export const apiGetUserNewsSended = async (
@@ -75,6 +86,79 @@ export const apiGetUserInfo = async (
         return await apiFetchJWTAuth(jwt, req, { method: "GET" });
     } catch (error) {
         console.error(`Error fetch user with id: ${idUser}`, error);
+        throw error;
+    }
+};
+
+//TODO Da provare
+//CRUD allenamento utente
+export const apiCreateWorkout = async (
+    workout: ApiInputCreateWorkout,
+    jwt: string
+) => {
+    try {
+        const req = API_WORKOUT;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(workout),
+        });
+    } catch (error) {
+        console.error(
+            `Error creating workout: ${JSON.stringify(workout)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiGetWorkout = async (
+    filter: ApiInputGetWorkout,
+    jwt: string
+): Promise<ApiOutputCreateWorkout> => {
+    try {
+        const req = `${API_WORKOUT}?id_user=${filter.id_user}&year=${filter.year}&month=${filter.month}`;
+        return await apiFetchJWTAuth(jwt, req, { method: "GET" });
+    } catch (error) {
+        console.error(`Error fetch workout with filter: ${filter}`, error);
+        throw error;
+    }
+};
+
+export const apiUpdateWorkout = async (
+    update: ApiInputUpdateWorkout,
+    jwt: string
+) => {
+    try {
+        const req = API_WORKOUT + "/" + update.id;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+        });
+    } catch (error) {
+        console.error(
+            `Error updating workout by update with: ${JSON.stringify(update)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiDeleteWorkout = async (
+    filter: ApiInputDeleteWorkout,
+    jwt: string
+) => {
+    try {
+        const req = API_WORKOUT + "/" + filter.id;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "DELETE",
+        });
+    } catch (error) {
+        console.error(
+            `Error deleting workout with filter: ${JSON.stringify(filter)}`,
+            error
+        );
         throw error;
     }
 };

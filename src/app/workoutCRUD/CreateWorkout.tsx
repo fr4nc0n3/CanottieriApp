@@ -1,12 +1,17 @@
 // NewWorkoutScreen.jsx
 
-import { useLocalSearchParams } from "expo-router";
+import { apiCreateWorkout } from "@/global/APICalls";
+import { getJWT } from "@/global/jwtStorage";
+import { alert } from "@/global/UniversalPopups";
+import { getJWTIdentity } from "@/global/Utils";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Card, Text } from "react-native-paper";
 
 // Il componente accetta una data tramite props
 const CreateWorkout = () => {
+    const router = useRouter();
     const [description, setDescription] = useState("");
 
     const { wkYear, wkMonth, wkDate } = useLocalSearchParams();
@@ -20,9 +25,26 @@ const CreateWorkout = () => {
 
     if (isNaN(workoutDate.getTime())) return null; //se la data non e' valida non mostra nulla
 
-    const handleSave = () => {
-        // Gestione del salvataggio (non implementata, solo grafica)
-        console.log("Workout saved:", { date: workoutDate, description });
+    const handleSave = async () => {
+        const jwt = await getJWT();
+        const identity = getJWTIdentity(jwt);
+
+        try {
+            await apiCreateWorkout(
+                {
+                    date: workoutDate.toISOString().split("T")[0],
+                    description: description,
+                    id_user: identity,
+                },
+                jwt
+            );
+        } catch (error) {
+            alert("Errore", "creazione allenamento fallita: " + error);
+            return;
+        }
+
+        alert("Creato", "Allenamento creato");
+        router.back();
     };
 
     return (

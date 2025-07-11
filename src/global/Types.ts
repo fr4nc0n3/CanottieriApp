@@ -84,3 +84,36 @@ export const emptyNewsToSend: NewsToSend = {
     title: "",
     message: "",
 };
+
+// CRUD allenamento utente
+export type Workout = {
+    id: number;
+    id_user: string;
+    date: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+};
+
+export type ApiInputCreateWorkout = {
+    id_user: string;
+    date: string;
+    description: string;
+};
+
+export type ApiOutputCreateWorkout = Workout[];
+
+export type ApiInputGetWorkout = {
+    id_user: string;
+    year: number;
+    month: number;
+};
+
+export type ApiInputUpdateWorkout = {
+    id: number;
+    description: string;
+};
+
+export type ApiInputDeleteWorkout = {
+    id: number;
+};

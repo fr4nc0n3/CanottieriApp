@@ -3,18 +3,15 @@ import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Card, Text } from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { confirm, alert } from "@/global/UniversalPopups";
+import { apiDeleteWorkout, apiUpdateWorkout } from "@/global/APICalls";
+import { getJWT } from "@/global/jwtStorage";
+import { getJWTIdentity } from "@/global/Utils";
 
 const ModifyWorkout = () => {
     const router = useRouter();
 
-    const [desc, setDesc] = useState("");
-
-    const {
-        wkYear,
-        wkMonth,
-        wkDate,
-        workout /*passato dal chiamante per poi fare la modifica sul db */,
-    } = useLocalSearchParams();
+    const { wkYear, wkMonth, wkDate, wkId, wkDescr } = useLocalSearchParams();
+    const [desc, setDesc] = useState(wkDescr?.toString() ?? "");
 
     //controllo di cio' che e' stato ricevuto in searchparams
     const workoutDate = new Date(
@@ -25,15 +22,23 @@ const ModifyWorkout = () => {
         )
     );
 
-    if (isNaN(workoutDate.getTime()) || !workout) {
+    if (isNaN(workoutDate.getTime()) || wkId == null || wkDescr == null) {
         return null;
     }
 
-    const handleApply = () => {
-        // Logica di salvataggio (simulata)
-        console.log("Updated workout:", { workoutDate, desc });
-        alert("Saved", "Workout updated successfully.");
-        router.back(); // Torna indietro
+    const handleApply = async () => {
+        const jwt = await getJWT();
+        const id = parseInt(wkId.toString());
+
+        try {
+            await apiUpdateWorkout({ id, description: desc }, jwt);
+        } catch (error) {
+            alert("Errore", "Errore durante la modifica");
+            return;
+        }
+
+        alert("Modifica", "Modifica effettuata");
+        router.back();
     };
 
     const handleDelete = () => {
@@ -41,9 +46,18 @@ const ModifyWorkout = () => {
             "Eliminazione allenamento",
             "Sei sicuro di voler eliminare l' allenamento in data " +
                 workoutDate.toLocaleDateString(),
-            () => {
-                console.log("Workout deleted:", { workoutDate });
-                alert("Deleted", "Workout has been deleted.");
+            async () => {
+                const jwt = await getJWT();
+                const id = parseInt(wkId.toString());
+
+                try {
+                    await apiDeleteWorkout({ id }, jwt);
+                } catch (error) {
+                    alert("Errore", "Errore durante la eliminazione");
+                    return;
+                }
+
+                alert("Eliminato", "L' allenamento e' stato eliminato");
                 router.back();
             }
         );
