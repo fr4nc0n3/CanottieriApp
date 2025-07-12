@@ -23,15 +23,6 @@ export default function MenuPage() {
                         }}
                         icon="account"
                     />
-                    <Drawer.Item
-                        label="News"
-                        active={active === "news"}
-                        onPress={() => {
-                            setActive("news");
-                            router.push("/NewsPage");
-                        }}
-                        icon="bell"
-                    />
                 </Drawer.Section>
 
                 <Drawer.Section style={styles.sidebar} title="Sezione Atleta">
@@ -46,35 +37,17 @@ export default function MenuPage() {
                     />
                 </Drawer.Section>
 
-                {/*Al momento non viene mostrato */}
-                {false && (
-                    <Drawer.Section
-                        style={styles.sidebar}
-                        title="Sezione Allenatore"
-                    >
-                        <Drawer.Item
-                            label="Gestione allenamenti"
-                            active={active === "manageTraining"}
-                            onPress={() => {
-                                setActive("manageTraining");
-                                router.push("/ManageTrainingPage");
-                            }}
-                            icon="view-grid"
-                        />
-                    </Drawer.Section>
-                )}
-
                 {/*TODO abilitare guardando gli account types contenuti nel JWT */}
                 <Drawer.Section
                     style={styles.sidebar}
                     title="Sezione amministratore"
                 >
                     <Drawer.Item
-                        label="Notifica utenti"
-                        active={active === "notify"}
+                        label="Allenamenti atleti"
+                        active={active === "athlete_workouts"}
                         onPress={() => {
-                            setActive("notify");
-                            router.push("/NotifyPage");
+                            setActive("athlete_workouts");
+                            //router.push("/WorkoutsAdminPanel");
                         }}
                         icon="view-grid"
                     />

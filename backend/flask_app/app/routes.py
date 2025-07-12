@@ -168,7 +168,6 @@ def deleteNews():
 
     return jsonify({"status": "ok"})
 
-# ########## TODO DA TESTARE ###############
 # ----------- CRUD Workout ------------ 
 @api.route('workout', methods=["POST"])
 @jwt_required()
