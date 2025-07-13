@@ -17,14 +17,17 @@ def index():
 @api.route('/get-users', methods=['GET'])
 @jwt_required()
 def getUsers():
-        identity = get_jwt_identity()
-        claims = get_jwt()
+    identity = get_jwt_identity()
+    claims = get_jwt()
 
-        if(not is_admin(claims)):
-            return permission_denied()
+    if(not is_admin(claims)):
+        return permission_denied()
 
-        users = query_db('SELECT * FROM User')
-        return jsonify([dict(u) for u in users])
+    # TODO in futuro non dovrei dare tutte le colonne di user
+    # nemmeno all' admin siccome ci sono delle colonne sensibili come 
+    # la password hashata
+    users = query_db('SELECT * FROM User')
+    return jsonify([dict(u) for u in users])
 
 @api.route('/get-user-info', methods=['GET'])
 @jwt_required()

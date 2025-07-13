@@ -1,0 +1,243 @@
+import Calendar from "@/components/Calendar";
+import { apiGetUsers, apiGetWorkout } from "@/global/APICalls";
+import { getJWT } from "@/global/jwtStorage";
+import { User, Workout } from "@/global/Types";
+import { alert } from "@/global/UniversalPopups";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
+import {
+    IconButton,
+    Text,
+    Menu,
+    Button,
+    Portal,
+    Modal,
+    Divider,
+} from "react-native-paper";
+
+//TODO DA FARE
+
+const WorkoutsPanel = () => {
+    const router = useRouter();
+
+    const [showMenu, setShowMenu] = useState<boolean>(false);
+    const openMenu = () => setShowMenu(true);
+    const closeMenu = () => setShowMenu(false);
+
+    const [visibleModal, setVisibleModal] = useState<boolean>(false);
+    const hideModal = () => setVisibleModal(false);
+    const showModal = () => setVisibleModal(true);
+
+    const [openedWorkout, setOpenedWorkout] = useState<Workout | null>(null);
+
+    const [date, setDate] = useState<Date>(new Date());
+    const [workouts, setWorkouts] = useState<Workout[]>([]);
+
+    //TODO in teoria dovrebbero essere
+    //solo gli utenti di tipo atleta
+    const [athletes, setAthletes] = useState<User[]>([]);
+
+    const [selectedAthlete, setSelectedAthlete] = useState<User | null>(null);
+
+    useEffect(() => {
+        fetchAthletes();
+    }, []);
+
+    //fetch allenamenti al cambiare della data
+    //e dell' atleta selezionato
+    useEffect(() => {
+        if (!selectedAthlete) return;
+
+        fetchWorkouts(selectedAthlete);
+    }, [date, selectedAthlete]);
+
+    //log state
+    useEffect(() => {
+        console.log("workouts:", workouts);
+    }, [workouts]);
+
+    const fetchAthletes = () => {
+        getJWT()
+            .then((jwt) => {
+                return apiGetUsers(jwt);
+            })
+            .then((users) => {
+                setAthletes(users);
+            })
+            .catch((error) => {
+                alert("Errore", "errore durante la ricezione atleti: " + error);
+            });
+    };
+
+    const fetchWorkouts = (athlete: User) => {
+        getJWT()
+            .then((jwt) => {
+                return apiGetWorkout(
+                    {
+                        id_user: athlete.id,
+                        year: date.getFullYear(),
+                        month: date.getMonth(),
+                    },
+                    jwt
+                );
+            })
+            .then((output) => {
+                setWorkouts(output);
+            })
+            .catch((error) => {
+                alert(
+                    "Errore",
+                    `errore durante la ricezione allenamenti per l' atleta ${athlete.name}: ` +
+                        error
+                );
+            });
+    };
+
+    //TODO dovrei fare qualcosa per avere una nuova pagina di sola vista workout ?
+    //o magari fare solo modale ?
+    //la date in realta' e' gia' contenuta in workout
+    const openWorkout = (date: Date, workout: Workout) => {
+        /*router.push({
+            pathname: "/workoutCRUD/ModifyWorkout",
+            params: {
+                wkYear: date.getFullYear(),
+                wkMonth: date.getMonth(),
+                wkDate: date.getDate(),
+                wkId: workout.id,
+                wkDescr: workout.description,
+            },
+        });*/
+        setOpenedWorkout(workout);
+        showModal();
+    };
+
+    return (
+        <>
+            <Menu
+                visible={showMenu}
+                onDismiss={closeMenu}
+                anchor={
+                    <Button
+                        style={{ marginVertical: 5, marginHorizontal: 15 }}
+                        mode="outlined"
+                        onPress={openMenu}
+                    >
+                        Cambia atleta
+                    </Button>
+                }
+            >
+                {athletes.map((athlete, idx) => (
+                    <Menu.Item
+                        key={idx}
+                        onPress={() => {
+                            setSelectedAthlete(athlete);
+                            closeMenu();
+                        }}
+                        title={`${idx + 1}. ${athlete.name}`}
+                    />
+                ))}
+            </Menu>
+            <View
+                style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
+                <IconButton
+                    icon="arrow-left"
+                    onPress={() =>
+                        setDate(
+                            (cur) =>
+                                new Date(cur.getFullYear(), cur.getMonth() - 1)
+                        )
+                    }
+                />
+                <Text variant="titleLarge" style={style.header}>
+                    Registro allenamenti
+                    {`\natleta: ${selectedAthlete?.name || "N/A"}`}
+                </Text>
+                <IconButton
+                    icon="arrow-right"
+                    onPress={() =>
+                        setDate(
+                            (cur) =>
+                                new Date(cur.getFullYear(), cur.getMonth() + 1)
+                        )
+                    }
+                />
+            </View>
+            <ScrollView style={style.container}>
+                <Calendar
+                    year={date.getFullYear()}
+                    month={date.getMonth()}
+                    markedDayIdxs={[
+                        ...workouts.map((wk) => {
+                            return new Date(wk.date).getDate();
+                        }),
+                    ]}
+                    onPressDayIdx={(pressedDay) => {
+                        const pressedDate = new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            pressedDay.dayIdx
+                        );
+
+                        console.log("pressed date: ", pressedDate);
+
+                        if (pressedDay.isMarked) {
+                            const wkPressed = workouts.find((wk) => {
+                                const wkDate = new Date(wk.date);
+                                return (
+                                    wkDate.getFullYear() ===
+                                        pressedDate.getFullYear() &&
+                                    wkDate.getMonth() ===
+                                        pressedDate.getMonth() &&
+                                    wkDate.getDate() === pressedDate.getDate()
+                                );
+                            });
+
+                            if (!wkPressed) {
+                                console.error(
+                                    "error workout pressed not found"
+                                );
+                            } else {
+                                openWorkout(pressedDate, wkPressed);
+                            }
+                        }
+                    }}
+                />
+            </ScrollView>
+            <Portal>
+                <Modal
+                    visible={visibleModal}
+                    onDismiss={hideModal}
+                    contentContainerStyle={{
+                        backgroundColor: "white",
+                        padding: 20,
+                        margin: 20,
+                        borderRadius: 10,
+                    }}
+                >
+                    <Text variant="titleMedium">
+                        Allenamento del {openedWorkout?.date}
+                    </Text>
+                    <Divider />
+                    <Text>{openedWorkout?.description}</Text>
+                    <Button onPress={hideModal} style={{ marginTop: 10 }}>
+                        Chiudi
+                    </Button>
+                </Modal>
+            </Portal>
+        </>
+    );
+};
+
+const style = StyleSheet.create({
+    header: {
+        padding: 8,
+        textAlign: "center",
+    },
+    container: {
+        padding: 5,
+    },
+});
+
+export default WorkoutsPanel;

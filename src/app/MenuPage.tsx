@@ -47,7 +47,7 @@ export default function MenuPage() {
                         active={active === "athlete_workouts"}
                         onPress={() => {
                             setActive("athlete_workouts");
-                            //router.push("/WorkoutsAdminPanel");
+                            router.push("/admin/WorkoutsPanel");
                         }}
                         icon="view-grid"
                     />

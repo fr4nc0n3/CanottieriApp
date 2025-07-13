@@ -3,6 +3,7 @@ import {
     API_GET_USER_INFO,
     API_GET_USER_NEWS_RECEIVED,
     API_GET_USER_NEWS_SENDED,
+    API_GET_USERS,
     API_LOGIN,
     API_SEND_NEWS_TO_GROUPS,
     API_WORKOUT,
@@ -19,7 +20,16 @@ import {
     UserNewsTx,
 } from "./Types";
 
-//TODO fare refactoring per standardizzarle (magari provare a mettere anche timeout per fetch con Promise race)
+export const apiGetUsers = async (jwt: string): Promise<User[]> => {
+    try {
+        const req = API_GET_USERS;
+        return await apiFetchJWTAuth(jwt, req);
+    } catch (error) {
+        console.error(`Error fetch users:`, error);
+        throw error;
+    }
+};
+
 export const apiGetUserNewsSended = async (
     idUser: number,
     jwt: string
