@@ -204,6 +204,9 @@ const WorkoutsPanel = () => {
                         }
                     }}
                 />
+                <Text variant="titleMedium" style={{ alignSelf: "center" }}>
+                    Totale allenamenti del mese: {workouts.length}
+                </Text>
             </ScrollView>
             <Portal>
                 <Modal
