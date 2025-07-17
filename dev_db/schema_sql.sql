@@ -129,4 +129,20 @@ BEGIN
     WHERE id = OLD.id;
 END;
 
+CREATE TABLE Image (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (name)
+);
+
+CREATE TABLE WorkoutImage (
+    id_workout INTEGER NOT NULL,
+    id_image INTEGER NOT NULL,
+    PRIMARY KEY (id_workout, id_image),
+    FOREIGN KEY (id_workout) REFERENCES Workout(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_image) REFERENCES Image(id) ON DELETE CASCADE,
+    UNIQUE (id_image)
+);
+
 COMMIT;

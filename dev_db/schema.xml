@@ -120,7 +120,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="473" y="308" name="News">
+<table x="401" y="303" name="News">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 </row>
@@ -177,10 +177,11 @@
 <part>id</part>
 </key>
 </table>
-<table x="848" y="312" name="Workout">
+<table x="598" y="247" name="Workout">
 <row name="id" null="0" autoincrement="1">
 <datatype>INTEGER</datatype>
 <relation table="User" row="id" />
+<relation table="WorkoutImage" row="id_workout" />
 </row>
 <row name="id_user" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
@@ -199,6 +200,33 @@
 </row>
 <key type="PRIMARY" name="">
 <part>id</part>
+</key>
+</table>
+<table x="942" y="116" name="Image">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+</row>
+<row name="name" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="804" y="305" name="WorkoutImage">
+<row name="id_workout" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+</row>
+<row name="id_image" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="Image" row="id" />
+</row>
+<key type="PRIMARY" name="">
+<part>id_workout</part>
+<part>id_image</part>
 </key>
 </table>
 </sql>
