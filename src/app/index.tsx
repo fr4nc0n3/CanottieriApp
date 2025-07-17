@@ -6,6 +6,9 @@ import { decodeJWT } from "@/global/Utils";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
+import { alert } from "@/global/UniversalPopups";
 
 enum LoginStatus {
     loading,
@@ -38,8 +41,21 @@ export default function Index() {
         }
     };
 
+    const askMediaLibraryPermission = async () => {
+        if (Platform.OS !== "android") return;
+
+        const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permission.status !== "granted") {
+            alert("Permesso negato per accedere alla galleria!");
+            return;
+        }
+    };
+
     useEffect(() => {
         checkLogged();
+        askMediaLibraryPermission();
     }, []);
 
     switch (loginStatus) {

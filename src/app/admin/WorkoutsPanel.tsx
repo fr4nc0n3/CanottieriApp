@@ -16,11 +16,7 @@ import {
     Divider,
 } from "react-native-paper";
 
-//TODO DA FARE
-
 const WorkoutsPanel = () => {
-    const router = useRouter();
-
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
@@ -94,20 +90,8 @@ const WorkoutsPanel = () => {
             });
     };
 
-    //TODO dovrei fare qualcosa per avere una nuova pagina di sola vista workout ?
-    //o magari fare solo modale ?
     //la date in realta' e' gia' contenuta in workout
     const openWorkout = (date: Date, workout: Workout) => {
-        /*router.push({
-            pathname: "/workoutCRUD/ModifyWorkout",
-            params: {
-                wkYear: date.getFullYear(),
-                wkMonth: date.getMonth(),
-                wkDate: date.getDate(),
-                wkId: workout.id,
-                wkDescr: workout.description,
-            },
-        });*/
         setOpenedWorkout(workout);
         showModal();
     };
