@@ -1,0 +1,4 @@
+curl -X POST http://localhost:5000/api/img_workout \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc1MzAxMTQwMywianRpIjoiNTllNWNhZTQtNmFmZC00ZThlLWI5MTgtOWYyNGViMzlmZDBmIiwidHlwZSI6ImFjY2VzcyIsInN1YiI6IjQiLCJuYmYiOjE3NTMwMTE0MDMsImNzcmYiOiIwZjAwZDZmNi1mZTFmLTRiMTMtODc0MC00MDhlMTdjZmUwNjkiLCJleHAiOjE3NTMwOTc4MDMsInVzZXJuYW1lIjoiU2FyYSBOZXJpIiwiYWNjb3VudFR5cGVzIjpbImF0bGV0YSJdfQ.Ntd642yzzLDUHf2V7gb18f45qVYslGO0OZZ9Ft4eEAM" \
+  -F "image=@/home/franco/Downloads/hall-7986771_1280.jpg" \
+  -F "id_workout=14"

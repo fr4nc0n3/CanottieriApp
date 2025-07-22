@@ -1,0 +1,1 @@
+curl http://localhost:5000/api/image/20250717_215320_hall-7986771_1280.jpg
