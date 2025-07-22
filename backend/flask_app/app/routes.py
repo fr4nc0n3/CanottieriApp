@@ -1,11 +1,15 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app, send_from_directory
 from .db import (query_db, execute_ops_db, dbUserAccountTypes, dbUserNewsRx, 
     dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews,
-    insertWorkout, dbUserWorkouts, updateUserWorkout, deleteUserWorkout )
+    insertWorkout, dbUserWorkouts, updateUserWorkout, deleteUserWorkout, insertWorkoutImage,
+    dbWorkoutImages, dbIdUserOfWorkoutImage, deleteImg )
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt_identity, get_jwt)
 import json
 import datetime
+import os
+from PIL import Image
+import io
 
 api = Blueprint('main', __name__)
 
@@ -255,6 +259,107 @@ def delete_user(workout_id):
     deleteUserWorkout(workout_id, identity)
 
     return jsonify({"status": "ok"})
+
+#--- CRD Workout images ---
+@api.route('/img_workout', methods=['GET'])
+@jwt_required()
+def getImagesWorkout():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    print(request.url)
+
+    folder = current_app.config['IMG_FOLDER']
+
+    id_workout = request.args.get("id", None)
+
+    if(id_workout is None):
+        return jsonify({'message': "Bad request workout id missing"}), 400
+
+    images = dbWorkoutImages(id_workout)
+    #urls = [("image/" + img) for img in images]
+
+    print("images for workout id = ", id_workout, ": ", images)
+
+    return jsonify(images)
+
+@api.route('/img_workout', methods=['POST'])
+@jwt_required()
+def createImageWorkout():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    print(request.url)
+    print("request form:", request.form)
+    print("request files:", request.files)
+
+    upload_folder = current_app.config['IMG_FOLDER']
+
+    id_workout = request.form.get('id_workout', None)
+
+    if(id_workout is None):
+        return jsonify({'message': "Bad request workout id missing"}), 400
+
+    if 'image' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    # TODO fare controllo se il workout appartiene ad identity jwt
+
+    image = request.files['image']
+    imagePIL = Image.open(image.stream)
+
+    # forzo ad RGB
+    if imagePIL.mode in ("RGBA", "P"):
+        imagePIL = imagePIL.convert("RGB")
+
+    img_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + image.filename + ".jpg"
+
+    # salvataggio su filesystem con immagine compressa
+    save_path = os.path.join(upload_folder, img_name)
+    imagePIL.save(save_path, format="JPEG", quality=15, optimize=True)
+
+    # registrazione nel database
+    insertWorkoutImage(id_workout, img_name)
+
+    return jsonify({"status": "ok", "img_name": img_name})
+    
+@api.route('/img_workout/<string:name>', methods=['DELETE'])
+@jwt_required()
+def deleteImageWorkout(name):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    upload_folder = current_app.config['IMG_FOLDER']
+
+    #controllo che l' immagine del workout sia del jwt identity
+    #che effettua la richiesta
+    id_user = dbIdUserOfWorkoutImage(name)
+    id_user = str(id_user)
+
+    print("id_user:", id_user)
+    print("identity:", identity)
+
+    if(id_user != identity):
+        return permission_denied()
+
+    img_path = os.path.join(upload_folder, name)
+    if os.path.exists(img_path):
+        os.remove(img_path)
+    else:
+        print("Il file immagine da eliminare non esiste")
+
+    deleteImg(name) 
+
+    return jsonify({"status": "ok"})
+
+@api.route('/image/<path:name>')
+def getImage(name):
+    folder = current_app.config["IMG_FOLDER"]
+
+    print(request.url)
+    print("Trying to serve:", os.path.join(folder, name))
+
+    return send_from_directory(folder, name)
 
 # -------------- AUTENTICATIONS -----------
 @api.route('/login', methods=['POST'])

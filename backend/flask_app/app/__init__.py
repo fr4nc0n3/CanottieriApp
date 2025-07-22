@@ -40,6 +40,10 @@ def create_app():
 
     app.config.from_object(config)
 
+    #creazione della cartella per le immagini
+    img_folder = app.config['IMG_FOLDER']
+    os.makedirs(img_folder, exist_ok=True)
+
     #configurazione JWT
     jwt = JWTManager(app) 
 

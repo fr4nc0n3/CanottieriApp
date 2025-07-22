@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Image, Dimensions } from "react-native";
 import {
     TextInput,
@@ -12,17 +12,23 @@ import {
 } from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { confirm, alert } from "@/global/UniversalPopups";
-import { apiDeleteWorkout, apiUpdateWorkout } from "@/global/APICalls";
+import {
+    apiCreateWorkoutImage,
+    apiDeleteImage,
+    apiDeleteWorkout,
+    apiGetWorkoutImages,
+    apiUpdateWorkout,
+    apiUriImage,
+} from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
-import { getJWTIdentity } from "@/global/Utils";
 import ImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import * as ImagePicker from "expo-image-picker";
 
-//TODO fare il fetch delle immagini dal backend
 const ModifyWorkout = () => {
     const router = useRouter();
     const { height: winHeight, width: winWidth } = Dimensions.get("window");
 
+    //TODO qui dovrei forzare i le variabili a tipi e dati coerenti
     const { wkYear, wkMonth, wkDate, wkId, wkDescr } = useLocalSearchParams();
     const [desc, setDesc] = useState(wkDescr?.toString() ?? "");
 
@@ -47,6 +53,33 @@ const ModifyWorkout = () => {
     if (isNaN(workoutDate.getTime()) || wkId == null || wkDescr == null) {
         return null;
     }
+
+    const fetchWorkoutImages = async () => {
+        const jwt = await getJWT();
+        const id = parseInt(wkId.toString());
+
+        await apiGetWorkoutImages(id, jwt).then(async (imgs) => {
+            console.log("images backend: ", imgs);
+
+            setImages(
+                imgs.map((imgBackend) => {
+                    return {
+                        uri: apiUriImage(imgBackend.name),
+                        id: imgBackend.name,
+                    };
+                })
+            );
+        });
+    };
+
+    useEffect(() => {
+        fetchWorkoutImages();
+    }, []);
+
+    //log images grid
+    useEffect(() => {
+        console.log("images of the grid:", images);
+    }, [images]);
 
     const handleApply = async () => {
         const jwt = await getJWT();
@@ -85,53 +118,35 @@ const ModifyWorkout = () => {
         );
     };
 
-    const uploadImageOnline = async (asset: ImagePicker.ImagePickerAsset) => {
-        /*    console.log("upload asset:", asset);
+    const uploadImageOnline = async (
+        asset: ImagePicker.ImagePickerAsset
+    ): Promise<string> => {
+        console.log("upload asset:", asset);
 
-        // ImagePicker saves the taken photo to disk and returns a local URI to it
-        let localUri = asset.uri;
-        let filename = localUri.split("/").pop();
-
-        // Infer the type of the image
-        let match = /\.(\w+)$/.exec(asset.fileName ?? "");
-        let type = match ? `image/${match[1]}` : `image`;
-
-        // Upload the image using the fetch and FormData APIs
-        let formData = new FormData();
-        // Assume "photo" is the name of the form field the server expects
-        formData.append("image", {
-            uri: localUri,
-            name: filename,
-            type,
-        } as any);
+        if (!asset.file) {
+            alert("Errore, file non reperibile");
+            throw new Error("file not available");
+        }
 
         try {
+            const id = parseInt(wkId.toString());
             const jwt = await getJWT();
-            const response = await fetch(
-                "http://192.168.1.100:5000/api/img_workout",
-                {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        Authorization: `Bearer ${jwt}`,
-                        "Content-Type": "multipart/form-data",
-                    },
-                }
-            );
 
-            const data = await response.json();
-            if (!response.ok)
-                throw new Error(data.error || "Errore durante l’upload");
-
-            alert("Successo", "Immagine caricata!");
+            return await apiCreateWorkoutImage(id, asset.file, jwt);
         } catch (error) {
-            console.error("Errore upload:", error);
             alert("Errore", "Impossibile caricare l’immagine");
-        }*/
+            throw error;
+        }
     };
 
-    const deleteImageOnline = (imageName: string) => {};
+    const deleteImageOnline = async (imageName: string) => {
+        const jwt = await getJWT();
 
+        await apiDeleteImage(jwt, imageName);
+    };
+
+    //TODO problema id locale rispetto a name online
+    //fare refetch?
     const addImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             quality: 1,
@@ -139,16 +154,31 @@ const ModifyWorkout = () => {
 
         if (!result.canceled && result.assets.length > 0) {
             const asset = result.assets[0];
-            setImages((cur) => [
-                ...cur,
-                {
-                    uri: asset.uri,
-                    id: asset.assetId ?? (cur.length + 10).toString(),
-                },
-            ]);
 
-            uploadImageOnline(asset);
+            try {
+                const imgName = await uploadImageOnline(asset);
+
+                setImages((cur) => [
+                    ...cur,
+                    {
+                        uri: asset.uri,
+                        id: imgName,
+                    },
+                ]);
+            } catch (error) {
+                console.error(error);
+            }
         }
+    };
+
+    const deleteImage = async (imageName: string) => {
+        console.log("remove image:", imageName);
+
+        setImages((cur) => {
+            return cur.filter((image) => image.id !== imageName);
+        });
+
+        deleteImageOnline(imageName);
     };
 
     return (
@@ -261,17 +291,17 @@ const ModifyWorkout = () => {
                             iconColor="red"
                             size={48}
                             onPress={() => {
-                                console.log("remove image:", imageModal?.id);
+                                confirm(
+                                    "Eliminazione",
+                                    "Sei sicuro di voler eliminare l' immagine?",
+                                    () => {
+                                        if (imageModal) {
+                                            deleteImage(imageModal.id);
+                                        }
 
-                                setImages((cur) => {
-                                    return cur.filter(
-                                        (image) => image.id !== imageModal?.id
-                                    );
-                                });
-
-                                //TODO: deleteImageOnline();
-
-                                closeModal();
+                                        closeModal();
+                                    }
+                                );
                             }}
                         />
                     </View>

@@ -10,3 +10,5 @@ export const API_SEND_NEWS_TO_GROUPS = API_ENDPOINT + "send-news-to-groups";
 export const API_DELETE_NEWS = API_ENDPOINT + "delete-news";
 export const API_LOGIN = API_ENDPOINT + "login";
 export const API_WORKOUT = API_ENDPOINT + "workout";
+export const API_IMG_WORKOUT = API_ENDPOINT + "img_workout";
+export const API_IMAGE = API_ENDPOINT + "image";

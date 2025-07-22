@@ -101,6 +101,26 @@ def dbUserWorkouts(idUser, startDate, endDate):
 
     return [dict(w) for w in workouts]
 
+# ritorna list dict
+def dbWorkoutImages(id_workout):
+    images = query_db("SELECT img.* FROM WorkoutImage AS wImg JOIN " +
+     "Image AS img ON img.id = wImg.id_image " +
+        "WHERE wImg.id_workout = ? ", tuple([id_workout]))
+
+    return [dict(img) for img in images]
+
+def dbIdUserOfWorkoutImage(img_name):
+    id = query_db(
+        "SELECT wk.id_user "
+        "FROM Image "
+        "JOIN WorkoutImage AS wkImg ON wkImg.id_image = Image.id "
+        "JOIN Workout AS wk ON wk.id = wkImg.id_workout "
+        "WHERE Image.name = ?", 
+        tuple([img_name])
+    )
+
+    return id[0][0]
+
 # aggiorna il workout di un utente filtrando sia per id utente che per id workout
 # in genere verra' passato l' identity del JWT come idUser in modo da verificare
 # che l' utente sia autorizzato
@@ -160,6 +180,16 @@ def deleteNews(id):
             "args": tuple([id])
         }])
 
+def deleteImg(name):
+    execute_ops_db([
+        {
+            "query": (
+                "DELETE FROM Image WHERE name = ?"
+            ), 
+            "args": tuple([name])
+        }
+    ])
+
 #restituisce un queryOp 
 def queryInsertUserNews(idNews, idUser) -> QueryOp:
     query = (
@@ -186,3 +216,25 @@ def insertWorkout(idUser, date, description):
     )
 
     execute_ops_db([{"query": query, "args": tuple([idUser, date, description])}])
+
+def insertWorkoutImage(id_workout, image_name):
+    query = (
+        "INSERT INTO Image ("
+        "name"
+        ") VALUES ("
+        "?"
+        ")"
+    )
+
+    execute_ops_db([{"query": query, "args": tuple([image_name])}])
+
+    id_image = query_db("SELECT id FROM Image WHERE name = ?", tuple([image_name]))
+    id_image = id_image[0][0]
+
+    query = (
+        "INSERT INTO WorkoutImage ("
+        "id_workout, id_image"
+        ") VALUES (?, ?) "
+    )
+
+    execute_ops_db([{"query": query, "args": tuple([id_workout, id_image])}])

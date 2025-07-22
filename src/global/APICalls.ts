@@ -4,6 +4,8 @@ import {
     API_GET_USER_NEWS_RECEIVED,
     API_GET_USER_NEWS_SENDED,
     API_GET_USERS,
+    API_IMAGE,
+    API_IMG_WORKOUT,
     API_LOGIN,
     API_SEND_NEWS_TO_GROUPS,
     API_WORKOUT,
@@ -14,6 +16,7 @@ import {
     ApiInputGetWorkout,
     ApiInputUpdateWorkout,
     ApiOutputCreateWorkout,
+    ApiOutputWorkoutImage,
     NewsToSend,
     User,
     UserNewsRx,
@@ -185,6 +188,66 @@ export const apiLogin = async (username: string, psw: string) => {
         console.error(`Error login for user: ${username}`, error);
         throw error;
     }
+};
+
+export const apiGetWorkoutImages = async (
+    workoutId: number,
+    jwt: string
+): Promise<ApiOutputWorkoutImage[]> => {
+    try {
+        const images = await apiFetchJWTAuth(
+            jwt,
+            API_IMG_WORKOUT + "?id=" + workoutId
+        );
+
+        return images;
+    } catch (error) {
+        console.error(`Error get images for workout id: ${workoutId}`, error);
+        throw error;
+    }
+};
+
+//ritorna nome immagine appena creata
+export const apiCreateWorkoutImage = async (
+    workoutId: number,
+    image: File,
+    jwt: string
+): Promise<string> => {
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("id_workout", workoutId.toString());
+
+    try {
+        const res = await apiFetchJWTAuth(jwt, API_IMG_WORKOUT, {
+            method: "POST",
+            body: formData,
+        });
+
+        return res.img_name;
+    } catch (error) {
+        console.error(
+            `Error creating image for workout id: ${workoutId}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiDeleteImage = async (jwt: string, imageName: string) => {
+    try {
+        return await apiFetchJWTAuth(jwt, API_IMG_WORKOUT + "/" + imageName, {
+            method: "DELETE",
+        });
+    } catch (error) {
+        console.error(`Error deleting image with name: ${imageName}`, error);
+        throw error;
+    }
+};
+
+//ritorna una stringa che puo' essere messa in campi uri
+//in modo da caricare le immagini online
+export const apiUriImage = (imageName: string) => {
+    return `${API_IMAGE}/${imageName}`;
 };
 
 //fa una chiamata di fetch con il token salvato in precedenza

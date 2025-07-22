@@ -117,3 +117,9 @@ export type ApiInputUpdateWorkout = {
 export type ApiInputDeleteWorkout = {
     id: number;
 };
+
+export type ApiOutputWorkoutImage = {
+    id: number;
+    name: string;
+    created_at: string;
+};
