@@ -252,6 +252,7 @@ const ModifyWorkout = () => {
                     }}
                 />
             </View>
+            {/*TODO fare componente per modale immagine? */}
             <Portal>
                 <Modal
                     visible={!!imageModal}

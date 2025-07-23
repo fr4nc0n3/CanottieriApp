@@ -1,5 +1,12 @@
 import Calendar from "@/components/Calendar";
-import { apiGetUsers, apiGetWorkout } from "@/global/APICalls";
+import FullImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
+import FullImageModal from "@/components/FullImageModal";
+import {
+    apiGetUsers,
+    apiGetWorkout,
+    apiGetWorkoutImages,
+    apiUriImage,
+} from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import { User, Workout } from "@/global/Types";
 import { alert } from "@/global/UniversalPopups";
@@ -26,9 +33,15 @@ const WorkoutsPanel = () => {
     const showModal = () => setVisibleModal(true);
 
     const [openedWorkout, setOpenedWorkout] = useState<Workout | null>(null);
+    const [openedImage, setOpenedImage] = useState<string | null>(null);
+
+    const isImageModalOpen = () => openedImage !== null;
+    const closeImageModal = () => setOpenedImage(null);
+    const openImageModal = (uri: string) => setOpenedImage(uri);
 
     const [date, setDate] = useState<Date>(new Date());
     const [workouts, setWorkouts] = useState<Workout[]>([]);
+    const [workoutImages, setWorkoutImages] = useState<ImageItemGrid[]>([]);
 
     //TODO in teoria dovrebbero essere
     //solo gli utenti di tipo atleta
@@ -39,6 +52,13 @@ const WorkoutsPanel = () => {
     useEffect(() => {
         fetchAthletes();
     }, []);
+
+    //ricezione immagini workout aperto nel modale
+    useEffect(() => {
+        if (!openedWorkout) return;
+
+        fetchWorkoutImages(openedWorkout.id);
+    }, [openedWorkout]);
 
     //fetch allenamenti al cambiare della data
     //e dell' atleta selezionato
@@ -88,6 +108,20 @@ const WorkoutsPanel = () => {
                         error
                 );
             });
+    };
+
+    const fetchWorkoutImages = async (workoutId: number) => {
+        const jwt = await getJWT();
+        const images = await apiGetWorkoutImages(workoutId, jwt);
+
+        setWorkoutImages(
+            images.map((img) => {
+                return {
+                    id: img.name,
+                    uri: apiUriImage(img.name),
+                };
+            })
+        );
     };
 
     //la date in realta' e' gia' contenuta in workout
@@ -208,11 +242,24 @@ const WorkoutsPanel = () => {
                     </Text>
                     <Divider />
                     <Text>{openedWorkout?.description}</Text>
+                    <Divider />
+                    <Text>Immagini:</Text>
+                    <FullImageGrid
+                        images={workoutImages}
+                        onPressImage={(imageItem: ImageItemGrid) => {
+                            openImageModal(imageItem.uri);
+                        }}
+                    />
                     <Button onPress={hideModal} style={{ marginTop: 10 }}>
                         Chiudi
                     </Button>
                 </Modal>
             </Portal>
+            <FullImageModal
+                visible={isImageModalOpen()}
+                onDismiss={() => closeImageModal()}
+                imageUri={openedImage ?? ""}
+            />
         </>
     );
 };
