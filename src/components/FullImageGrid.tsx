@@ -2,6 +2,8 @@ import * as React from "react";
 import { FlatList, StyleSheet, Dimensions, ListRenderItem } from "react-native";
 import { Card } from "react-native-paper";
 
+//TODO questo componente dovrebbe avere un altezza e larghezza impostate dal padre
+
 export type ImageItemGrid = {
     id: string;
     uri: string;
@@ -17,9 +19,16 @@ const FullImageGrid: React.FC<FullImageGridProps> = ({
     onPressImage,
 }) => {
     const numColumns = 3;
-    const { width: screenWidth } = Dimensions.get("window");
+    const { width: screenWidth, height: screenHeight } =
+        Dimensions.get("window");
 
-    const imageSize = screenWidth / (numColumns * 1.2);
+    let imageSize;
+
+    if (screenHeight > screenWidth) {
+        imageSize = screenWidth / (numColumns * 1.2);
+    } else {
+        imageSize = screenHeight / (numColumns * 1.2);
+    }
 
     const renderItem: ListRenderItem<ImageItemGrid> = ({ item }) => (
         <Card style={styles.card} onPress={() => onPressImage(item)}>

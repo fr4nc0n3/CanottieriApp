@@ -278,7 +278,7 @@ const apiFetch = async (input: RequestInfo, init?: RequestInit) => {
         const res = await Promise.race([
             fetch(input, init),
             new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("fetch timeout")), 5000)
+                setTimeout(() => reject(new Error("fetch timeout")), 20000)
             ),
         ]);
 

@@ -23,6 +23,7 @@ import {
 import { getJWT } from "@/global/jwtStorage";
 import ImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import * as ImagePicker from "expo-image-picker";
+import LoadingModal from "@/components/LoadingModal";
 
 const ModifyWorkout = () => {
     const router = useRouter();
@@ -49,6 +50,8 @@ const ModifyWorkout = () => {
     const closeModal = () => {
         setImageModal(null);
     };
+
+    const [visibleLoading, setVisibleLoading] = useState<boolean>(false);
 
     if (isNaN(workoutDate.getTime()) || wkId == null || wkDescr == null) {
         return null;
@@ -155,6 +158,7 @@ const ModifyWorkout = () => {
         if (!result.canceled && result.assets.length > 0) {
             const asset = result.assets[0];
 
+            setVisibleLoading(true);
             try {
                 const imgName = await uploadImageOnline(asset);
 
@@ -167,6 +171,8 @@ const ModifyWorkout = () => {
                 ]);
             } catch (error) {
                 console.error(error);
+            } finally {
+                setVisibleLoading(false);
             }
         }
     };
@@ -252,7 +258,6 @@ const ModifyWorkout = () => {
                     }}
                 />
             </View>
-            {/*TODO fare componente per modale immagine? */}
             <Portal>
                 <Modal
                     visible={!!imageModal}
@@ -308,6 +313,10 @@ const ModifyWorkout = () => {
                     </View>
                 </Modal>
             </Portal>
+            <LoadingModal
+                visible={visibleLoading}
+                message={"Caricamento immagine online..."}
+            />
         </>
     );
 };
