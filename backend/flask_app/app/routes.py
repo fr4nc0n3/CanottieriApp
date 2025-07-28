@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request, current_app, send_from_directory
 from .db import (query_db, execute_ops_db, dbUserAccountTypes, dbUserNewsRx, 
     dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews,
     insertWorkout, dbUserWorkouts, updateUserWorkout, deleteUserWorkout, insertWorkoutImage,
-    dbWorkoutImages, dbIdUserOfWorkoutImage, deleteImg )
+    dbWorkoutImages, dbIdUserOfWorkoutImage, deleteImg, get_db )
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import (create_access_token, jwt_required, get_jwt_identity, get_jwt)
 import json
@@ -360,6 +360,115 @@ def getImage(name):
     print("Trying to serve:", os.path.join(folder, name))
 
     return send_from_directory(folder, name)
+
+# -- TODO bisogna fare una route per prendere l' allenamento di un singolo giorno 
+# o del giorno corrente
+# Promem: TESTARE GLI ALTRI
+# ----------- CRUD planning -------------
+@api.route('/plannings', methods=['GET'])
+@jwt_required()
+def get_plannings():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    year = request.args.get('year', None)
+    month = request.args.get('month', None) # indice tra 0 e 11
+
+    print("request.args: ", request.args)
+
+    year = int(year)
+    month = int(month)
+
+    month = month + 1 # converto l' indice tra 1 e 12 per lib datetime 
+
+    #TODO dovrei fare funzioni/e per prendere startDate e endDate
+    startDate = datetime.date(year, month, 1).isoformat()
+
+    endDate = None
+    if(month == 12):
+        endDate = datetime.date(year + 1, 1, 1).isoformat()
+    else:
+        endDate = datetime.date(year, month + 1, 1).isoformat()
+
+    #TODO mettere in file .db
+    month_plannings = query_db(
+        "SELECT * FROM Planning WHERE date >= ? AND date < ?",
+        tuple([startDate, endDate])
+    )
+
+    return jsonify([dict(p) for p in month_plannings])
+
+@api.route('/plannings', methods=['POST'])
+@jwt_required()
+def create_planning():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if not is_admin(claims):
+        return permission_denied()
+
+    data = request.get_json()
+    date = data.get('date')
+    description = data.get('description')
+
+    if not date or not description:
+        return jsonify({'error': 'date and description are required'}), 400
+
+    try:
+        # TODO penso che le altre chiamate al db siano un po' limitate
+        conn = get_db()
+        cursor = conn.execute(
+            'INSERT INTO Planning (date, description) VALUES (?, ?)',
+            tuple([date, description])
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
+
+        return jsonify({'id': new_id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    finally:
+        if conn:
+            conn.close()
+
+@api.route('/plannings/<int:planning_id>', methods=['PUT'])
+@jwt_required()
+def update_planning(planning_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if not is_admin(claims):
+        return permission_denied()
+
+    data = request.get_json()
+    date = data.get('date')
+    description = data.get('description')
+
+    if not date or not description:
+        return jsonify({'error': 'date and description are required'}), 400
+
+    #TODO fare query in .db
+    execute_ops_db([{
+        'query': 'UPDATE Planning SET date = ?, description = ? WHERE id = ?',
+        'args': tuple([date, description, planning_id])
+        }]
+    )
+
+    return jsonify({'message': 'Updated successfully'})
+
+@api.route('/plannings/<int:planning_id>', methods=['DELETE'])
+@jwt_required()
+def delete_planning(planning_id):
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    if not is_admin(claims):
+        return permission_denied()
+
+    # TODO fare funzione query in db.py
+    execute_ops_db({'query': 'DELETE FROM Planning WHERE id = ?', 'args': tuple([planning_id])})
+
+    return jsonify({'status': 'ok'})
 
 # -------------- AUTENTICATIONS -----------
 @api.route('/login', methods=['POST'])
