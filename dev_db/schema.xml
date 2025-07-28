@@ -229,4 +229,25 @@
 <part>id_image</part>
 </key>
 </table>
+<table x="805" y="424" name=" Planning">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+</row>
+<row name="date" null="0" autoincrement="0">
+<datatype>DATE</datatype>
+</row>
+<row name="description" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<row name="updated_at" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Tabella che in genere identifica la pianificazione di un evento ad una certa data. Si prevede che venga utilizzata essenzialmente per la pianificazione degli elementi</comment>
+</table>
 </sql>

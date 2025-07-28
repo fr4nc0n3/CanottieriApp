@@ -145,4 +145,22 @@ CREATE TABLE WorkoutImage (
     UNIQUE (id_image)
 );
 
+-- Table: Planning --
+CREATE TABLE Planning (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date DATE NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER trg_Planning_updated_at
+AFTER UPDATE ON Planning
+FOR EACH ROW
+BEGIN  
+    UPDATE Planning
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = OLD.id;
+END;
+
 COMMIT;
