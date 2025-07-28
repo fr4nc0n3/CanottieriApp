@@ -12,3 +12,4 @@ export const API_LOGIN = API_ENDPOINT + "login";
 export const API_WORKOUT = API_ENDPOINT + "workout";
 export const API_IMG_WORKOUT = API_ENDPOINT + "img_workout";
 export const API_IMAGE = API_ENDPOINT + "image";
+export const API_PLANNINGS = API_ENDPOINT + "plannings";

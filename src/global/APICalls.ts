@@ -7,15 +7,22 @@ import {
     API_IMAGE,
     API_IMG_WORKOUT,
     API_LOGIN,
+    API_PLANNINGS,
     API_SEND_NEWS_TO_GROUPS,
     API_WORKOUT,
 } from "./Constants";
 import {
+    ApiInputCreatePlanning,
     ApiInputCreateWorkout,
+    ApiInputDeletePlanning,
     ApiInputDeleteWorkout,
+    ApiInputGetPlannings,
     ApiInputGetWorkout,
+    ApiInputUpdatePlanning,
     ApiInputUpdateWorkout,
-    ApiOutputCreateWorkout,
+    ApiOutputCreatePlanning,
+    ApiOutputGetPlannings,
+    ApiOutputGetWorkout,
     ApiOutputWorkoutImage,
     NewsToSend,
     User,
@@ -103,7 +110,6 @@ export const apiGetUserInfo = async (
     }
 };
 
-//TODO Da provare
 //CRUD allenamento utente
 export const apiCreateWorkout = async (
     workout: ApiInputCreateWorkout,
@@ -128,7 +134,7 @@ export const apiCreateWorkout = async (
 export const apiGetWorkout = async (
     filter: ApiInputGetWorkout,
     jwt: string
-): Promise<ApiOutputCreateWorkout> => {
+): Promise<ApiOutputGetWorkout> => {
     try {
         const req = `${API_WORKOUT}?id_user=${filter.id_user}&year=${filter.year}&month=${filter.month}`;
         return await apiFetchJWTAuth(jwt, req, { method: "GET" });
@@ -170,6 +176,78 @@ export const apiDeleteWorkout = async (
     } catch (error) {
         console.error(
             `Error deleting workout with filter: ${JSON.stringify(filter)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+//CRUD Plannings
+export const apiCreatePlanning = async (
+    planning: ApiInputCreatePlanning,
+    jwt: string
+): Promise<ApiOutputCreatePlanning> => {
+    try {
+        const req = API_PLANNINGS;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(planning),
+        });
+    } catch (error) {
+        console.error(
+            `Error creating planning: ${JSON.stringify(planning)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiGetPlannings = async (
+    filter: ApiInputGetPlannings,
+    jwt: string
+): Promise<ApiOutputGetPlannings> => {
+    try {
+        const req = `${API_PLANNINGS}?year=${filter.year}&month=${filter.month}`;
+        return await apiFetchJWTAuth(jwt, req, { method: "GET" });
+    } catch (error) {
+        console.error(`Error fetch plannings with filter: ${filter}`, error);
+        throw error;
+    }
+};
+
+export const apiUpdatePlanning = async (
+    update: ApiInputUpdatePlanning,
+    jwt: string
+) => {
+    try {
+        const req = API_PLANNINGS + "/" + update.id;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+        });
+    } catch (error) {
+        console.error(
+            `Error updating planning by update with: ${JSON.stringify(update)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiDeletePlanning = async (
+    filter: ApiInputDeletePlanning,
+    jwt: string
+) => {
+    try {
+        const req = API_PLANNINGS + "/" + filter.id;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "DELETE",
+        });
+    } catch (error) {
+        console.error(
+            `Error deleting planning with filter: ${JSON.stringify(filter)}`,
             error
         );
         throw error;

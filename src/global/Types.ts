@@ -101,7 +101,7 @@ export type ApiInputCreateWorkout = {
     description: string;
 };
 
-export type ApiOutputCreateWorkout = Workout[];
+export type ApiOutputGetWorkout = Workout[];
 
 export type ApiInputGetWorkout = {
     id_user: string;
@@ -123,3 +123,38 @@ export type ApiOutputWorkoutImage = {
     name: string;
     created_at: string;
 };
+
+//CRUD Planning
+export type ApiInputCreatePlanning = {
+    date: string;
+    description: string;
+};
+
+export type ApiOutputCreatePlanning = {
+    id: number;
+};
+
+export type ApiInputGetPlannings = {
+    year: number;
+    month: number;
+};
+
+export type ApiInputUpdatePlanning = {
+    id: number;
+    date: string;
+    description: string;
+};
+
+export type ApiInputDeletePlanning = {
+    id: number;
+};
+
+export type ApiOutputGetPlanning = {
+    id: number;
+    date: string;
+    description: string;
+    created_at: string;
+    updated_at: string;
+};
+
+export type ApiOutputGetPlannings = ApiOutputGetPlanning[];
