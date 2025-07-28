@@ -35,6 +35,15 @@ export default function MenuPage() {
                         }}
                         icon="calendar"
                     />
+                    <Drawer.Item
+                        label="Allenamento del giorno"
+                        active={active === "trainingDay"}
+                        onPress={() => {
+                            setActive("trainingDay");
+                            router.push("/TrainingDayPage");
+                        }}
+                        icon="dumbbell"
+                    />
                 </Drawer.Section>
 
                 {/*TODO abilitare guardando gli account types contenuti nel JWT */}
@@ -50,6 +59,15 @@ export default function MenuPage() {
                             router.push("/admin/WorkoutsPanel");
                         }}
                         icon="view-grid"
+                    />
+                    <Drawer.Item
+                        label="Programma di allenamento"
+                        active={active === "publishProgram"}
+                        onPress={() => {
+                            setActive("publishProgram");
+                            router.push("/admin/PublishProgram");
+                        }}
+                        icon="upload"
                     />
                 </Drawer.Section>
             </View>
