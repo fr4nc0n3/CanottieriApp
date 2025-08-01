@@ -404,12 +404,16 @@ def create_planning():
     identity = get_jwt_identity()
     claims = get_jwt()
 
+    print(request.url)
+
     if not is_admin(claims):
         return permission_denied()
 
     data = request.get_json()
     date = data.get('date')
     description = data.get('description')
+
+    print("json: ", data)
 
     if not date or not description:
         return jsonify({'error': 'date and description are required'}), 400
