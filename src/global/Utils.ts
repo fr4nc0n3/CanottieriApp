@@ -17,6 +17,13 @@ export const getJWTIdentity = (token: string) => {
     return identity;
 };
 
+export const getJWTAccountTypes = (token: string): string[] => {
+    const jwt = decodeJWT(token);
+    const accountTypes = jwt.accountTypes;
+
+    return accountTypes;
+};
+
 export const universalDateStringFormat = (date: Date) => {
     return date.toLocaleDateString();
 };
