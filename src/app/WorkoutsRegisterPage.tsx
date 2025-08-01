@@ -45,8 +45,8 @@ const WorkoutsRegisterPage = () => {
                 return apiGetWorkout(
                     {
                         id_user: identity,
-                        year: date.getFullYear(),
-                        month: date.getMonth(),
+                        year: date.getUTCFullYear(),
+                        month: date.getUTCMonth(),
                     },
                     jwt
                 );
@@ -66,9 +66,9 @@ const WorkoutsRegisterPage = () => {
         router.push({
             pathname: "/workoutCRUD/CreateWorkout",
             params: {
-                wkYear: date.getFullYear(),
-                wkMonth: date.getMonth(),
-                wkDate: date.getDate(),
+                wkYear: date.getUTCFullYear(),
+                wkMonth: date.getUTCMonth(),
+                wkDate: date.getUTCDate(),
             },
         });
     };
@@ -76,9 +76,9 @@ const WorkoutsRegisterPage = () => {
         router.push({
             pathname: "/workoutCRUD/ModifyWorkout",
             params: {
-                wkYear: date.getFullYear(),
-                wkMonth: date.getMonth(),
-                wkDate: date.getDate(),
+                wkYear: date.getUTCFullYear(),
+                wkMonth: date.getUTCMonth(),
+                wkDate: date.getUTCDate(),
                 wkId: workout.id,
                 wkDescr: workout.description,
             },
@@ -123,9 +123,11 @@ const WorkoutsRegisterPage = () => {
                     ]}
                     onPressDayIdx={(pressedDay) => {
                         const pressedDate = new Date(
-                            date.getFullYear(),
-                            date.getMonth(),
-                            pressedDay.dayIdx
+                            Date.UTC(
+                                date.getUTCFullYear(),
+                                date.getUTCMonth(),
+                                pressedDay.dayIdx
+                            )
                         );
 
                         console.log("pressed date: ", pressedDate);
