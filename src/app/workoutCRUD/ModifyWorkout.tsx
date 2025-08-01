@@ -24,6 +24,10 @@ import { getJWT } from "@/global/jwtStorage";
 import ImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import * as ImagePicker from "expo-image-picker";
 import LoadingModal from "@/components/LoadingModal";
+import {
+    apiGetDateStringFormat,
+    universalDateStringFormat,
+} from "@/global/Utils";
 
 const ModifyWorkout = () => {
     const router = useRouter();
@@ -103,7 +107,7 @@ const ModifyWorkout = () => {
         confirm(
             "Eliminazione allenamento",
             "Sei sicuro di voler eliminare l' allenamento in data " +
-                workoutDate.toLocaleDateString(),
+                universalDateStringFormat(workoutDate),
             async () => {
                 const jwt = await getJWT();
                 const id = parseInt(wkId.toString());
@@ -215,7 +219,7 @@ const ModifyWorkout = () => {
                         <Text style={styles.dateText}>
                             Data:{" "}
                             {workoutDate
-                                ? workoutDate.toLocaleDateString()
+                                ? universalDateStringFormat(workoutDate)
                                 : "Invalid date"}
                         </Text>
 

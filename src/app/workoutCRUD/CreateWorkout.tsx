@@ -3,7 +3,11 @@
 import { apiCreateWorkout } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import { alert } from "@/global/UniversalPopups";
-import { getJWTIdentity } from "@/global/Utils";
+import {
+    apiGetDateStringFormat,
+    getJWTIdentity,
+    universalDateStringFormat,
+} from "@/global/Utils";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
@@ -32,7 +36,7 @@ const CreateWorkout = () => {
         try {
             await apiCreateWorkout(
                 {
-                    date: workoutDate.toISOString().split("T")[0],
+                    date: apiGetDateStringFormat(workoutDate),
                     description: description,
                     id_user: identity,
                 },
@@ -55,7 +59,7 @@ const CreateWorkout = () => {
 
                     {/* Mostra la data dell'allenamento */}
                     <Text style={styles.dateText}>
-                        Data: {workoutDate.toISOString().split("T")[0]}
+                        Data: {universalDateStringFormat(workoutDate)}
                     </Text>
 
                     {/* Campo per il testo descrittivo dell'allenamento */}
