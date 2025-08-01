@@ -16,3 +16,12 @@ export const getJWTIdentity = (token: string) => {
 
     return identity;
 };
+
+export const universalDateStringFormat = (date: Date) => {
+    return date.toLocaleDateString();
+};
+
+//es. "2025-07-31" in UTC
+export const apiGetDateStringFormat = (date: Date) => {
+    return date.toISOString().split("T")[0];
+};
