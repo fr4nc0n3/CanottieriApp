@@ -4,3 +4,5 @@ __pycache__/
 .env
 *.zip
 backend/img/
+psws.txt
+init_prod_data.sql
