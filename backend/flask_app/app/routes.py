@@ -194,9 +194,24 @@ def createWorkout():
     if(idUser != identity):
         return permission_denied()
 
-    insertWorkout(idUser, date, description)
+    try:
+        # TODO penso che le altre chiamate al db siano un po' limitate
+        conn = get_db()
+        cursor = conn.execute(
+            "INSERT INTO Workout ("
+            "id_user, date, description"
+            ") VALUES (?,?,?) ",
+            tuple([idUser, date, description])
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
 
-    return jsonify({"status": "ok"})
+        return jsonify({'id': new_id}), 201
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    finally:
+        if conn:
+            conn.close()
 
 @api.route('workout', methods=['GET'])
 @jwt_required()
