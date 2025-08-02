@@ -32,3 +32,7 @@ export const universalDateStringFormat = (date: Date) => {
 export const apiGetDateStringFormat = (date: Date) => {
     return date.toISOString().split("T")[0];
 };
+
+export const sleep = (millis: number) => {
+    return new Promise((resolve) => setTimeout(resolve, millis));
+};
