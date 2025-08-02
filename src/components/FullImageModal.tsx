@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Image,
@@ -19,20 +19,41 @@ const FullImageModal: React.FC<FullImageModalProps> = ({
     onDismiss,
     imageUri,
 }) => {
+    const [rotationDegree, setRotationDegree] = useState<number>(0);
+    const rotate = () => setRotationDegree((cur) => (cur + 90) % 360);
+    const reset = () => setRotationDegree(0);
+
+    const closeModal = () => {
+        reset();
+        onDismiss();
+    };
+
     return (
         <Portal>
             <Modal
                 visible={visible}
-                onDismiss={onDismiss}
+                onDismiss={closeModal}
                 contentContainerStyle={styles.modalContainer}
                 dismissable={true}
             >
-                <TouchableWithoutFeedback onPress={onDismiss}>
+                <IconButton
+                    icon="rotate-right"
+                    size={32}
+                    onPress={() => rotate()}
+                />
+                <TouchableWithoutFeedback onPress={closeModal}>
                     <View style={styles.imageWrapper}>
                         <Image
                             source={{ uri: imageUri }}
                             resizeMode="contain"
-                            style={styles.image}
+                            style={[
+                                styles.image,
+                                {
+                                    transform: [
+                                        { rotate: `${rotationDegree}deg` },
+                                    ],
+                                },
+                            ]}
                         />
                     </View>
                 </TouchableWithoutFeedback>
@@ -49,14 +70,15 @@ const styles = StyleSheet.create({
         margin: 0,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "white",
     },
     imageWrapper: {
         justifyContent: "center",
         alignItems: "center",
     },
     image: {
-        width: width,
-        height: height,
+        width: width * 0.9,
+        height: height * 0.9,
     },
 });
 

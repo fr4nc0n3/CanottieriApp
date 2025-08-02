@@ -31,7 +31,6 @@ import {
 
 const ModifyWorkout = () => {
     const router = useRouter();
-    const { height: winHeight, width: winWidth } = Dimensions.get("window");
 
     //TODO qui dovrei forzare i le variabili a tipi e dati coerenti
     const { wkYear, wkMonth, wkDate, wkId, wkDescr } = useLocalSearchParams();
@@ -262,66 +261,105 @@ const ModifyWorkout = () => {
                     }}
                 />
             </View>
-            <Portal>
-                <Modal
-                    visible={!!imageModal}
-                    onDismiss={() => closeModal()}
-                    contentContainerStyle={{
-                        backgroundColor: "white",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: 20,
-                        margin: 20,
-                        borderRadius: 10,
-                    }}
-                >
-                    <IconButton
-                        style={{ alignSelf: "flex-end" }}
-                        icon="close"
-                        onPress={() => closeModal()}
-                    />
-                    <Image
-                        source={{ uri: imageModal?.uri }}
-                        style={{
-                            resizeMode: "contain",
-                            width: winWidth * 0.8,
-                            height: winHeight * 0.8,
-                            marginBottom: 10,
-                        }}
-                    />
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-around",
-                        }}
-                    >
-                        <IconButton
-                            icon="trash-can"
-                            iconColor="red"
-                            size={48}
-                            onPress={() => {
-                                confirm(
-                                    "Eliminazione",
-                                    "Sei sicuro di voler eliminare l' immagine?",
-                                    () => {
-                                        if (imageModal) {
-                                            deleteImage(imageModal.id);
-                                        }
-
-                                        closeModal();
-                                    }
-                                );
-                            }}
-                        />
-                    </View>
-                </Modal>
-            </Portal>
+            <ImageModal
+                visible={!!imageModal}
+                onDismiss={() => closeModal()}
+                imageModal={imageModal}
+                onDelete={(imageId) => deleteImage(imageId)}
+            />
             <LoadingModal
                 visible={visibleLoading}
                 message={"Caricamento immagine online..."}
             />
         </>
+    );
+};
+
+interface ImageModalProps {
+    visible: boolean;
+    onDismiss: () => void;
+    imageModal: { id: string; uri: string } | null;
+    onDelete: (imageId: string) => void;
+}
+
+/* Componente per visualizzare un immagine e poterla eliminare */
+const ImageModal: React.FC<ImageModalProps> = ({
+    visible,
+    onDismiss,
+    imageModal,
+    onDelete,
+}) => {
+    const { height: winHeight, width: winWidth } = Dimensions.get("window");
+    const [rotationDegree, setRotationDegree] = useState<number>(0);
+
+    const closeModal = () => {
+        setRotationDegree(0);
+        onDismiss();
+    };
+
+    return (
+        <Portal>
+            <Modal
+                visible={visible}
+                onDismiss={() => closeModal()}
+                contentContainerStyle={{
+                    backgroundColor: "white",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 20,
+                    margin: 20,
+                    borderRadius: 10,
+                }}
+            >
+                <IconButton
+                    style={{ alignSelf: "flex-end" }}
+                    icon="close"
+                    onPress={() => closeModal()}
+                />
+                <IconButton
+                    icon="rotate-right"
+                    onPress={() => {
+                        setRotationDegree((cur) => (cur + 90) % 360);
+                    }}
+                />
+                <Image
+                    source={{ uri: imageModal?.uri }}
+                    style={{
+                        resizeMode: "contain",
+                        width: winWidth * 0.8,
+                        height: winHeight * 0.8,
+                        marginBottom: 10,
+                        transform: [{ rotate: `${rotationDegree}deg` }],
+                    }}
+                />
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-around",
+                    }}
+                >
+                    <IconButton
+                        icon="trash-can"
+                        iconColor="red"
+                        size={48}
+                        onPress={() => {
+                            confirm(
+                                "Eliminazione",
+                                "Sei sicuro di voler eliminare l' immagine?",
+                                () => {
+                                    if (imageModal) {
+                                        onDelete(imageModal.id);
+                                    }
+
+                                    closeModal();
+                                }
+                            );
+                        }}
+                    />
+                </View>
+            </Modal>
+        </Portal>
     );
 };
 

@@ -66,8 +66,6 @@ export default function MenuPage() {
                     )}
                 </Drawer.Section>
 
-                {/*TODO abilitare guardando gli account types contenuti nel JWT */}
-
                 {isAdmin && (
                     <Drawer.Section
                         style={styles.sidebar}
