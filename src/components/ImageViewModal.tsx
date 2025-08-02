@@ -20,8 +20,18 @@ const ImageViewModal: React.FC<ImageViewModalProps> = ({
     const { height: winHeight, width: winWidth } = Dimensions.get("window");
     const [rotationDegree, setRotationDegree] = useState<number>(0);
 
-    const closeModal = () => {
+    const rotate = () => {
+        setRotationDegree((cur) => {
+            return (cur + 90) % 360;
+        });
+    };
+
+    const resetRotation = () => {
         setRotationDegree(0);
+    };
+
+    const closeModal = () => {
+        resetRotation();
         onDismiss();
     };
 
@@ -44,11 +54,15 @@ const ImageViewModal: React.FC<ImageViewModalProps> = ({
                     icon="close"
                     onPress={() => closeModal()}
                 />
+
+                {/*zIndex altrimenti se l' immagine va sopra non diventa piu' cliccabile */}
                 <IconButton
                     icon="rotate-right"
+                    size={32}
                     onPress={() => {
-                        setRotationDegree((cur) => (cur + 90) % 360);
+                        rotate();
                     }}
+                    style={{ zIndex: 999 }}
                 />
                 {imageUri && (
                     <Image
