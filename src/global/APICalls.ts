@@ -114,7 +114,7 @@ export const apiGetUserInfo = async (
 export const apiCreateWorkout = async (
     workout: ApiInputCreateWorkout,
     jwt: string
-) => {
+): Promise<{ id: number }> => {
     try {
         const req = API_WORKOUT;
         return await apiFetchJWTAuth(jwt, req, {
