@@ -327,6 +327,9 @@ def createImageWorkout():
     if imagePIL.mode in ("RGBA", "P"):
         imagePIL = imagePIL.convert("RGB")
 
+    max_size = (700, 700)
+    imagePIL.thumbnail(max_size, Image.LANCZOS)
+
     img_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + image.filename + ".jpg"
 
     # salvataggio su filesystem con immagine compressa
