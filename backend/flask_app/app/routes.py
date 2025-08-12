@@ -463,16 +463,15 @@ def update_planning(planning_id):
         return permission_denied()
 
     data = request.get_json()
-    date = data.get('date')
     description = data.get('description')
 
-    if not date or not description:
+    if not description:
         return jsonify({'error': 'date and description are required'}), 400
 
     #TODO fare query in .db
     execute_ops_db([{
-        'query': 'UPDATE Planning SET date = ?, description = ? WHERE id = ?',
-        'args': tuple([date, description, planning_id])
+        'query': 'UPDATE Planning SET description = ? WHERE id = ?',
+        'args': tuple([description, planning_id])
         }]
     )
 
@@ -488,7 +487,9 @@ def delete_planning(planning_id):
         return permission_denied()
 
     # TODO fare funzione query in db.py
-    execute_ops_db({'query': 'DELETE FROM Planning WHERE id = ?', 'args': tuple([planning_id])})
+    execute_ops_db([{
+        'query': 'DELETE FROM Planning WHERE id = ?', 'args': tuple([planning_id])
+    }])
 
     return jsonify({'status': 'ok'})
 
