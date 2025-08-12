@@ -80,10 +80,7 @@ export default function MenuPage() {
                             }}
                             icon="view-grid"
                         />
-                        {/*
-                    disabilitato finche' non a posto 
-                    */}
-                        {false && (
+                        {
                             <Drawer.Item
                                 label="Programma di allenamento"
                                 active={active === "publishProgram"}
@@ -93,7 +90,7 @@ export default function MenuPage() {
                                 }}
                                 icon="upload"
                             />
-                        )}
+                        }
                     </Drawer.Section>
                 )}
             </View>

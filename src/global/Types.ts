@@ -141,7 +141,7 @@ export type ApiInputGetPlannings = {
 
 export type ApiInputUpdatePlanning = {
     id: number;
-    date: string;
+    //date: string;
     description: string;
 };
 
