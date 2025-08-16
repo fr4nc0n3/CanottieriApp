@@ -50,20 +50,16 @@ export default function MenuPage() {
                         }}
                         icon="calendar"
                     />
-                    {
-                        //disabilitato finche non a posto
-                    }
-                    {false && (
-                        <Drawer.Item
-                            label="Allenamento del giorno"
-                            active={active === "trainingDay"}
-                            onPress={() => {
-                                setActive("trainingDay");
-                                router.push("/TrainingDayPage");
-                            }}
-                            icon="dumbbell"
-                        />
-                    )}
+
+                    <Drawer.Item
+                        label="Allenamento del giorno"
+                        active={active === "trainingDay"}
+                        onPress={() => {
+                            setActive("trainingDay");
+                            router.push("/TrainingDayPage");
+                        }}
+                        icon="dumbbell"
+                    />
                 </Drawer.Section>
 
                 {isAdmin && (
@@ -82,7 +78,7 @@ export default function MenuPage() {
                         />
                         {
                             <Drawer.Item
-                                label="Programma di allenamento"
+                                label="Programma allenamento"
                                 active={active === "publishProgram"}
                                 onPress={() => {
                                     setActive("publishProgram");

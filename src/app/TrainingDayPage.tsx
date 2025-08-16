@@ -1,43 +1,71 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import * as React from "react";
+import { apiGetPlannings } from "@/global/APICalls";
+import { getJWT } from "@/global/jwtStorage";
+import { ApiInputGetPlannings, ApiOutputGetPlanning } from "@/global/Types";
+import { alert } from "@/global/UniversalPopups";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
-const trainingText = `
-Obiettivo: Resistenza aerobica e tecnica di voga
-
-Sessione:
-
-- Riscaldamento (15 min)
-  - Vogata leggera a 18 colpi/minuto (SPM)
-  - Mobilità spalle e fianchi
-  - 3 allunghi da 10 colpi per attivare la potenza
-
-- Allenamento Principale (40 min)
-  - 4 x 8 minuti a 22 SPM, recupero 2 minuti tra le serie
-  - Concentrarsi su:
-    - Fase di aggancio efficace
-    - Spinta controllata con le gambe
-    - Coordinazione tra trazione e corpo
-
-- Defaticamento (10 min)
-  - Vogata molto leggera a 16 SPM
-  - Stretching: zona lombare, posteriori delle cosce, spalle
-
-Note Tecniche:
-Mantenere la barca in assetto stabile, lavorare sulla simmetria del colpo e ridurre movimenti inutili durante il recupero.
-`;
-
+type Planning = ApiOutputGetPlanning;
 export default function TrainingDayPage() {
+    const [monthPlannings, setMonthPlannings] = useState<Planning[]>([]);
+
+    const fetchMonthPlannings = async () => {
+        const jwt = await getJWT();
+        const today = new Date();
+
+        const filter: ApiInputGetPlannings = {
+            year: today.getFullYear(),
+            month: today.getMonth(),
+        };
+
+        try {
+            const plannings = await apiGetPlannings(filter, jwt);
+            setMonthPlannings(plannings);
+        } catch (error) {
+            console.error("Error: ", error);
+            alert("Errore", "Errore durante la ricezione della programmazione");
+        }
+    };
+
+    useEffect(() => {
+        fetchMonthPlannings();
+    }, []);
+
+    const getPlanningOfToday = () => {
+        return monthPlannings.find((planning) => {
+            const pDate = new Date(planning.date);
+            const today = new Date();
+
+            return (
+                pDate.getFullYear() === today.getFullYear() &&
+                pDate.getMonth() === today.getMonth() &&
+                pDate.getDate() === today.getDate()
+            );
+        });
+    };
+
+    const planningOfTheDay = getPlanningOfToday();
+
+    if (!planningOfTheDay) {
+        return (
+            <Text>Non e&apos; stato registrato alcun allenamento per oggi</Text>
+        );
+    }
+
     return (
         <>
             <View style={styles.header}>
-                <Text variant="titleLarge">Allenamento giornaliero</Text>
+                <Text variant="titleLarge">
+                    Allenamento giornaliero del{" "}
+                    {planningOfTheDay?.date ?? "<N/A>"}
+                </Text>
             </View>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
                 <Text variant="bodyLarge" style={{ lineHeight: 24 }}>
-                    {trainingText}
+                    {planningOfTheDay?.description ?? ""}
                 </Text>
             </ScrollView>
         </>
