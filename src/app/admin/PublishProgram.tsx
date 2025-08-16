@@ -156,7 +156,7 @@ const PublishProgram = () => {
                     }
                 />
                 <Text variant="titleLarge" style={style.header}>
-                    Programma allenamenti
+                    Programma
                 </Text>
                 <IconButton
                     icon="arrow-right"
@@ -371,9 +371,10 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                     >
                         Modifica
                     </Button>
-                    <Button
-                        buttonColor={MD3Colors.error50}
+                    <IconButton
                         icon="delete"
+                        containerColor="red"
+                        iconColor="white"
                         mode="contained"
                         onPress={() => {
                             confirm(
@@ -387,9 +388,7 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                                 }
                             );
                         }}
-                    >
-                        Elimina
-                    </Button>
+                    />
                 </View>
             </Modal>
         </Portal>

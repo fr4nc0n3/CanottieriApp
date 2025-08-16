@@ -45,8 +45,8 @@ const WorkoutsRegisterPage = () => {
                 return apiGetWorkout(
                     {
                         id_user: identity,
-                        year: date.getUTCFullYear(),
-                        month: date.getUTCMonth(),
+                        year: date.getFullYear(),
+                        month: date.getMonth(),
                     },
                     jwt
                 );
@@ -145,6 +145,10 @@ const WorkoutsRegisterPage = () => {
                             });
 
                             if (!wkPressed) {
+                                alert(
+                                    "Errore:",
+                                    `Errore selezione allenamento con data: ${pressedDate}`
+                                );
                                 console.error(
                                     "error workout pressed not found"
                                 );
