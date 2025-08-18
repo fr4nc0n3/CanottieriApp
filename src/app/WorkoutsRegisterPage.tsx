@@ -16,29 +16,29 @@ const WorkoutsRegisterPage = () => {
     const [date, setDate] = useState<Date>(new Date());
     const [workouts, setWorkouts] = useState<Workout[]>([]);
 
-    //fetch allenamenti al cambiare della data
-    useEffect(() => {
-        fetchWorkouts();
+    //fetch allenamenti ogni volta che va in focus la pagina
+    const focusCallback = useCallback(() => {
+        if (!firstFocusRef.current) {
+            fetchWorkouts(date);
+        } else {
+            firstFocusRef.current = false;
+        }
+        return () => {};
     }, [date]);
 
-    //fetch allenamenti ogni volta che va in focus la pagina
-    useFocusEffect(
-        useCallback(() => {
-            if (!firstFocusRef.current) {
-                fetchWorkouts();
-            } else {
-                firstFocusRef.current = false;
-            }
-            return () => {};
-        }, [])
-    );
+    //fetch allenamenti al cambiare della data
+    useEffect(() => {
+        fetchWorkouts(date);
+    }, [date]);
+
+    useFocusEffect(focusCallback);
 
     //log state
     useEffect(() => {
         console.log("workouts:", workouts);
     }, [workouts]);
 
-    const fetchWorkouts = () => {
+    const fetchWorkouts = (date: Date) => {
         getJWT()
             .then((jwt) => {
                 const identity = getJWTIdentity(jwt);
@@ -66,9 +66,9 @@ const WorkoutsRegisterPage = () => {
         router.push({
             pathname: "/workoutCRUD/CreateWorkout",
             params: {
-                wkYear: date.getUTCFullYear(),
-                wkMonth: date.getUTCMonth(),
-                wkDate: date.getUTCDate(),
+                wkYear: date.getFullYear(),
+                wkMonth: date.getMonth(),
+                wkDate: date.getDate(),
             },
         });
     };
@@ -76,9 +76,9 @@ const WorkoutsRegisterPage = () => {
         router.push({
             pathname: "/workoutCRUD/ModifyWorkout",
             params: {
-                wkYear: date.getUTCFullYear(),
-                wkMonth: date.getUTCMonth(),
-                wkDate: date.getUTCDate(),
+                wkYear: date.getFullYear(),
+                wkMonth: date.getMonth(),
+                wkDate: date.getDate(),
                 wkId: workout.id,
                 wkDescr: workout.description,
             },
@@ -124,8 +124,8 @@ const WorkoutsRegisterPage = () => {
                     onPressDayIdx={(pressedDay) => {
                         const pressedDate = new Date(
                             Date.UTC(
-                                date.getUTCFullYear(),
-                                date.getUTCMonth(),
+                                date.getFullYear(),
+                                date.getMonth(),
                                 pressedDay.dayIdx
                             )
                         );

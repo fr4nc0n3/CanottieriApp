@@ -57,6 +57,15 @@ const ModifyWorkout = () => {
 
     const [visibleLoading, setVisibleLoading] = useState<boolean>(false);
 
+    useEffect(() => {
+        fetchWorkoutImages();
+    }, []);
+
+    //log images grid
+    useEffect(() => {
+        console.log("images of the grid:", images);
+    }, [images]);
+
     if (isNaN(workoutDate.getTime()) || wkId == null || wkDescr == null) {
         return null;
     }
@@ -78,15 +87,6 @@ const ModifyWorkout = () => {
             );
         });
     };
-
-    useEffect(() => {
-        fetchWorkoutImages();
-    }, []);
-
-    //log images grid
-    useEffect(() => {
-        console.log("images of the grid:", images);
-    }, [images]);
 
     const handleApply = async () => {
         const jwt = await getJWT();

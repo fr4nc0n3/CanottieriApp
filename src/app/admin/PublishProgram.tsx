@@ -62,7 +62,7 @@ const PublishProgram = () => {
         fetchMonthPlannings(date);
     }, [date]);
 
-    //TODO crea planning
+    //crea planning
     const createPlanning = async (planning: {
         date: Date;
         description: string;
@@ -100,7 +100,7 @@ const PublishProgram = () => {
         }
     };
 
-    //TODO elimina planning
+    //elimina planning
     const deletePlanning = async (id: number) => {
         console.log(`delete planning with id=${id}`);
 
