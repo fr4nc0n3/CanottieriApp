@@ -14,7 +14,7 @@ def index():
 # route per servire immagini tramite il nome,
 # prendendole dalla cartella di sistema
 @api.route('/image/<path:name>')
-def getImage(name):
+def getImage(name: str):
     folder = current_app.config["IMG_FOLDER"]
 
     print(request.url)

@@ -1,6 +1,6 @@
 from flask import jsonify
 
-def is_admin(claims):
+def is_admin(claims: dict):
     return "admin" in claims.get("accountTypes", [])
 
 def permission_denied():

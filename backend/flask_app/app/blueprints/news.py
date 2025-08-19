@@ -20,7 +20,7 @@ def getUserNews():
     if(idUser != identity):
         return permission_denied()
 
-    news = dbUserNewsRx(idUser, limit, offset)
+    news = dbUserNewsRx(int(idUser), limit, int(offset))
 
     return jsonify(news)
 
@@ -36,7 +36,7 @@ def getUserNewsSended():
     if(identity != idUser):
         return permission_denied()
 
-    news = dbUserNewsTx(idUser, limit, offset)
+    news = dbUserNewsTx(int(idUser), limit, int(offset))
 
     return jsonify(news)
 

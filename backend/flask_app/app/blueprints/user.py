@@ -50,6 +50,6 @@ def getUserAccountTypes():
     if(idUser != identity and not is_admin(claims)):
         return permission_denied()
 
-    accountTypes = dbUserAccountTypes(idUser)
+    accountTypes = dbUserAccountTypes(int(idUser))
 
     return jsonify(accountTypes)

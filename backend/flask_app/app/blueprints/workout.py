@@ -62,6 +62,10 @@ def getWorkout():
     year = request.args.get('year', None)
     month = request.args.get('month', None) # indice tra 0 e 11
 
+    # controllo che i parametri siano stati passati
+    if idUser is None:
+        return missing_parameter('id_user')
+
     if year is None:
         return missing_parameter('year')
 
@@ -86,7 +90,7 @@ def getWorkout():
     else:
         endDate = datetime.date(year, month + 1, 1).isoformat()
 
-    workouts = dbUserWorkouts(idUser, startDate, endDate)
+    workouts = dbUserWorkouts(int(idUser), startDate, endDate)
     return jsonify(workouts)
 
 @api_workout.route('workout/<int:workout_id>', methods=['PUT'])
@@ -138,7 +142,7 @@ def getImagesWorkout():
     if(id_workout is None):
         return jsonify({'message': "Bad request workout id missing"}), 400
 
-    images = dbWorkoutImages(id_workout)
+    images = dbWorkoutImages(int(id_workout))
     #urls = [("image/" + img) for img in images]
 
     print("images for workout id = ", id_workout, ": ", images)
@@ -187,7 +191,7 @@ def createImageWorkout():
     imagePIL.save(save_path, format="JPEG", quality=15, optimize=True)
 
     # registrazione nel database
-    insertWorkoutImage(id_workout, img_name)
+    insertWorkoutImage(int(id_workout), img_name)
 
     return jsonify({"status": "ok", "img_name": img_name})
     
