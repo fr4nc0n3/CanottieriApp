@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request, current_app, send_from_directory
-from .db import (query_db, dbUserAccountTypes)
+from ..db import (query_db, dbUserAccountTypes)
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (create_access_token) 
 import os
-from .blueprints.helpers import (bad_json)
+from .helpers import (bad_json)
 
 api = Blueprint('main', __name__)
 
@@ -11,6 +11,8 @@ api = Blueprint('main', __name__)
 def index():
     return jsonify({"message": "Service available"})
 
+# route per servire immagini tramite il nome,
+# prendendole dalla cartella di sistema
 @api.route('/image/<path:name>')
 def getImage(name):
     folder = current_app.config["IMG_FOLDER"]

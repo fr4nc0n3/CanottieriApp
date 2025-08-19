@@ -1,5 +1,4 @@
 from flask import Flask
-from .routes import api
 from .config import Config
 from .db import close_connection
 from flask_cors import CORS
@@ -9,6 +8,7 @@ from .blueprints.user import api_user
 from .blueprints.news import api_news
 from .blueprints.planning import api_planning
 from .blueprints.workout import api_workout
+from .blueprints.main import api
 
 def create_app():
     app = Flask(__name__)
@@ -23,7 +23,8 @@ def create_app():
     if(FLASK_ENV == "dev"):
         CORS(app)
 
-    #per produzione
+    # TODO: 
+    #per produzione 
     elif(FLASK_ENV == "prod"): 
      CORS(app, resources={
         r"/api/*": {
