@@ -1,0 +1,122 @@
+from flask import Blueprint
+from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
+from flask import Blueprint, jsonify, request
+from .helpers import bad_json, permission_denied, is_admin
+from ..db import (query_db, execute_ops_db, dbUserNewsRx, 
+    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews)
+
+api_news = Blueprint("news", __name__)
+
+@api_news.route('/get-user-news-received', methods=['GET'])
+@jwt_required()
+def getUserNews():
+    identity = get_jwt_identity()
+
+    idUser = request.args.get('id-user', '-1')
+    offset = request.args.get('offset-sql', '0')
+    limit = 10
+
+    #autenticazione
+    if(idUser != identity):
+        return permission_denied()
+
+    news = dbUserNewsRx(idUser, limit, offset)
+
+    return jsonify(news)
+
+@api_news.route('/get-user-news-sended', methods=['GET'])
+@jwt_required()
+def getUserNewsSended():
+    identity = get_jwt_identity()
+
+    idUser = request.args.get('id-user', '-1')
+    offset = request.args.get('offset-sql', '0')
+    limit = 10
+
+    if(identity != idUser):
+        return permission_denied()
+
+    news = dbUserNewsTx(idUser, limit, offset)
+
+    return jsonify(news)
+
+#-------------- PROCEDURES ---------------
+@api_news.route('/send-news-to-groups', methods=['POST'])
+@jwt_required()
+def sendNewsToGroup():
+    identity = get_jwt_identity()
+
+    data = request.json
+
+    if data is None:
+        return bad_json()
+
+    # group e' un array di account type, se contiene "all" allora invia a tutti utenti
+    groups = data.get('groups', None)
+    idUser = data.get('id-user', None) # id user sender
+    title = data.get('title', '')
+    message = data.get('message', None)
+
+    if(idUser != identity):
+        return permission_denied()
+
+    if (groups is None or idUser is None or message is None):
+        return jsonify({"error": "Bad request"}), 400
+
+    #estraggo utenti target
+    query = "SELECT u.id FROM User u, UserAccountType uat, AccountType at " + \
+        "WHERE at.id = uat.id_account_type AND uat.id_user = u.id "
+    
+    targetIdUsers = None 
+
+    if ("all" not in groups):
+        placeholders = ','.join(['?'] * len(groups))
+        query += f"AND at.type in ({placeholders}) "
+        query += "GROUP BY u.id "
+        targetIdUsers = query_db(query, tuple(groups))
+    else:
+        query += "GROUP BY u.id "
+        targetIdUsers = query_db(query)
+
+    targetIdUsers = [t[0] for t in targetIdUsers]
+
+    print("Send to userIds:", targetIdUsers)
+
+    insertNews(idUser, message, title, groups)
+
+    #get last id news
+    lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
+    lastIdNews = lastIdNews[0][0]
+
+    print("last id news: ", lastIdNews)
+
+    #inserimento DB UserNews
+    for id in targetIdUsers:
+        execute_ops_db([queryInsertUserNews(lastIdNews, id)])
+
+    return jsonify({"status": "ok"})
+
+#soft delete di una news
+@api_news.route('/delete-news', methods=['POST'])
+@jwt_required()
+def deleteNews():
+    identity = get_jwt_identity()
+    claims = get_jwt()
+
+    # solo admin puo' eliminare news
+    if(not is_admin(claims)):
+        return permission_denied()
+
+    data = request.json
+    if data is None:
+        return bad_json()
+
+    id = data.get('id', None)
+
+    if (id is None):
+        return jsonify({"error": "Bad request"}), 400
+
+    #eliminazione DB News by id
+    dbDeleteNews(id)
+
+    return jsonify({"status": "ok"})

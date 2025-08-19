@@ -5,6 +5,10 @@ from .db import close_connection
 from flask_cors import CORS
 import os
 from flask_jwt_extended import JWTManager
+from .blueprints.user import api_user
+from .blueprints.news import api_news
+from .blueprints.planning import api_planning
+from .blueprints.workout import api_workout
 
 def create_app():
     app = Flask(__name__)
@@ -32,6 +36,7 @@ def create_app():
         print("Errore: FLASK_ENV non valido, FLASK_ENV = " + FLASK_ENV)
         exit(1)
 
+    # ---------- SETUP App configs ----------
     config = Config()
 
     print("config flask: ")
@@ -49,6 +54,10 @@ def create_app():
 
     # Blueprint registration
     app.register_blueprint(api, url_prefix='/api')
+    app.register_blueprint(api_user, url_prefix='/api')
+    app.register_blueprint(api_planning, url_prefix='/api')
+    app.register_blueprint(api_workout, url_prefix='/api')
+    #app.register_blueprint(api_news, url_prefix='/api') # Disabilitato
 
     # In questo modo alla fine di ogni api viene chiamato automaticamente
     # close_connection
