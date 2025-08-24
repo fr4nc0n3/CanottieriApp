@@ -5,7 +5,7 @@ import { API_GET_USER_INFO } from "@/global/Constants";
 import { deleteJWT, getJWT } from "@/global/jwtStorage";
 import { emptyUser, User } from "@/global/Types";
 import { confirm } from "@/global/UniversalPopups";
-import { getJWTIdentity } from "@/global/Utils";
+import { getJWTAccountTypes, getJWTIdentity } from "@/global/Utils";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -13,6 +13,8 @@ import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
 
 export default function ProfiloPage() {
     const [user, setUser] = useState<User>(emptyUser);
+    const [userAccountTypes, setUserAccountTypes] = useState<string[]>([]);
+
     const [loading, setLoading] = useState<boolean>(true);
     const [isImageUrl, setIsImageUrl] = useState<boolean>(false);
 
@@ -48,6 +50,13 @@ export default function ProfiloPage() {
     };
 
     useEffect(() => {
+        /* fetch dei tipi di account associati all' utente */
+        (async () => {
+            const jwt = await getJWT();
+            const accountTypes = getJWTAccountTypes(jwt);
+            setUserAccountTypes(accountTypes);
+        })();
+
         fetchUser();
     }, []);
 
@@ -77,7 +86,7 @@ export default function ProfiloPage() {
 
                         <Text style={styles.label}>Tipo Account</Text>
                         <Chip icon="account" style={styles.chip}>
-                            {/*TODO*/}TODO
+                            {userAccountTypes.join(", ")}
                         </Chip>
 
                         <Text style={styles.label}>Scadenza iscrizione</Text>
