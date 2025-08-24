@@ -28,6 +28,7 @@ const CreateWorkout = () => {
     const openImage = (uri: string) => setImageUriModal(uri);
     const closeImage = () => setImageUriModal(null);
 
+    //TODO: fare controllo singolo sui parametri di navigazione
     const { wkYear, wkMonth, wkDate } = useLocalSearchParams();
     const workoutDate = new Date(
         Date.UTC(
@@ -78,6 +79,7 @@ const CreateWorkout = () => {
             const newWorkoutId = json.id;
 
             //TODO: gestione errori
+            //TODO: (mettere warning se una o piu' immagini non riescono ad essere caricate)
             //aggiunta immagini
             images.forEach((image) => {
                 if (image.file) {

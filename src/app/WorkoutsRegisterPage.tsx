@@ -9,6 +9,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
 
+//TODO: fare componente che passando i dati come nome/id atleta restituisca
+//TODO: la vista CRUD, nel formato a calendario, per quell' atleta in modo da
+//TODO: poterlo riutilizzare sia qui che nel pannello di admin (con la negazione di poter
+//TODO: avere lo stesso potere dell' atleta stesso (guardando il JWT))
+
+/**
+ * Calendario per segnare gli allenamenti svolti dall' atleta
+ */
 const WorkoutsRegisterPage = () => {
     const router = useRouter();
 
@@ -38,28 +46,27 @@ const WorkoutsRegisterPage = () => {
         console.log("workouts:", workouts);
     }, [workouts]);
 
-    const fetchWorkouts = (date: Date) => {
-        getJWT()
-            .then((jwt) => {
-                const identity = getJWTIdentity(jwt);
-                return apiGetWorkout(
-                    {
-                        id_user: identity,
-                        year: date.getFullYear(),
-                        month: date.getMonth(),
-                    },
-                    jwt
-                );
-            })
-            .then((output) => {
-                setWorkouts(output);
-            })
-            .catch((error) => {
-                alert(
-                    "Errore",
-                    "errore durante la ricezione allenamenti: " + error
-                );
-            });
+    const fetchWorkouts = async (date: Date) => {
+        try {
+            const jwt = await getJWT();
+            const identity = getJWTIdentity(jwt);
+
+            const workouts = await apiGetWorkout(
+                {
+                    id_user: identity,
+                    year: date.getFullYear(),
+                    month: date.getMonth(),
+                },
+                jwt
+            );
+
+            setWorkouts(workouts);
+        } catch (error) {
+            alert(
+                "Errore",
+                "errore durante la ricezione allenamenti: " + error
+            );
+        }
     };
 
     const openCreateWorkout = (date: Date) => {

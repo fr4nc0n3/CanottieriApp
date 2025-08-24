@@ -178,7 +178,7 @@ def createImageWorkout():
     if imagePIL.mode in ("RGBA", "P"):
         imagePIL = imagePIL.convert("RGB")
 
-    max_size = (700, 700)
+    max_size = (700, 700) # TODO da aumentare risoluzione (troppo sgranato con questi valori)
     imagePIL.thumbnail(max_size, Image.Resampling.LANCZOS) # TODO: to test
 
     if image.filename is None:
