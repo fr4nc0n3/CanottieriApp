@@ -6,3 +6,4 @@ __pycache__/
 backend/img/
 psws.txt
 init_prod_data.sql
+dev_db/backup_prods_db/**
