@@ -22,7 +22,7 @@ def get_db():
     return db
 
 #DA USARE SOLO CON FLASK ROUTES
-def query_db(query, args=()):
+def query_db(query: str, args: tuple=()):
     db = get_db()
 
     print("execute query: ", query)
@@ -62,7 +62,7 @@ def close_connection(exception):
 
 # --------------------- QUERYS -----------------
 # accetta id utente e restituisce list di stringhe
-def dbUserAccountTypes(idUser):
+def dbUserAccountTypes(idUser: int):
     accountTypes = query_db(
         'SELECT type FROM UserAccountType, AccountType ' +
         'WHERE id_account_type = AccountType.id and id_user = ?',
@@ -72,7 +72,7 @@ def dbUserAccountTypes(idUser):
     return [a['type'] for a in accountTypes]
 
 # ritorna list di dict
-def dbUserNewsRx(idUser, limit, offset):
+def dbUserNewsRx(idUser: int, limit: int, offset: int):
     news = query_db(
         'SELECT n.title, n.message, n.data_publish, n.target_name ' +
         'FROM UserNews un, News n ' +
@@ -84,7 +84,7 @@ def dbUserNewsRx(idUser, limit, offset):
     return [dict(n) for n in news]
 
 #ritorna list dict
-def dbUserNewsTx(idUser, limit, offset):
+def dbUserNewsTx(idUser: int, limit: int, offset: int):
     news = query_db('SELECT * FROM News ' +
         'WHERE id_user_sender = ? AND is_deleted = 0 ' +
         'LIMIT ? OFFSET ?', tuple([idUser, limit, offset]))
@@ -94,7 +94,7 @@ def dbUserNewsTx(idUser, limit, offset):
 #ritorna list dict
 #endDate e' estremo escluso
 #startDate e' estremo incluso
-def dbUserWorkouts(idUser, startDate, endDate): 
+def dbUserWorkouts(idUser:int, startDate: str, endDate: str): 
     workouts = query_db('SELECT * FROM Workout ' +
         'WHERE id_user = ? AND date >= ? AND date < ?'
         , tuple([idUser, startDate, endDate]))
@@ -102,14 +102,14 @@ def dbUserWorkouts(idUser, startDate, endDate):
     return [dict(w) for w in workouts]
 
 # ritorna list dict
-def dbWorkoutImages(id_workout):
+def dbWorkoutImages(id_workout: int):
     images = query_db("SELECT img.* FROM WorkoutImage AS wImg JOIN " +
      "Image AS img ON img.id = wImg.id_image " +
         "WHERE wImg.id_workout = ? ", tuple([id_workout]))
 
     return [dict(img) for img in images]
 
-def dbIdUserOfWorkoutImage(img_name):
+def dbIdUserOfWorkoutImage(img_name: str):
     id = query_db(
         "SELECT wk.id_user "
         "FROM Image "
@@ -124,7 +124,7 @@ def dbIdUserOfWorkoutImage(img_name):
 # aggiorna il workout di un utente filtrando sia per id utente che per id workout
 # in genere verra' passato l' identity del JWT come idUser in modo da verificare
 # che l' utente sia autorizzato
-def updateUserWorkout(idWorkout, idUser, description):
+def updateUserWorkout(idWorkout: int, idUser: int, description: str):
     execute_ops_db([
         {
             "query": (
@@ -135,7 +135,7 @@ def updateUserWorkout(idWorkout, idUser, description):
             "args": tuple([description, idWorkout, idUser])
         }])
 
-def deleteUserWorkout(idWorkout, idUser):
+def deleteUserWorkout(idWorkout: int, idUser: int):
     execute_ops_db([
         {
             "query": (
@@ -145,7 +145,7 @@ def deleteUserWorkout(idWorkout, idUser):
             "args": tuple([idWorkout, idUser])
         }])
 
-def insertNews(idUser, message, title, groups):
+def insertNews(idUser: int, message: str, title: str, groups: list[str]):
     query_ops = []
     query_ops.append(
         {
@@ -169,7 +169,7 @@ def insertNews(idUser, message, title, groups):
 
     execute_ops_db(query_ops)
 
-def deleteNews(id):
+def deleteNews(id: int):
     execute_ops_db([
         {
             "query": (
@@ -180,7 +180,7 @@ def deleteNews(id):
             "args": tuple([id])
         }])
 
-def deleteImg(name):
+def deleteImg(name: str):
     execute_ops_db([
         {
             "query": (
@@ -191,7 +191,7 @@ def deleteImg(name):
     ])
 
 #restituisce un queryOp 
-def queryInsertUserNews(idNews, idUser) -> QueryOp:
+def queryInsertUserNews(idNews: int, idUser: int) -> QueryOp:
     query = (
         "INSERT INTO UserNews ("
         "id_news, id_user, created_at"
@@ -204,7 +204,7 @@ def queryInsertUserNews(idNews, idUser) -> QueryOp:
 
     return {"query": query, "args": tuple([idNews, idUser])}
 
-def insertWorkout(idUser, date, description):
+def insertWorkout(idUser: int, date: str, description: str):
     query = (
         "INSERT INTO Workout ("
         "id_user, date, description"
@@ -217,7 +217,7 @@ def insertWorkout(idUser, date, description):
 
     execute_ops_db([{"query": query, "args": tuple([idUser, date, description])}])
 
-def insertWorkoutImage(id_workout, image_name):
+def insertWorkoutImage(id_workout: int, image_name: str):
     query = (
         "INSERT INTO Image ("
         "name"
