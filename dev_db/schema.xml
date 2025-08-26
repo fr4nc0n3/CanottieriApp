@@ -254,7 +254,7 @@
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
-<row name="id_commentator" null="0" autoincrement="0">
+<row name="id_user_commentator" null="0" autoincrement="0">
 <datatype>INTEGER</datatype>
 <relation table="User" row="id" />
 </row>

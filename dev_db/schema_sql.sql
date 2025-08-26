@@ -163,4 +163,26 @@ BEGIN
     WHERE id = OLD.id;
 END;
 
+-- Table: WorkoutComment --
+CREATE TABLE WorkoutComment (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_user_commentator INTEGER NOT NULL,
+    id_workout INTEGER NOT NULL,
+    description TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+    FOREIGN KEY (id_user_commentator) REFERENCES User(id), -- ON DELETE CASCADE,
+    FOREIGN KEY (id_workout) REFERENCES Workout(id) ON DELETE CASCADE,
+);
+
+CREATE TRIGGER trg_WorkoutComment_updated_at
+AFTER UPDATE ON WorkoutComment
+FOR EACH ROW
+BEGIN  
+    UPDATE WorkoutComment
+    SET updated_at = CURRENT_TIMESTAMP
+    WHERE id = OLD.id;
+END;
+
 COMMIT;
