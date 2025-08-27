@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from .config import Config
 from .db import close_connection
 from flask_cors import CORS
@@ -9,6 +9,18 @@ from .blueprints.news import api_news
 from .blueprints.planning import api_planning
 from .blueprints.workout import api_workout
 from .blueprints.main import api
+from datetime import datetime
+
+def log_request():
+    print("------ LOG REQUEST ------")
+    print(f"Timestamp: {datetime.now()}")
+    print(f"Metodo: {request.method}")
+    print(f"URL: {request.url}")
+    print(f"IP: {request.remote_addr}")
+    # rischio di loggare la password e JWT utente in chiaro
+    #print(f"Headers: {dict(request.headers)}") 
+    #print(f"Dati: {request.get_data(as_text=True)}")
+    print("-------------------------\n")
 
 def create_app():
     app = Flask(__name__)
@@ -63,5 +75,9 @@ def create_app():
     # In questo modo alla fine di ogni api viene chiamato automaticamente
     # close_connection
     app.teardown_appcontext(close_connection)
+
+    # TODO a questo punto togliere i log manuali dentro le route flask
+    # logging ad ogni route API
+    app.before_request(log_request)
 
     return app
