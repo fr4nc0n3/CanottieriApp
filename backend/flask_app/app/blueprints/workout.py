@@ -159,7 +159,10 @@ def createImageWorkout():
     print("request form:", request.form)
     print("request files:", request.files)
 
+    # TODO: fare refactoring per controllare che esistano le configurazioni
     upload_folder = current_app.config['IMG_FOLDER']
+    img_max_width = current_app.config['IMG_MAX_WIDTH']
+    img_max_height = current_app.config['IMG_MAX_HEIGHT']
 
     id_workout = request.form.get('id_workout', None)
 
@@ -178,8 +181,8 @@ def createImageWorkout():
     if imagePIL.mode in ("RGBA", "P"):
         imagePIL = imagePIL.convert("RGB")
 
-    max_size = (700, 700) # TODO da aumentare risoluzione (troppo sgranato con questi valori)
-    imagePIL.thumbnail(max_size, Image.Resampling.LANCZOS) # TODO: to test
+    max_size = (img_max_width, img_max_height)
+    imagePIL.thumbnail(max_size, Image.Resampling.LANCZOS) 
 
     if image.filename is None:
         image.filename = ""
