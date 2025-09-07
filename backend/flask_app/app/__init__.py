@@ -9,6 +9,7 @@ from .blueprints.news import api_news
 from .blueprints.planning import api_planning
 from .blueprints.workout import api_workout
 from .blueprints.main import api
+from .blueprints.workout_comment import api_workout_comment
 from datetime import datetime
 
 def log_request():
@@ -70,6 +71,7 @@ def create_app():
     app.register_blueprint(api_user, url_prefix='/api')
     app.register_blueprint(api_planning, url_prefix='/api')
     app.register_blueprint(api_workout, url_prefix='/api')
+    app.register_blueprint(api_workout_comment, url_prefix='/api')
     #app.register_blueprint(api_news, url_prefix='/api') # Disabilitato
 
     # In questo modo alla fine di ogni api viene chiamato automaticamente
