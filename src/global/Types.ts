@@ -158,3 +158,37 @@ export type ApiOutputGetPlanning = {
 };
 
 export type ApiOutputGetPlannings = ApiOutputGetPlanning[];
+
+//CRUD workout comment
+//TODO
+export type ApiInputCreateWorkoutComment = {
+    id_user_commentator: number;
+    id_workout: number;
+    description: string;
+};
+
+//output on success!!
+export type ApiOutputCreateWorkoutComment = {
+    id: number;
+};
+
+export type ApiInputGetWorkoutComment = { id_workout: number };
+
+export type WorkoutComment = {
+    id: number;
+    id_user_commentator: number;
+    id_workout: number;
+    description: string;
+    created_at: string;
+    updated_at: string;
+};
+
+export type ApiOutputGetWorkoutComment = WorkoutComment[];
+
+export type ApiInputUpdateWorkoutComment = {
+    id: number; //id utilizzato per capire su quale record operare (non per aggiornare l' id stesso)
+    description: string;
+};
+
+//non restituisce nulla di che
+export type ApiOutputUpdateWorkoutComment = {};

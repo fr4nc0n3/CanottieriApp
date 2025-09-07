@@ -4,25 +4,32 @@ import {
     API_GET_USER_NEWS_RECEIVED,
     API_GET_USER_NEWS_SENDED,
     API_GET_USERS,
+    API_GET_WORKOUT_COMMENTS,
     API_IMAGE,
     API_IMG_WORKOUT,
     API_LOGIN,
     API_PLANNINGS,
     API_SEND_NEWS_TO_GROUPS,
     API_WORKOUT,
+    API_WORKOUT_COMMENT,
 } from "./Constants";
 import {
     ApiInputCreatePlanning,
     ApiInputCreateWorkout,
+    ApiInputCreateWorkoutComment,
     ApiInputDeletePlanning,
     ApiInputDeleteWorkout,
     ApiInputGetPlannings,
     ApiInputGetWorkout,
+    ApiInputGetWorkoutComment,
     ApiInputUpdatePlanning,
     ApiInputUpdateWorkout,
+    ApiInputUpdateWorkoutComment,
     ApiOutputCreatePlanning,
+    ApiOutputCreateWorkoutComment,
     ApiOutputGetPlannings,
     ApiOutputGetWorkout,
+    ApiOutputGetWorkoutComment,
     ApiOutputWorkoutImage,
     NewsToSend,
     User,
@@ -248,6 +255,65 @@ export const apiDeletePlanning = async (
     } catch (error) {
         console.error(
             `Error deleting planning with filter: ${JSON.stringify(filter)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+//CRUD Workout comment
+export const apiCreateWorkoutComment = async (
+    wkComment: ApiInputCreateWorkoutComment,
+    jwt: string
+): Promise<ApiOutputCreateWorkoutComment> => {
+    try {
+        const req = API_WORKOUT_COMMENT;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(wkComment),
+        });
+    } catch (error) {
+        console.error(
+            `Error creating workout comment: ${JSON.stringify(wkComment)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiGetWorkoutComments = async (
+    filter: ApiInputGetWorkoutComment,
+    jwt: string
+): Promise<ApiOutputGetWorkoutComment> => {
+    try {
+        const req = `${API_GET_WORKOUT_COMMENTS}/${filter.id_workout}`;
+        return await apiFetchJWTAuth(jwt, req, { method: "GET" });
+    } catch (error) {
+        console.error(
+            `Error fetching workout comments of workout id: ${filter.id_workout}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiUpdateWorkoutComment = async (
+    update: ApiInputUpdateWorkoutComment,
+    jwt: string
+) => {
+    try {
+        const req = API_WORKOUT_COMMENT + "/" + update.id;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+        });
+    } catch (error) {
+        console.error(
+            `Error updating workout comment by update with: ${JSON.stringify(
+                update
+            )}`,
             error
         );
         throw error;

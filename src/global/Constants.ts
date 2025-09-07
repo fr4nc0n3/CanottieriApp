@@ -13,3 +13,5 @@ export const API_WORKOUT = API_ENDPOINT + "workout";
 export const API_IMG_WORKOUT = API_ENDPOINT + "img_workout";
 export const API_IMAGE = API_ENDPOINT + "image";
 export const API_PLANNINGS = API_ENDPOINT + "plannings";
+export const API_WORKOUT_COMMENT = API_ENDPOINT + "workout_comment";
+export const API_GET_WORKOUT_COMMENTS = API_WORKOUT_COMMENT + "/of_workout";
