@@ -170,10 +170,10 @@ CREATE TABLE WorkoutComment (
     id_workout INTEGER NOT NULL,
     description TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (id_user_commentator) REFERENCES User(id), -- ON DELETE CASCADE,
-    FOREIGN KEY (id_workout) REFERENCES Workout(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_workout) REFERENCES Workout(id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER trg_WorkoutComment_updated_at
