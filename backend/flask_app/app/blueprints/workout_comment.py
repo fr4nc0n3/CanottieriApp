@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from ..db import (execute_ops_db, get_db, query_db)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from .helpers import (bad_json, is_admin, missing_parameter, permission_denied)
+import traceback
 
 api_workout_comment = Blueprint('workout_comment', __name__)
 
@@ -49,6 +50,7 @@ def createWorkoutComment():
 
         return jsonify({'id': new_id}), 201
     except Exception as e:
+        traceback.print_exc()
         return jsonify({'error': str(e)}), 400
     finally:
         if conn:
