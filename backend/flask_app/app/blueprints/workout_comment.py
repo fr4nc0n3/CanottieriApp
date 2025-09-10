@@ -32,7 +32,7 @@ def createWorkoutComment():
         return missing_parameter('description')
 
     # controllo che il jwt combaci con l' id utente che si intende segnare
-    if not is_admin(claims) or id_user_commentator != identity:
+    if not is_admin(claims) or str(id_user_commentator) != identity:
         return permission_denied()
 
     conn = None

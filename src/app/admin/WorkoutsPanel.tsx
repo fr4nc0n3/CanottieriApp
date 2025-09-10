@@ -1,15 +1,18 @@
 import Calendar from "@/components/Calendar";
+import EditTextModal from "@/components/EditTextModal";
 import FullImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import FullImageModal from "@/components/FullImageModal";
 import {
+    apiCreateWorkoutComment,
     apiGetUsers,
     apiGetWorkout,
     apiGetWorkoutImages,
     apiUriImage,
 } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
-import { User, Workout } from "@/global/Types";
-import { alert } from "@/global/UniversalPopups";
+import { User, Workout, WorkoutComment } from "@/global/Types";
+import { alert, confirm } from "@/global/UniversalPopups";
+import { getJWTIdentity } from "@/global/Utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -24,6 +27,8 @@ import {
 } from "react-native-paper";
 
 const WorkoutsPanel = () => {
+    const router = useRouter();
+
     const [showMenu, setShowMenu] = useState<boolean>(false);
     const openMenu = () => setShowMenu(true);
     const closeMenu = () => setShowMenu(false);
@@ -33,6 +38,14 @@ const WorkoutsPanel = () => {
     const showModal = () => setVisibleModal(true);
 
     const [openedWorkout, setOpenedWorkout] = useState<Workout | null>(null);
+    const [openedWorkoutComment, setOpenedWorkoutComment] =
+        useState<WorkoutComment | null>(null);
+
+    const isOpenedWkComment = () => openedWorkoutComment !== null;
+    const closeOpenedWkComment = () => setOpenedWorkoutComment(null);
+    const openWorkoutComment = (wkComment: WorkoutComment) =>
+        setOpenedWorkoutComment(wkComment);
+
     const [openedImage, setOpenedImage] = useState<string | null>(null);
 
     const isImageModalOpen = () => openedImage !== null;
@@ -87,6 +100,7 @@ const WorkoutsPanel = () => {
     };
 
     const fetchWorkouts = (athlete: User) => {
+        //TODO usare async await
         getJWT()
             .then((jwt) => {
                 return apiGetWorkout(
@@ -126,6 +140,7 @@ const WorkoutsPanel = () => {
 
     //la date in realta' e' gia' contenuta in workout
     const openWorkout = (date: Date, workout: Workout) => {
+        //TODO: qui si dovrebbe fare il fetch dei commenti allenamento
         setOpenedWorkout(workout);
         showModal();
     };
@@ -237,9 +252,36 @@ const WorkoutsPanel = () => {
                         borderRadius: 10,
                     }}
                 >
-                    <Text variant="titleMedium">
-                        Allenamento del {openedWorkout?.date}
-                    </Text>
+                    <View style={[style.flexRow, { minHeight: 30 }]}>
+                        <Text variant="titleMedium">
+                            Allenamento del {openedWorkout?.date}
+                        </Text>
+                        {/* TODO: se commento esistente l' icona deve essere 'comment-text'
+                        altrimenti deve essere solo 'comment' (senza le righe) */}
+                        <IconButton
+                            icon={"comment-text"}
+                            size={24}
+                            onPress={async () => {
+                                if (!openedWorkout) {
+                                    return;
+                                }
+
+                                router.push({
+                                    pathname: "/admin/WorkoutComment",
+                                    params: {
+                                        wkId: openedWorkout.id.toString(),
+                                        wkDate: openedWorkout.date,
+                                        wkDescription:
+                                            openedWorkout.description,
+                                    },
+                                });
+
+                                //TODO cambiare nome da visible modal con il collegarlo ad
+                                //opened workout (se openedworkout === null allora e' chiuso)
+                                setVisibleModal(false);
+                            }}
+                        />
+                    </View>
                     <Divider />
                     <Text>{openedWorkout?.description}</Text>
                     <Divider />
@@ -260,6 +302,53 @@ const WorkoutsPanel = () => {
                 onDismiss={() => closeImageModal()}
                 imageUri={openedImage ?? ""}
             />
+            <EditTextModal
+                initialText={openedWorkoutComment?.description ?? ""}
+                title={"Commento"}
+                visible={isOpenedWkComment()}
+                onDismiss={() => {
+                    confirm(
+                        "Attenzione",
+                        "non verra' salvata alcuna bozza del commento!",
+                        () => {
+                            closeOpenedWkComment();
+                        }
+                    );
+                }}
+                onConfirm={async (newDescription: string) => {
+                    //TODO creazione / modifica del commento
+                    if (!openedWorkoutComment) {
+                        alert("Errore", "riferimento: 0xaa");
+                        return;
+                    }
+
+                    const jwt = await getJWT();
+
+                    /* TODO, se esiste gia' il commento allora aggiornarlo
+                     altrimenti crearlo. Esiste quando il commento aperto fa parte tra quelli fetchati */
+                    try {
+                        const { id } = await apiCreateWorkoutComment(
+                            {
+                                id_user_commentator:
+                                    openedWorkoutComment.id_user_commentator,
+                                id_workout: openedWorkoutComment.id_workout,
+                                description: newDescription,
+                            },
+                            jwt
+                        );
+
+                        //TODO sincronizzazione stato locale
+                        //dovrebbe aggiungere il commento appena creato a quelli fetchati
+                    } catch (error) {
+                        alert(
+                            "Errore",
+                            "Errore durante la creazione del commento: " + error
+                        );
+                    }
+
+                    closeOpenedWkComment();
+                }}
+            />
         </>
     );
 };
@@ -271,6 +360,12 @@ const style = StyleSheet.create({
     },
     container: {
         padding: 5,
+    },
+    flexRow: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 });
 
