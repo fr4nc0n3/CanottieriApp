@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { Card, Text, TextInput, Button, Divider } from "react-native-paper";
+import {
+    Card,
+    Text,
+    TextInput,
+    Button,
+    Divider,
+    IconButton,
+} from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
     apiCreateWorkoutComment,
@@ -142,6 +149,15 @@ const WorkoutCommentPage = () => {
             }
             <View style={{ flex: 1, padding: 16 }}>
                 <Card>
+                    <Card.Title
+                        title={
+                            <IconButton
+                                icon="arrow-left"
+                                size={24}
+                                onPress={() => router.back()}
+                            />
+                        }
+                    />
                     <Card.Content>
                         <Text
                             style={{
