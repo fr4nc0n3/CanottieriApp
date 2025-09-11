@@ -257,7 +257,8 @@ const WorkoutsPanel = () => {
                             Allenamento del {openedWorkout?.date}
                         </Text>
                         {/* TODO: se commento esistente l' icona deve essere 'comment-text'
-                        altrimenti deve essere solo 'comment' (senza le righe) */}
+                        altrimenti deve essere solo 'comment' (senza le righe)
+                        ma questo dovrebbe essere segnato nel tipo workout, workout.is_commented */}
                         <IconButton
                             icon={"comment-text"}
                             size={24}

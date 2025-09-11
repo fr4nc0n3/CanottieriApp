@@ -205,15 +205,27 @@ const ModifyWorkout = () => {
                             <Text variant="titleLarge">
                                 Modifica allenamento
                             </Text>
-                            <Button
-                                icon="image"
-                                mode="contained"
-                                onPress={() => {
-                                    addImage();
-                                }}
-                            >
-                                +
-                            </Button>
+                            <View style={{ flexDirection: "row" }}>
+                                {/*TODO: se e' presente un commento dell' allenatore, allora mettere
+                                icona commento, come riportato di sotto */}
+                                <IconButton
+                                    icon="comment-text"
+                                    onPress={() => {}}
+                                    size={24}
+                                />
+                                <Button
+                                    style={{
+                                        justifyContent: "center",
+                                    }}
+                                    icon="image"
+                                    mode="contained"
+                                    onPress={() => {
+                                        addImage();
+                                    }}
+                                >
+                                    +
+                                </Button>
+                            </View>
                         </View>
 
                         <Text style={styles.dateText}>
@@ -241,14 +253,14 @@ const ModifyWorkout = () => {
                             Applica modifiche
                         </Button>
 
-                        <Button
+                        {/*<Button
                             mode="outlined"
                             onPress={handleDelete}
                             style={styles.deleteButton}
                             textColor="red"
                         >
                             Elimina allenamento
-                        </Button>
+                        </Button>*/}
                     </Card.Content>
                 </Card>
                 <Divider style={{ marginTop: 10 }} />
