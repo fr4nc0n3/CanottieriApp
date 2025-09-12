@@ -16,6 +16,7 @@ import {
     apiCreateWorkoutImage,
     apiDeleteImage,
     apiDeleteWorkout,
+    apiGetWorkoutComments,
     apiGetWorkoutImages,
     apiUpdateWorkout,
     apiUriImage,
@@ -29,6 +30,9 @@ import {
     universalDateStringFormat,
 } from "@/global/Utils";
 import ImageViewModal from "@/components/ImageViewModal";
+import { WorkoutComment } from "@/global/Types";
+import EditTextModal from "@/components/EditTextModal";
+import TextModal from "@/components/TextModal";
 
 const ModifyWorkout = () => {
     const router = useRouter();
@@ -46,7 +50,13 @@ const ModifyWorkout = () => {
         )
     );
 
+    const [openedComment, setOpenedComment] = useState<boolean>(false);
+    const isOpenComment = () => openedComment;
+    const closeComment = () => setOpenedComment(false);
+    const openComment = () => setOpenedComment(true);
+
     const [images, setImages] = useState<ImageItemGrid[]>([]);
+    const [comment, setComment] = useState<WorkoutComment | null>(null);
     const [imageModal, setImageModal] = useState<ImageItemGrid | null>(null);
     const openModal = (image: ImageItemGrid) => {
         setImageModal(image);
@@ -59,6 +69,7 @@ const ModifyWorkout = () => {
 
     useEffect(() => {
         fetchWorkoutImages();
+        fetchWorkoutComment();
     }, []);
 
     //log images grid
@@ -69,6 +80,36 @@ const ModifyWorkout = () => {
     if (isNaN(workoutDate.getTime()) || wkId == null || wkDescr == null) {
         return null;
     }
+
+    const fetchWorkoutComment = async () => {
+        const jwt = await getJWT();
+        const id_workout = parseInt(wkId.toString());
+
+        try {
+            const comments = await apiGetWorkoutComments(
+                {
+                    id_workout: id_workout,
+                },
+                jwt
+            );
+
+            console.log(
+                "comments (solo date creazione): " +
+                    comments.map((comment) => {
+                        return comment.created_at;
+                    })
+            );
+
+            if (comments && comments.length > 0) {
+                const last = comments[comments.length - 1];
+                setComment(last);
+            } else {
+                setComment(null);
+            }
+        } catch (error) {
+            alert("Errore", "Errore durante la ricezione commenti: " + error);
+        }
+    };
 
     const fetchWorkoutImages = async () => {
         const jwt = await getJWT();
@@ -208,11 +249,13 @@ const ModifyWorkout = () => {
                             <View style={{ flexDirection: "row" }}>
                                 {/*TODO: se e' presente un commento dell' allenatore, allora mettere
                                 icona commento, come riportato di sotto */}
-                                <IconButton
-                                    icon="comment-text"
-                                    onPress={() => {}}
-                                    size={24}
-                                />
+                                {comment && (
+                                    <IconButton
+                                        icon="comment-text"
+                                        onPress={() => openComment()}
+                                        size={24}
+                                    />
+                                )}
                                 <Button
                                     style={{
                                         justifyContent: "center",
@@ -282,6 +325,18 @@ const ModifyWorkout = () => {
                     if (imageModal) {
                         deleteImage(imageModal.id);
                     }
+                }}
+            />
+            <TextModal
+                visible={isOpenComment()}
+                title={
+                    comment
+                        ? "Commento del " + comment.created_at
+                        : "Nessun commento disponibile"
+                }
+                text={comment?.description ?? ""}
+                onDismiss={() => {
+                    closeComment();
                 }}
             />
             <LoadingModal
