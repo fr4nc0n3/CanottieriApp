@@ -1,35 +1,36 @@
-- FARE REFACTORING BACKEND
-- Nel frontend bisogna fare controllo token usando magari una route creata solo per verificare se il token
-e' accettato (riutilizzare get-info-user?)
+-- BUGS feedback utenti --
+- Quando si carica un immagine in workout poi se si ricarica la pagina o si accede successivamente, l' immagine
+risulta ruotata di 90 gradi
+
+--- RICHIESTE SOLA ---------
+- Vorrebbe che il suo profilo possa modificare/eliminare cio' che segnano come allenamento gli atleti
+- Fare "Programma allenamento". L' amministratore/allenatore deve poter inserire l' allenamento programmato
+in una determinata data (testo). Tutti gli account devono poter vedere quindi l' allenamento programmato
+del giorno o comunque il calendario del programma (per semplicita' iniziamo solo con l' allenamento del giorno)
+- Quando un atleta registra un allenamento ci devono essere 2 radio button group diversi:
+    - uno per dire che intensita' di allenamento si ha svolto (guardare garmin)
+    - uno per dire come ci si sente dopo aver svolto l' allenamento: stanco morto, sciallo... (guardare/chiedere
+    come fa garmin)
+NOTA: ricorda: prima parti dal frontend di esempio con dati fake, poi procedi con il database e successivamente
+con il backend, ed infine integri il tutto nel frontend eliminando i dati fake
 
 ---------- TODO ----------
+- Migliorare compressione immagini (provare formato WebP) (chatGPT consiglia di fare il resize dell' immagine, quindi ridurre i pixels)
+- Uniformare date formati testuali (devono essere tutte in UTC per backend e database e i nomi immagini)
+devono poi essere mostrate nel formato orario corretto del local time zone nel frontend
+sono incriminati i campi getfullyear, getmonth, getdate che dovrebbero essere in utc e le creazioni di date
+
+- FARE check versione app, in modo da consigliare/forzare l' aggiornamento della PWA/APK
+- FARE REFACTORING BACKEND
+- Provare a fare la funzionalita' per caricare statistiche allenameti svolti in modo che l' allenatore possa
+visualizzarli. Inizialmente con solo del testo e successivamente provare a caricare foto del monitor remoergometro
+e gia' che ci sono sistemo il database
+- Mettere un layout per manuale utente interno
 - La funzionalita' che ha interessato maggiormente il Sola e': 
 Dare la possibilita' agli atleti di caricare gli allenamenti fatti e che quindi
 lui possa vedere gli allenamenti fatti giorno per giorno
 
-- Da fare prova caricando il backend su un cloud (Per questa prova non fare https e quindi non usare nginx, ma server wsgi di produzione)
-- Connettere flask e sqlite3: https://flask.palletsprojects.com/en/stable/patterns/sqlite3/?utm_source=chatgpt.com
-- Creare db ed app flask con gunicorn WSGI e conneterlo all' app (solo ambiente di sviluppo locale al momento)
-    Avevo chiesto a chatGPT, mi sembra che la sua soluzione con Nginx per fare da web server che gestisce
-    HTTPS con il server gunicorn che usa l' app flask + sqlite mi sembra lightweight. Usando un dominio gratis
-    con duckDNS ho gratis la certificazione HTTPS (siccome necessita' di un dominio)
-    Inoltre suggeriva che Oracle Cloud provvede dei servizi di VPS gratuiti per sempre (solo con piano free)
-
-- Provare expo-notifications
-
-- Le chiamate Alert... del modulo react-native devono essere sostituite
-con dei dialog di react-native-paper per la compatibilita' con il web
-
-- Nell' index bisogna fare un controllo se l' endpoint API e' online
-
-- Nella pagina "Profilo" bisogna sistemare logica logout
-
-- In produzione impostare tramite .env app.run(debug=False) per lanciare flask
-
 - Nel metodo getUserInfo non dovrei restituire l' hash password
-
-- Per fare i test finche' non ci si decide con hosting usare una raspberry pi
-blindata e supersicura che emetta il servizio web attraverso port forwarding
 
 --------- TODO Refactoring ------------
 - Modulare grafica
@@ -37,10 +38,6 @@ blindata e supersicura che emetta il servizio web attraverso port forwarding
 
 ------- PRIMA DI CARICARE SU STORE --------
 - Fare privacy policy
-
------- TODO FUTURI --------
-- Per la tabella News il campo target_name dovrebbe essere preso da una nuova tabella che specifica
-i possibili valori disponibili 
 
 ----------- SPUNTI PER FUTURO ----------
 - Permettere a chi usa l' app di inviare dei feedback per bug o suggerimenti tramite email od altro mezzo.
