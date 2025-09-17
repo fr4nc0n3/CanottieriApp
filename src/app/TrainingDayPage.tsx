@@ -1,71 +1,30 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import { apiGetPlannings } from "@/global/APICalls";
-import { getJWT } from "@/global/jwtStorage";
-import { ApiInputGetPlannings, ApiOutputGetPlanning } from "@/global/Types";
-import { alert } from "@/global/UniversalPopups";
-import { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 
-type Planning = ApiOutputGetPlanning;
 export default function TrainingDayPage() {
-    const [monthPlannings, setMonthPlannings] = useState<Planning[]>([]);
-
-    const fetchMonthPlannings = async () => {
-        const jwt = await getJWT();
-        const today = new Date();
-
-        const filter: ApiInputGetPlannings = {
-            year: today.getFullYear(),
-            month: today.getMonth(),
-        };
-
-        try {
-            const plannings = await apiGetPlannings(filter, jwt);
-            setMonthPlannings(plannings);
-        } catch (error) {
-            console.error("Error: ", error);
-            alert("Errore", "Errore durante la ricezione della programmazione");
-        }
-    };
-
-    useEffect(() => {
-        fetchMonthPlannings();
-    }, []);
-
-    const getPlanningOfToday = () => {
-        return monthPlannings.find((planning) => {
-            const pDate = new Date(planning.date);
-            const today = new Date();
-
-            return (
-                pDate.getFullYear() === today.getFullYear() &&
-                pDate.getMonth() === today.getMonth() &&
-                pDate.getDate() === today.getDate()
-            );
-        });
-    };
-
-    const planningOfTheDay = getPlanningOfToday();
-
-    if (!planningOfTheDay) {
-        return (
-            <Text>Non e&apos; stato registrato alcun allenamento per oggi</Text>
-        );
-    }
+    const router = useRouter();
+    const { date: d, description: descr } = useLocalSearchParams();
+    const date = d?.toString();
+    const description = descr?.toString();
 
     return (
         <>
             <View style={styles.header}>
+                <IconButton
+                    icon="arrow-left"
+                    size={24}
+                    onPress={() => router.back()}
+                />
                 <Text variant="titleLarge">
-                    Allenamento giornaliero del{" "}
-                    {planningOfTheDay?.date ?? "<N/A>"}
+                    Allenamento giornaliero del {date ?? "<N/A>"}
                 </Text>
             </View>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
                 <Text variant="bodyLarge" style={{ lineHeight: 24 }}>
-                    {planningOfTheDay?.description ?? ""}
+                    {description ?? ""}
                 </Text>
             </ScrollView>
         </>
@@ -74,6 +33,8 @@ export default function TrainingDayPage() {
 
 const styles = StyleSheet.create({
     header: {
+        flexDirection: "row",
+        alignItems: "center",
         paddingHorizontal: 16,
         paddingTop: 12,
         paddingBottom: 8,

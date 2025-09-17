@@ -52,11 +52,11 @@ export default function MenuPage() {
                     />
 
                     <Drawer.Item
-                        label="Allenamento del giorno"
-                        active={active === "trainingDay"}
+                        label="Calendario allenamenti"
+                        active={active === "trainingCalendar"}
                         onPress={() => {
-                            setActive("trainingDay");
-                            router.push("/TrainingDayPage");
+                            setActive("trainingCalendar");
+                            router.push("/TrainingCalendarPage");
                         }}
                         icon="dumbbell"
                     />
