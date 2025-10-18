@@ -2,7 +2,7 @@
     "expo": {
         "name": "Canottieri Pallanza",
         "slug": "CanottieriApp",
-        "version": "0.2.1",
+        "version": "0.3.0",
         "orientation": "portrait",
         "icon": "./assets/images/icon_app.png",
         "scheme": "canottieriapp",
