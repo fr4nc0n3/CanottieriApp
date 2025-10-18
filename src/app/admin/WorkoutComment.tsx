@@ -202,6 +202,8 @@ const WorkoutCommentPage = () => {
                                             value={text}
                                             onChangeText={setText}
                                             mode="outlined"
+                                            multiline
+                                            numberOfLines={10}
                                             style={{ marginBottom: 8 }}
                                         />
                                         <Button
@@ -227,6 +229,8 @@ const WorkoutCommentPage = () => {
                                     value={text}
                                     onChangeText={setText}
                                     mode="outlined"
+                                    multiline
+                                    numberOfLines={10}
                                     style={{ marginBottom: 8 }}
                                 />
                                 <Button onPress={handleCreate} mode="contained">
