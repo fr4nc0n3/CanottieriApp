@@ -1,6 +1,6 @@
 # Canottieri App v0.3.0
 
-Questa app e' pensata per supervisionare gli l' attivita' agonistica.
+Questa app e' pensata per supervisionare l' attivita' agonistica.
 Le funzionalita' sono:
 
 -   Programmazione degli allenamenti
