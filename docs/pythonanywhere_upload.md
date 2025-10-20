@@ -15,13 +15,13 @@
 -   Zippare e caricare le cartelle src/dist e src/backend/flask_app in modo da caricarle sul server
     di produzione, rispettivamente, in /home/canottieriapp/dist e /home/canottieriapp/flask_app.
 
-    Dopo aver fatto cio' ricordarsi di modificare il file /home/canottieriapp/flask_app/.env
-    in modo da rimettere i valori di produzione (es. i percorsi al db e img e la chiave per JWT)
-
 -   Aggiornare struttura database produzione, con le sole query strutturali che servono per passare alla
     nuova versione.
 
 ## Solo se bisogna ripartire da 0 sul server
+
+-   Quando si carica la cartella flask_app in /home/canottieriapp, in seguito e' necessario creare
+    al medesimo percorso il file flask_app_config.env (guardare quello di sviluppo backend/flask_app_config.env e mettere i dati di produzione)
 
 -   Caricare il file src/backend/pythonanywhere_com_wsgi.py (o copiare il contenuto in quello di  
     default che da' la piattaforma). Questo file serve a far capire al server dove si trova l'
