@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="it">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Notifiche — Demo</title>
+        <style>
+            :root {
+                --bg: #f6f8fb;
+                --card: #fff;
+                --accent: #2b6cb0;
+                --muted: #6b7280;
+                --danger: #e53e3e;
+                --success: #16a34a;
+                --shadow: 0 6px 18px rgba(41, 52, 75, 0.08);
+                font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                    "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: #0f172a;
+            }
+            header {
+                background: linear-gradient(90deg, #1e3a8a 0%, #2563eb 100%);
+                color: white;
+                padding: 14px 20px;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .brand {
+                font-weight: 700;
+                font-size: 18px;
+            }
+            nav {
+                display: flex;
+                gap: 12px;
+                margin-left: auto;
+                align-items: center;
+            }
+            .menu-item {
+                color: rgba(255, 255, 255, 0.9);
+                padding: 8px 12px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+                text-decoration: none;
+            }
+            .menu-item.active {
+                background: rgba(255, 255, 255, 0.12);
+            }
+            .badge {
+                background: var(--danger);
+                color: white;
+                font-weight: 700;
+                border-radius: 999px;
+                padding: 4px 8px;
+                font-size: 13px;
+                min-width: 28px;
+                text-align: center;
+            }
+            .container {
+                max-width: 1100px;
+                margin: 24px auto;
+                padding: 0 20px;
+            }
+            .top-alert {
+                background: #fffbeb;
+                border: 1px solid #fef3c7;
+                padding: 12px 16px;
+                border-radius: 8px;
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                color: #92400e;
+                box-shadow: var(--shadow);
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: 260px 1fr;
+                gap: 20px;
+                margin-top: 18px;
+            }
+            /* Sidebar (menu) */
+            aside {
+                background: var(--card);
+                padding: 16px;
+                border-radius: 10px;
+                box-shadow: var(--shadow);
+                height: fit-content;
+            }
+            .nav-link {
+                padding: 10px 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-radius: 8px;
+                color: var(--muted);
+                cursor: pointer;
+                margin-bottom: 8px;
+                text-decoration: none;
+            }
+            .nav-link:hover {
+                background: #f1f5f9;
+                color: var(--accent);
+            }
+            .nav-link.active {
+                background: #eef2ff;
+                color: var(--accent);
+                font-weight: 600;
+            }
+            /* Card list */
+            main {
+                background: var(--card);
+                padding: 18px;
+                border-radius: 10px;
+                box-shadow: var(--shadow);
+            }
+            .header-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 12px;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .btn {
+                background: var(--accent);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                border: none;
+                font-weight: 600;
+            }
+            .btn.ghost {
+                background: transparent;
+                color: var(--accent);
+                border: 1px solid #dbeafe;
+            }
+            .btn.danger {
+                background: var(--danger);
+            }
+            .list {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .notif-row {
+                display: flex;
+                gap: 12px;
+                padding: 12px;
+                border-radius: 10px;
+                align-items: center;
+                border: 1px solid #eef2ff;
+                cursor: pointer;
+                transition: transform 0.12s ease, box-shadow 0.12s ease;
+                background: linear-gradient(
+                    180deg,
+                    rgba(255, 255, 255, 1),
+                    rgba(249, 250, 253, 1)
+                );
+            }
+            .notif-row:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(11, 22, 64, 0.06);
+            }
+            .notif-meta {
+                flex: 1;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .title {
+                font-weight: 700;
+                margin-bottom: 6px;
+                color: #0f172a;
+            }
+            .sub {
+                font-size: 13px;
+                color: var(--muted);
+            }
+            .sender {
+                font-weight: 600;
+                color: #374151;
+            }
+            .date {
+                font-size: 13px;
+                color: #6b7280;
+                min-width: 150px;
+                text-align: right;
+            }
+            .dot-unread {
+                width: 10px;
+                height: 10px;
+                border-radius: 999px;
+                background: var(--danger);
+                margin-right: 6px;
+            }
+            .small-info {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: var(--muted);
+            }
+            .right-check {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            input[type="checkbox"][disabled] {
+                width: 18px;
+                height: 18px;
+            }
+            /* Pagination */
+            .pagination {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                margin-top: 14px;
+                flex-wrap: wrap;
+            }
+            .page-btn {
+                padding: 6px 10px;
+                border-radius: 8px;
+                border: 1px solid #e6eefc;
+                background: white;
+                cursor: pointer;
+            }
+            .page-btn.active {
+                background: #eef2ff;
+                border-color: #c7ddff;
+                font-weight: 700;
+                color: var(--accent);
+            }
+            /* Modal */
+            .modal-backdrop {
+                position: fixed;
+                inset: 0;
+                background: rgba(2, 6, 23, 0.45);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 60;
+            }
+            .modal {
+                width: min(820px, 96%);
+                background: white;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 30px 60px rgba(2, 6, 23, 0.5);
+                animation: pop 0.12s ease;
+            }
+            @keyframes pop {
+                from {
+                    transform: translateY(12px) scale(0.99);
+                    opacity: 0;
+                }
+                to {
+                    transform: none;
+                    opacity: 1;
+                }
+            }
+            .modal-header {
+                padding: 16px 18px;
+                border-bottom: 1px solid #f1f5f9;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+            }
+            .modal-body {
+                padding: 18px;
+                color: #111827;
+                line-height: 1.5;
+            }
+            .modal-footer {
+                padding: 12px 18px;
+                border-top: 1px solid #f1f5f9;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 12px;
+            }
+            .muted {
+                color: var(--muted);
+                font-size: 13px;
+            }
+            /* empty placeholder */
+            .empty {
+                padding: 24px;
+                text-align: center;
+                color: var(--muted);
+                background: #fbfbfb;
+                border-radius: 8px;
+                border: 1px dashed #e6eefc;
+            }
+            /* small helpers */
+            .flex {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+            }
+            @media (max-width: 780px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+                aside {
+                    order: 2;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="brand">App Demo</div>
+
+            <nav id="top-menu" aria-label="Menu principale">
+                <a
+                    class="menu-item"
+                    id="menu-home"
+                    href="#"
+                    onclick="openSection('home');return false;"
+                    >Home</a
+                >
+                <a
+                    class="menu-item"
+                    id="menu-notifiche"
+                    href="#"
+                    onclick="openSection('notifiche');return false;"
+                >
+                    Notifiche
+                    <span
+                        id="menu-badge"
+                        class="badge"
+                        style="display: none; margin-left: 6px"
+                        >0</span
+                    >
+                </a>
+            </nav>
+        </header>
+
+        <div class="container">
+            <!-- top alert (shows when there are unread notifications) -->
+            <div
+                id="main-alert"
+                style="display: none"
+                class="top-alert"
+                role="status"
+                aria-live="polite"
+            >
+                <strong id="alert-title">Hai delle notifiche non lette</strong>
+                <div class="muted" id="alert-desc">
+                    Guarda la sezione
+                    <a
+                        href="#"
+                        onclick="openSection('notifiche');return false;"
+                        style="
+                            color: inherit;
+                            font-weight: 700;
+                            text-decoration: underline;
+                            margin-left: 6px;
+                        "
+                        >Notifiche</a
+                    >
+                    per vederle.
+                </div>
+            </div>
+
+            <div class="grid">
+                <aside>
+                    <div style="font-weight: 700; margin-bottom: 8px">Menu</div>
+                    <a
+                        class="nav-link"
+                        href="#"
+                        onclick="openSection('home');return false;"
+                    >
+                        Dashboard
+                        <span class="muted">—</span>
+                    </a>
+                    <a
+                        class="nav-link"
+                        id="nav-notifiche"
+                        href="#"
+                        onclick="openSection('notifiche');return false;"
+                    >
+                        Notifiche
+                        <span id="nav-badge" class="badge" style="display: none"
+                            >0</span
+                        >
+                    </a>
+                    <a
+                        class="nav-link"
+                        href="#"
+                        onclick="alert('Sezione non implementata in demo');return false;"
+                    >
+                        Profilo
+                    </a>
+                    <div
+                        style="
+                            margin-top: 14px;
+                            font-size: 13px;
+                            color: var(--muted);
+                        "
+                    >
+                        Suggerimento: apri una notifica per vedere il dettaglio
+                        e modificare lo stato letta.
+                    </div>
+                </aside>
+
+                <main id="main-content" aria-live="polite">
+                    <!-- Home content -->
+                    <section id="section-home">
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                gap: 12px;
+                            "
+                        >
+                            <h2 style="margin: 0">Benvenuto</h2>
+                            <div class="muted">Demo sezione principale</div>
+                        </div>
+                        <div style="margin-top: 12px" class="empty">
+                            Questa è la home. Apri
+                            <a
+                                href="#"
+                                onclick="openSection('notifiche');return false;"
+                                >Notifiche</a
+                            >
+                            per vedere la sezione dedicata.
+                        </div>
+                    </section>
+
+                    <!-- Notifiche content -->
+                    <section id="section-notifiche" style="display: none">
+                        <div class="header-row">
+                            <div>
+                                <h2 style="margin: 0">Notifiche</h2>
+                                <div class="muted" id="list-subtitle">
+                                    Elenco delle notifiche — più recente in alto
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <button class="btn" id="mark-all-btn">
+                                    Segna tutte come lette
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="notifiche-list-area">
+                            <div class="list" id="notifiche-list"></div>
+                            <div
+                                id="empty-placeholder"
+                                class="empty"
+                                style="display: none; margin-top: 12px"
+                            >
+                                Nessuna notifica.
+                            </div>
+
+                            <div class="pagination" id="pagination"></div>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- Modal (inserted dynamically) -->
+        <div id="modal-root"></div>
+
+        <script>
+            // ========== Dati di esempio ==========
+            // 12 notifiche di test; alcune lette, altre no. Date in ISO.
+            const SAMPLE_NOTIFICHE = [
+                {
+                    id: "n12",
+                    titolo: "Aggiornamento sistema",
+                    data: "2025-10-20T18:12:00",
+                    mittente: "Sistema",
+                    messaggio:
+                        "Abbiamo aggiornato il sistema alle 18:00. Alcuni servizi potrebbero essere temporaneamente indisponibili.",
+                    letta: false,
+                },
+                {
+                    id: "n11",
+                    titolo: "Promemoria riunione",
+                    data: "2025-10-19T09:00:00",
+                    mittente: "Luca Rossi",
+                    messaggio:
+                        "Non dimenticare la riunione delle 10:00 con il team prodotto.",
+                    letta: true,
+                },
+                {
+                    id: "n10",
+                    titolo: "Nuova funzionalità",
+                    data: "2025-10-18T15:32:00",
+                    mittente: "Sara Bianchi",
+                    messaggio:
+                        "È stata rilasciata una nuova funzionalità. Leggi i dettagli nel changelog.",
+                    letta: false,
+                },
+                {
+                    id: "n09",
+                    titolo: "Password in scadenza",
+                    data: "2025-10-17T07:05:00",
+                    mittente: "Sicurezza",
+                    messaggio:
+                        "La tua password scadrà tra 5 giorni. Effettua il cambio per evitare disservizi.",
+                    letta: false,
+                },
+                {
+                    id: "n08",
+                    titolo: "Benvenuto nel team",
+                    data: "2025-10-15T12:10:00",
+                    mittente: "HR",
+                    messaggio:
+                        "Benvenuto! Trovi le informazioni iniziali nella sezione Onboarding.",
+                    letta: true,
+                },
+                {
+                    id: "n07",
+                    titolo: "Note spese approvate",
+                    data: "2025-10-14T11:00:00",
+                    mittente: "Amministrazione",
+                    messaggio:
+                        "Le tue note spese sono state approvate e verranno rimborsate.",
+                    letta: true,
+                },
+                {
+                    id: "n06",
+                    titolo: "Manutenzione programmata",
+                    data: "2025-10-13T23:45:00",
+                    mittente: "Sistema",
+                    messaggio:
+                        "Manutenzione programmata domani tra le 03:00 e le 04:00.",
+                    letta: false,
+                },
+                {
+                    id: "n05",
+                    titolo: "Nuovo commento",
+                    data: "2025-10-12T09:21:00",
+                    mittente: "Marco",
+                    messaggio:
+                        "Ho lasciato un commento sulla tua bozza, dai un'occhiata.",
+                    letta: false,
+                },
+                {
+                    id: "n04",
+                    titolo: "Report mensile",
+                    data: "2025-10-10T08:00:00",
+                    mittente: "Analytics",
+                    messaggio:
+                        "Il report mensile è pronto. Scaricalo quando vuoi.",
+                    letta: true,
+                },
+                {
+                    id: "n03",
+                    titolo: "Invito evento",
+                    data: "2025-10-08T17:30:00",
+                    mittente: "Eventi",
+                    messaggio:
+                        "Sei stato invitato all'evento aziendale del 25 ottobre.",
+                    letta: false,
+                },
+                {
+                    id: "n02",
+                    titolo: "Errore segnalato",
+                    data: "2025-10-03T10:11:00",
+                    mittente: "Supporto",
+                    messaggio:
+                        "Abbiamo ricevuto la tua segnalazione; la stiamo analizzando.",
+                    letta: true,
+                },
+                {
+                    id: "n01",
+                    titolo: "Feedback richiesto",
+                    data: "2025-09-28T14:55:00",
+                    mittente: "Product",
+                    messaggio:
+                        "Potresti compilare il breve sondaggio sulla nuova UI?",
+                    letta: false,
+                },
+            ];
+
+            // Config
+            const PAGE_SIZE = 5;
+
+            // Stato in memoria (caricato da localStorage oppure dal sample)
+            let state = {
+                notifiche: [],
+                currentPage: 1,
+                currentSection: "home",
+            };
+
+            // Utility: salva in localStorage per persistenza locale
+            function saveState() {
+                localStorage.setItem(
+                    "notifiche_state",
+                    JSON.stringify(state.notifiche)
+                );
+            }
+            function loadState() {
+                const raw = localStorage.getItem("notifiche_state");
+                if (raw) {
+                    try {
+                        state.notifiche = JSON.parse(raw);
+                    } catch (e) {
+                        state.notifiche = SAMPLE_NOTIFICHE.slice();
+                    }
+                } else {
+                    // deep clone and sort by date desc
+                    state.notifiche = SAMPLE_NOTIFICHE.slice();
+                    saveState();
+                }
+                // ensure sorted by date desc (più recenti in alto)
+                state.notifiche.sort(
+                    (a, b) => new Date(b.data) - new Date(a.data)
+                );
+            }
+
+            // Formatta data in italiano
+            function fmtDate(iso) {
+                const d = new Date(iso);
+                const formatter = new Intl.DateTimeFormat("it-IT", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+                // month short returns 'ott' etc.
+                return formatter.format(d);
+            }
+
+            // Renders
+            function renderMenuBadge() {
+                const unreadCount = state.notifiche.filter(
+                    (n) => !n.letta
+                ).length;
+                const badge = document.getElementById("menu-badge");
+                const navBadge = document.getElementById("nav-badge");
+                const alert = document.getElementById("main-alert");
+                const alertTitle = document.getElementById("alert-title");
+
+                if (unreadCount > 0) {
+                    badge.style.display = "inline-block";
+                    badge.textContent = unreadCount;
+                    navBadge.style.display = "inline-block";
+                    navBadge.textContent = unreadCount;
+                    alert.style.display = "flex";
+                    alertTitle.textContent = `Hai ${unreadCount} notifiche non lette`;
+                } else {
+                    badge.style.display = "none";
+                    navBadge.style.display = "none";
+                    alert.style.display = "none";
+                }
+            }
+
+            function renderList() {
+                const listEl = document.getElementById("notifiche-list");
+                const empty = document.getElementById("empty-placeholder");
+                listEl.innerHTML = "";
+
+                const total = state.notifiche.length;
+                if (total === 0) {
+                    empty.style.display = "block";
+                    document.getElementById("pagination").innerHTML = "";
+                    return;
+                }
+                empty.style.display = "none";
+
+                // Pagination logic
+                const page = state.currentPage;
+                const start = (page - 1) * PAGE_SIZE;
+                const pageItems = state.notifiche.slice(
+                    start,
+                    start + PAGE_SIZE
+                );
+
+                pageItems.forEach((item) => {
+                    const row = document.createElement("div");
+                    row.className = "notif-row";
+                    row.setAttribute("data-id", item.id);
+                    row.onclick = (e) => {
+                        // If user clicked the disabled checkbox area (rare), ignore - otherwise open modal.
+                        openModal(item.id);
+                    };
+
+                    // Left: unread dot
+                    const left = document.createElement("div");
+                    left.style.display = "flex";
+                    left.style.alignItems = "center";
+                    left.style.marginRight = "6px";
+                    if (!item.letta) {
+                        const dot = document.createElement("span");
+                        dot.className = "dot-unread";
+                        left.appendChild(dot);
+                    } else {
+                        left.innerHTML =
+                            '<div style="width:10px;height:10px;margin-right:6px"></div>';
+                    }
+
+                    // Meta
+                    const meta = document.createElement("div");
+                    meta.className = "notif-meta";
+
+                    const main = document.createElement("div");
+                    main.style.flex = "1";
+                    const title = document.createElement("div");
+                    title.className = "title";
+                    title.textContent = item.titolo;
+                    const sub = document.createElement("div");
+                    sub.className = "sub";
+                    sub.innerHTML = `<span class="sender">${
+                        item.mittente
+                    }</span> — <span class="muted">${item.messaggio.slice(
+                        0,
+                        80
+                    )}${item.messaggio.length > 80 ? "…" : ""}</span>`;
+                    main.appendChild(title);
+                    main.appendChild(sub);
+
+                    const right = document.createElement("div");
+                    right.style.display = "flex";
+                    right.style.alignItems = "center";
+                    right.style.gap = "12px";
+
+                    const date = document.createElement("div");
+                    date.className = "date";
+                    date.textContent = fmtDate(item.data);
+
+                    // disabled checkbox (spunta non modificabile)
+                    const cb = document.createElement("input");
+                    cb.type = "checkbox";
+                    cb.disabled = true;
+                    cb.checked = !!item.letta;
+                    cb.title = item.letta ? "Letta" : "Non letta";
+                    cb.setAttribute(
+                        "aria-label",
+                        item.letta ? "Letta" : "Non letta"
+                    );
+
+                    right.appendChild(date);
+                    right.appendChild(cb);
+
+                    meta.appendChild(main);
+                    meta.appendChild(right);
+
+                    row.appendChild(left);
+                    row.appendChild(meta);
+
+                    listEl.appendChild(row);
+                });
+
+                renderPagination();
+            }
+
+            function renderPagination() {
+                const total = state.notifiche.length;
+                const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+                const pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+
+                // Prev
+                const prev = document.createElement("button");
+                prev.className = "page-btn";
+                prev.textContent = "‹ Prev";
+                prev.disabled = state.currentPage === 1;
+                prev.onclick = () => {
+                    if (state.currentPage > 1) {
+                        state.currentPage--;
+                        renderList();
+                    }
+                };
+                pagination.appendChild(prev);
+
+                // Pages (limit to a reasonable count)
+                const startPage = Math.max(1, state.currentPage - 2);
+                const endPage = Math.min(pages, startPage + 4);
+
+                for (let p = startPage; p <= endPage; p++) {
+                    const b = document.createElement("button");
+                    b.className =
+                        "page-btn" + (p === state.currentPage ? " active" : "");
+                    b.textContent = p;
+                    b.onclick = () => {
+                        state.currentPage = p;
+                        renderList();
+                    };
+                    pagination.appendChild(b);
+                }
+
+                // Next
+                const next = document.createElement("button");
+                next.className = "page-btn";
+                next.textContent = "Next ›";
+                next.disabled = state.currentPage === pages;
+                next.onclick = () => {
+                    if (state.currentPage < pages) {
+                        state.currentPage++;
+                        renderList();
+                    }
+                };
+                pagination.appendChild(next);
+
+                // Summary
+                const info = document.createElement("div");
+                info.className = "muted";
+                info.style.marginLeft = "12px";
+                info.textContent = `Pagina ${state.currentPage} di ${pages} — ${state.notifiche.length} notifiche`;
+                pagination.appendChild(info);
+            }
+
+            // Modal functionality
+            function openModal(id) {
+                const item = state.notifiche.find((n) => n.id === id);
+                if (!item) return;
+                // Build modal DOM
+                const root = document.getElementById("modal-root");
+                root.innerHTML = "";
+                const backdrop = document.createElement("div");
+                backdrop.className = "modal-backdrop";
+                backdrop.onclick = (e) => {
+                    if (e.target === backdrop) {
+                        closeModal();
+                    }
+                };
+
+                const modal = document.createElement("div");
+                modal.className = "modal";
+                modal.setAttribute("role", "dialog");
+
+                const header = document.createElement("div");
+                header.className = "modal-header";
+                header.innerHTML = `<div>
+      <div style="font-weight:800">${escapeHtml(item.titolo)}</div>
+      <div class="muted" style="margin-top:6px">${escapeHtml(
+          item.mittente
+      )} — ${fmtDate(item.data)}</div>
+    </div>
+    <div><button class="btn ghost" onclick="closeModal();">Chiudi</button></div>`;
+
+                const body = document.createElement("div");
+                body.className = "modal-body";
+                body.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(
+                    item.messaggio
+                )}</div>`;
+
+                const footer = document.createElement("div");
+                footer.className = "modal-footer";
+
+                // Checkbox in footer (modifiable)
+                const left = document.createElement("div");
+                left.style.display = "flex";
+                left.style.gap = "10px";
+                left.style.alignItems = "center";
+                const cb = document.createElement("input");
+                cb.type = "checkbox";
+                cb.checked = !!item.letta;
+                cb.id = "modal-read-checkbox";
+                cb.setAttribute("aria-label", "Segna come letta");
+                const cbLabel = document.createElement("label");
+                cbLabel.setAttribute("for", "modal-read-checkbox");
+                cbLabel.className = "muted";
+                cbLabel.textContent = "Letta";
+                left.appendChild(cb);
+                left.appendChild(cbLabel);
+
+                const right = document.createElement("div");
+                right.style.display = "flex";
+                right.style.gap = "8px";
+                const closeBtn = document.createElement("button");
+                closeBtn.className = "btn";
+                closeBtn.textContent = "Chiudi";
+                closeBtn.onclick = () => {
+                    // Apply checkbox state to notification and save
+                    const newVal = !!document.getElementById(
+                        "modal-read-checkbox"
+                    ).checked;
+                    setNotificationRead(item.id, newVal);
+                    closeModal();
+                };
+                right.appendChild(closeBtn);
+
+                footer.appendChild(left);
+                footer.appendChild(right);
+
+                modal.appendChild(header);
+                modal.appendChild(body);
+                modal.appendChild(footer);
+                backdrop.appendChild(modal);
+                root.appendChild(backdrop);
+
+                // focus trap naive
+                cb.focus();
+            }
+
+            function closeModal() {
+                const root = document.getElementById("modal-root");
+                root.innerHTML = "";
+            }
+
+            // Escape HTML to avoid injection from sample messages
+            function escapeHtml(str) {
+                return String(str)
+                    .replaceAll("&", "&amp;")
+                    .replaceAll("<", "&lt;")
+                    .replaceAll(">", "&gt;")
+                    .replaceAll('"', "&quot;")
+                    .replaceAll("'", "&#39;");
+            }
+
+            // Update read flag for a notification by id
+            function setNotificationRead(id, val) {
+                const idx = state.notifiche.findIndex((n) => n.id === id);
+                if (idx >= 0) {
+                    state.notifiche[idx].letta = !!val;
+                    saveState();
+                    renderList();
+                    renderMenuBadge();
+                }
+            }
+
+            // "Segna tutte come lette" — chiede conferma e marca tutte le notifiche come lette
+            function markAllAsRead() {
+                const unreadCount = state.notifiche.filter(
+                    (n) => !n.letta
+                ).length;
+                if (unreadCount === 0) {
+                    alert("Non ci sono notifiche non lette.");
+                    return;
+                }
+                const ok = confirm(
+                    `Vuoi davvero segnare tutte le ${unreadCount} notifiche come lette?`
+                );
+                if (!ok) return;
+                state.notifiche.forEach((n) => (n.letta = true));
+                saveState();
+                renderList();
+                renderMenuBadge();
+                alert("Tutte le notifiche sono state segnate come lette.");
+            }
+
+            // Section navigation
+            function openSection(section) {
+                state.currentSection = section;
+                document.getElementById("section-home").style.display =
+                    section === "home" ? "block" : "none";
+                document.getElementById("section-notifiche").style.display =
+                    section === "notifiche" ? "block" : "none";
+                document
+                    .getElementById("menu-home")
+                    .classList.toggle("active", section === "home");
+                document
+                    .getElementById("menu-notifiche")
+                    .classList.toggle("active", section === "notifiche");
+                document
+                    .getElementById("nav-notifiche")
+                    .classList.toggle("active", section === "notifiche");
+                // reset to first page when opening notifiche
+                if (section === "notifiche") {
+                    state.currentPage = 1;
+                    renderList();
+                }
+            }
+
+            // Hook up button
+            document
+                .getElementById("mark-all-btn")
+                .addEventListener("click", markAllAsRead);
+
+            // initialize
+            (function init() {
+                loadState();
+                renderMenuBadge();
+                // show home by default
+                openSection("home");
+                // attach some keyboard helpers
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") closeModal();
+                });
+            })();
+
+            // Expose setNotificationRead to window so accessible from modal inline (close button)
+            window.setNotificationRead = setNotificationRead;
+            window.openSection = openSection;
+            window.openModal = openModal;
+        </script>
+    </body>
+</html>

@@ -1,0 +1,12 @@
+Requisiti:
+- Usa react native expo
+- Usa typescript
+- Usa react-native-paper
+- Non usare cose obsolete, tieni conto che siamo almeno nel 2025
+- Crea codice minimale senza particolari decorazioni grafiche
+- Il codice deve essere in inglese
+- Il contenuto dell' interfaccia deve essere in italiano
+- Commenta le sezioni principali
+- I Commenti nel codice devono essere in italiano
+- Evita di usare dipendenze esterne, tranne quelle esplicitamente indicate
+- Utilizza dati di esempio mettendoli in cima al codice
