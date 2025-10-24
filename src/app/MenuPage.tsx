@@ -38,6 +38,15 @@ export default function MenuPage() {
                         }}
                         icon="account"
                     />
+                    <Drawer.Item
+                        label="Notifiche"
+                        active={active === "notifications"}
+                        onPress={() => {
+                            setActive("notifications");
+                            router.push("/NewsPage2");
+                        }}
+                        icon="bell"
+                    />
                 </Drawer.Section>
 
                 <Drawer.Section style={styles.sidebar} title="Sezione Atleta">

@@ -1,3 +1,11 @@
+-- 23/10/2025 --
+Ho revisionato ed adattato il codice generato dall' AI,
+ora bisogna impostare db e backend
+
+-- 22/10/2025 Lavoro in corso --
+Revisione del file generato da chatGPT NewsPage2.tsx.
+Stavo sistemando la grafica generata
+
 -- BUGS feedback utenti --
 - Quando si carica un immagine in workout poi se si ricarica la pagina o si accede successivamente, l' immagine
 risulta ruotata di 90 gradi
