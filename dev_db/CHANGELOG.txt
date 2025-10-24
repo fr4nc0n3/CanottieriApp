@@ -1,0 +1,3 @@
+-- 24/10/2025 --
+Aggiunto campo is_read alla tabella UserNews:
+is_read INTEGER NOT NULL DEFAULT 0, -- 0: non letto, 1: letto
