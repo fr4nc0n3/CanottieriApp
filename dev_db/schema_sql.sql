@@ -93,20 +93,21 @@ CREATE TABLE UserNews (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_news INTEGER NOT NULL,
     id_user INTEGER NOT NULL,
+    is_read INTEGER NOT NULL DEFAULT 0, -- 0: non letto, 1: letto
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_news) REFERENCES News(id) ON DELETE CASCADE,
     FOREIGN KEY (id_user) REFERENCES User(id) ON DELETE CASCADE,
     UNIQUE (id_news, id_user)
 );
 
-CREATE TRIGGER trg_UserNews_updated_at
+/*CREATE TRIGGER trg_UserNews_updated_at
 AFTER UPDATE ON UserNews
 FOR EACH ROW
 BEGIN  
     UPDATE UserNews
     SET updated_at = CURRENT_TIMESTAMP
     WHERE id = OLD.id;
-END;
+END;*/
 
 -- Table: Workout
 CREATE TABLE Workout (

@@ -157,7 +157,7 @@
 <part>id</part>
 </key>
 </table>
-<table x="63" y="423" name="UserNews">
+<table x="44" y="431" name="UserNews">
 <row name="id" null="1" autoincrement="1">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
@@ -170,6 +170,9 @@
 <default>NULL</default><relation table="User" row="id" />
 <comment>on delete set null (su eliminazione dell' utente, non della notifica)</comment>
 </row>
+<row name="is_read" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>0</default></row>
 <row name="created_at" null="1" autoincrement="0">
 <datatype>INTEGER</datatype>
 <default>NULL</default></row>
