@@ -43,7 +43,7 @@ export default function MenuPage() {
                         active={active === "notifications"}
                         onPress={() => {
                             setActive("notifications");
-                            router.push("/NewsPage2");
+                            router.push("/NewsPage");
                         }}
                         icon="bell"
                     />
