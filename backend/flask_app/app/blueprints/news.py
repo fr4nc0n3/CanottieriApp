@@ -1,8 +1,9 @@
+from re import I
 from flask import Blueprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from flask import Blueprint, jsonify, request
 from .helpers import bad_json, permission_denied, is_admin
-from ..db import (query_db, execute_ops_db, dbUserNewsRx, 
+from ..db import (dbCountUserNewsRx, query_db, execute_ops_db, dbUserNewsRx, 
     dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews)
 
 api_news = Blueprint("news", __name__)
@@ -13,16 +14,38 @@ def getUserNews():
     identity = get_jwt_identity()
 
     idUser = request.args.get('id-user', '-1')
-    offset = request.args.get('offset-sql', '0')
-    limit = 10
+    offset = request.args.get('offset', '0')
+    limit = request.args.get('limit', '10') 
 
     #autenticazione
     if(idUser != identity):
         return permission_denied()
 
-    news = dbUserNewsRx(int(idUser), limit, int(offset))
+    news = dbUserNewsRx(int(idUser), int(limit), int(offset))
 
     return jsonify(news)
+
+@api_news.route('/get-count-user-news', methods=['GET'])
+@jwt_required()
+def getCountUserNews():
+    identity = get_jwt_identity()
+
+    idUser = request.args.get('id-user', '-1')
+    only_read = request.args.get('only-read', 'false')
+
+    #autenticazione
+    if(idUser != identity):
+        return permission_denied()
+
+    count = 0
+    if only_read == "false":
+        count = dbCountUserNewsRx(int(idUser)) 
+    elif only_read == "true":
+        count = dbCountUserNewsRx(int(idUser), is_read=True)
+    else:
+        return jsonify({"Status": "Bad request"}), 400
+
+    return jsonify({"count": count})
 
 @api_news.route('/get-user-news-sended', methods=['GET'])
 @jwt_required()

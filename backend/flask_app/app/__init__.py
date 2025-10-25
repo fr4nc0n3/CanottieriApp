@@ -72,7 +72,7 @@ def create_app():
     app.register_blueprint(api_planning, url_prefix='/api')
     app.register_blueprint(api_workout, url_prefix='/api')
     app.register_blueprint(api_workout_comment, url_prefix='/api')
-    #app.register_blueprint(api_news, url_prefix='/api') # Disabilitato
+    app.register_blueprint(api_news, url_prefix='/api')
 
     # In questo modo alla fine di ogni api viene chiamato automaticamente
     # close_connection

@@ -61,4 +61,26 @@ INSERT INTO Workout (id_user, date, description) VALUES
   (4, '2025-05-12', 'Allenamento pesi'),
   (4, '2025-07-08', 'CrossFit base');*/
 
+  INSERT INTO News (id_user_sender, message, title, data_publish, target_name)
+  VALUES 
+  (1, 'Benvenuti nel nuovo portale aziendale! Qui troverai tutte le novità interne.', 'Nuovo Portale Aziendale', '2025-10-01', 'Tutti'),
+  (1, 'Da lunedì prossimo gli uffici resteranno chiusi per manutenzione straordinaria.', 'Chiusura Uffici per Manutenzione', '2025-10-05', 'Dipendenti'),
+  (1, 'È disponibile la nuova policy aziendale per lo smart working.', 'Aggiornamento Policy Smart Working', '2025-10-10', 'Tutti'),
+  (1, 'Sono aperte le iscrizioni al corso di formazione sulla sicurezza informatica.', 'Corso Sicurezza Informatica', '2025-10-15', 'Tutti'),
+  (1, 'Il meeting trimestrale si terrà online tramite Microsoft Teams.', 'Meeting Trimestrale Online', '2025-10-20', 'Manager'),
+  (1, 'Nuovi benefit per i dipendenti attivi da oltre 5 anni.', 'Nuovi Benefit Aziendali', '2025-10-25', 'Dipendenti'),
+  (1, 'Aggiornamento dei sistemi informatici previsto per domenica prossima.', 'Aggiornamento Sistemi IT', '2025-10-27', 'IT Department'),
+  (1, 'È stato pubblicato il calendario eventi aziendali del 2026.', 'Calendario Eventi 2026', '2025-10-30', 'Tutti');
+
+  INSERT INTO UserNews (id_news, id_user, is_read)
+  VALUES
+  (1, 12, 0),
+  (2, 12, 1),
+  (3, 12, 0),
+  (4, 12, 1),
+  (5, 12, 0),
+  (6, 12, 0),
+  (7, 12, 1),
+  (8, 12, 0);
+
 COMMIT;

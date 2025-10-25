@@ -1,6 +1,6 @@
 import sqlite3
 from flask import g, current_app
-from typing import List, Tuple, TypedDict
+from typing import List, Optional, Tuple, TypedDict
 
 class QueryOp(TypedDict):
     query: str
@@ -74,14 +74,39 @@ def dbUserAccountTypes(idUser: int):
 # ritorna list di dict
 def dbUserNewsRx(idUser: int, limit: int, offset: int):
     news = query_db(
-        'SELECT n.title, n.message, n.data_publish, n.target_name ' +
-        'FROM UserNews un, News n ' +
-        'WHERE un.id_news = n.id AND un.id_user = ? AND n.is_deleted = 0 ' +
-        'LIMIT ? OFFSET ?',
+        'SELECT un.id AS id_user_news, n.title, n.message, ' +
+        'n.data_publish, n.target_name, un.is_read, u.name AS sender_name ' +
+        'FROM UserNews un, News n, User u ' +
+        'WHERE u.id = n.id_user_sender AND un.id_news = n.id AND un.id_user = ? AND n.is_deleted = 0 ' +
+        'ORDER BY n.data_publish DESC '
+        'LIMIT ? OFFSET ? ',
         tuple([idUser, limit, offset])
     )
     
     return [dict(n) for n in news]
+
+# ritorna intero, ossia il conteggio
+def dbCountUserNewsRx(id_user: int, is_read: Optional[bool] = None):
+    count = 0
+
+    if is_read is None:
+        # [0][0] indica la prima colonna del primo record
+        count = query_db(
+            "SELECT COUNT(*) AS count_user_news " +
+            "FROM UserNews un " +
+            "WHERE id_user = ? ",
+            tuple([id_user])
+        )[0][0]
+    else:
+        sql_is_read = 1 if is_read else 0
+        count = query_db(
+            "SELECT COUNT(*) AS count_user_news " +
+            "FROM UserNews un " +
+            "WHERE is_read = ? AND id_user = ? ",
+            tuple([sql_is_read, id_user])
+        )[0][0]
+
+    return count
 
 #ritorna list dict
 def dbUserNewsTx(idUser: int, limit: int, offset: int):

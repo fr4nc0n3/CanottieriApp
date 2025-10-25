@@ -1,0 +1,1 @@
+curl "http://localhost:5000/api/get-count-user-news?id-user=12&only-read=false"
