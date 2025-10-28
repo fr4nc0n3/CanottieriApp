@@ -1,5 +1,6 @@
 import {
     API_DELETE_NEWS,
+    API_GET_COUNT_USER_NEWS,
     API_GET_USER_INFO,
     API_GET_USER_NEWS_RECEIVED,
     API_GET_USER_NEWS_SENDED,
@@ -76,11 +77,35 @@ export const apiDeleteNews = async (id: number, jwt: string) => {
 
 export const apiGetUserNewsReceived = async (
     idUser: number,
+    offset: number,
+    limit: number,
     jwt: string
 ): Promise<UserNewsRx[]> => {
     try {
-        const req = API_GET_USER_NEWS_RECEIVED + "?id-user=" + idUser;
+        const req =
+            API_GET_USER_NEWS_RECEIVED +
+            `?id-user=${idUser}&offset=${offset}&limit=${limit}`;
         return await apiFetchJWTAuth(jwt, req);
+    } catch (error) {
+        console.error(`Error fetch rx news for idUser: ${idUser}`, error);
+        throw error;
+    }
+};
+
+export const apiGetCountUserNews = async (
+    idUser: number,
+    only_read: boolean,
+    jwt: string
+): Promise<number> => {
+    const url_only_read = only_read ? "true" : "false";
+
+    try {
+        const req =
+            API_GET_COUNT_USER_NEWS +
+            `?id-user=${idUser}&only-read=${url_only_read}`;
+        const res = await apiFetchJWTAuth(jwt, req);
+
+        return res.count;
     } catch (error) {
         console.error(`Error fetch rx news for idUser: ${idUser}`, error);
         throw error;

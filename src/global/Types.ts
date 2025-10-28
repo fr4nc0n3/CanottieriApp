@@ -32,17 +32,23 @@ export const emptyUser: User = {
 };
 
 export type UserNewsRx = {
+    id_user_news: number;
     title: string;
     message: string;
     data_publish: string;
     target_name: string;
+    is_read: number;
+    sender_name: string;
 };
 
 export const emptyUserNewsRx: UserNewsRx = {
+    id_user_news: 0,
     title: "",
     message: "",
     data_publish: "",
     target_name: "",
+    is_read: 0,
+    sender_name: "",
 };
 
 export type UserNewsTx = {
