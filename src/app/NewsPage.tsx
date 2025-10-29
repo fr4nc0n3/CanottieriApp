@@ -1,9 +1,9 @@
-import { apiGetUserNewsReceived } from "@/global/APICalls";
+import { apiGetCountUserNews, apiGetUserNewsReceived } from "@/global/APICalls";
 import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
 import { UserNewsRx } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
-import { getJWTIdentity } from "@/global/Utils";
+import { getJWTIdentity, universalDateStringFormat } from "@/global/Utils";
 import { useRouter } from "expo-router";
 import React, { JSX, useCallback, useEffect, useMemo, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
@@ -20,178 +20,66 @@ import {
 } from "react-native-paper";
 
 // ==========================
-// Dati di esempio (in cima al file)
-// ==========================
-
-/*export type NotificationItem = {
-    id: string;
-    title: string;
-    date: string; // ISO
-    senderName: string;
-    message: string;
-    is_read: boolean;
-};*/
-
-// Array di esempio: più recente in alto (ma l'applicazione riordina comunque)
-/*const SAMPLE_NOTIFICATIONS: NotificationItem[] = [
-    {
-        id: "n1",
-        title: "Aggiornamento importante",
-        date: "2025-10-20T18:30:00Z",
-        senderName: "Sistema",
-        message:
-            "Abbiamo aggiornato i termini di servizio. Leggi i dettagli nella sezione account.",
-        is_read: false,
-    },
-    {
-        id: "n2",
-        title: "Nuova funzionalità disponibile",
-        date: "2025-10-18T09:10:00Z",
-        senderName: "Team Prodotto",
-        message:
-            "Ora puoi salvare i tuoi preferiti per accedervi più rapidamente.",
-        is_read: false,
-    },
-    {
-        id: "n3",
-        title: "Promemoria evento",
-        date: "2025-10-15T12:00:00Z",
-        senderName: "Calendario",
-        message: "Non dimenticare l'incontro fissato per domani alle 09:00.",
-        is_read: true,
-    },
-    {
-        id: "n4",
-        title: "Feedback richiesto",
-        date: "2025-10-10T08:00:00Z",
-        senderName: "Supporto",
-        message: "Raccontaci la tua esperienza con l'ultima versione.",
-        is_read: true,
-    },
-    {
-        id: "n5",
-        title: "Sicurezza account",
-        date: "2025-09-30T20:45:00Z",
-        senderName: "Sicurezza",
-        message:
-            "È stata rilevata una nuova attività di accesso. Se non sei stato tu, cambia la password.",
-        is_read: false,
-    },
-    {
-        id: "n6",
-        title: "Offerta speciale",
-        date: "2025-09-25T10:00:00Z",
-        senderName: "Marketing",
-        message: "Solo per oggi: sconto del 20% su tutti i piani.",
-        is_read: true,
-    },
-    {
-        id: "n7",
-        title: "Manutenzione pianificata",
-        date: "2025-09-20T22:00:00Z",
-        senderName: "Infrastruttura",
-        message:
-            "I servizi saranno temporaneamente non disponibili il 1 ottobre.",
-        is_read: true,
-    },
-    {
-        id: "n8",
-        title: "Nuovo messaggio",
-        date: "2025-09-15T14:00:00Z",
-        senderName: "Mario Rossi",
-        message: "Ciao! Possiamo sentirci per una breve chiamata domani?",
-        is_read: false,
-    },
-    {
-        id: "n9",
-        title: "Aggiornamento app",
-        date: "2025-09-10T11:30:00Z",
-        senderName: "Team Mobile",
-        message: "La versione 3.2 è disponibile: migliorie e bugfix.",
-        is_read: true,
-    },
-    {
-        id: "n10",
-        title: "Conferma iscrizione",
-        date: "2025-08-01T07:20:00Z",
-        senderName: "Servizio Clienti",
-        message: "La tua iscrizione è stata attivata correttamente.",
-        is_read: true,
-    },
-    {
-        id: "n11",
-        title: "Promemoria pagamento",
-        date: "2025-07-25T16:00:00Z",
-        senderName: "Fatturazione",
-        message: "La fattura è in scadenza il 30 luglio.",
-        is_read: false,
-    },
-    {
-        id: "n12",
-        title: "Benvenuto",
-        date: "2025-06-10T09:00:00Z",
-        senderName: "Sistema",
-        message:
-            "Grazie per esserti registrato! Inizia personalizzando il tuo profilo.",
-        is_read: true,
-    },
-];*/
-
-// ==========================
 // Component principale: NotificationsScreen
 // ==========================
 
 const ITEMS_PER_PAGE = 5;
 
 export default function NotificationsScreen(): JSX.Element {
-    const rxOffset = 0;
-    const rxLimit = 10;
+    const [rxOffset, setRxOffset] = useState<number>(0);
+    const rxLimit = 5;
 
-    const fetchNews = useCallback(async () => {
-        const jwt = await getJWT();
-        const idUser = getJWTIdentity(jwt);
-        return apiGetUserNewsReceived(idUser, rxOffset, rxLimit, jwt);
-    }, [rxOffset, rxLimit]);
+    const fetchNews = //useCallback(async () => {
+        async () => {
+            const jwt = await getJWT();
+            const idUser = getJWTIdentity(jwt);
+            return apiGetUserNewsReceived(idUser, rxOffset, rxLimit, jwt);
+        };
+
+    const fetchTotalCountNews = //useCallback(async () => {
+        async () => {
+            const jwt = await getJWT();
+            const idUser = getJWTIdentity(jwt);
+            return apiGetCountUserNews(idUser, false, jwt);
+        };
 
     const {
         data: rxNotifications,
         error: rxError,
         isLoading: rxIsLoading,
-    } = useQuery<UserNewsRx[]>("userNewsRx", fetchNews);
+    } = useQuery<UserNewsRx[]>(["userNewsRx", rxOffset.toString()], fetchNews);
 
-    // Stato delle notifiche (copiamo i sample)
+    const { data: rxTotalCountRaw } = useQuery<number>(
+        ["userNewsRxTotalCount"],
+        fetchTotalCountNews
+    );
+
+    const rxTotalCount = rxTotalCountRaw ?? 0;
+
     const [notifications, setNotifications] = useState<UserNewsRx[]>([]);
 
     useEffect(() => {
         setNotifications(rxNotifications || []);
     }, [rxNotifications]);
-    /*    () => {
-            // Ordina per data discendente (più recente prima)
-            return [...SAMPLE_NOTIFICATIONS].sort(
-                (a, b) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime()
-            );
-        }*/
 
     // Stato per la paginazione
     const [currentPage, setCurrentPage] = useState<number>(1);
 
-    // Stato per il dettaglio (modal)
-    //const [selected, setSelected] = useState<NotificationItem | null>(null);
+    useEffect(() => {
+        setRxOffset((currentPage - 1) * rxLimit);
+    }, [currentPage]);
+
     const [selected, setSelected] = useState<UserNewsRx | null>(null);
 
     //TODO: Calcola il numero massimo di pagine (da ricevere via backend)
-    const totalPages = Math.max(
-        1,
-        Math.ceil(notifications.length / ITEMS_PER_PAGE)
-    );
+    const totalPages = Math.max(1, Math.ceil(rxTotalCount / ITEMS_PER_PAGE));
 
     //TODO: da ricevere via backend
     // Lista delle notifiche visibili nella pagina corrente
-    const pageNotifications = useMemo(() => {
+    /*const pageNotifications = useMemo(() => {
         const start = (currentPage - 1) * ITEMS_PER_PAGE;
         return notifications.slice(start, start + ITEMS_PER_PAGE);
-    }, [notifications, currentPage]);
+    }, [notifications, currentPage]);*/
 
     // ==========================
     // Funzioni di aggiornamento stato
@@ -228,7 +116,6 @@ export default function NotificationsScreen(): JSX.Element {
     const isDetailOpened = () => selected !== null;
 
     // Apertura dettaglio
-    //const openDetail = (item: NotificationItem) => {
     const openDetail = (item: UserNewsRx) => {
         // Assicuriamoci di agganciare la versione più aggiornata della notifica
         const fresh = notifications.find(
@@ -251,15 +138,8 @@ export default function NotificationsScreen(): JSX.Element {
     // ==========================
     // Render di singolo elemento lista
     // ==========================
-    //const renderNotification = ({ item }: { item: NotificationItem }) => {
     const renderNotification = ({ item }: { item: UserNewsRx }) => {
-        const dateStr = new Date(item.data_publish).toLocaleString("it-IT", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-        });
+        const dateStr = universalDateStringFormat(new Date(item.data_publish));
 
         return (
             <TouchableRipple onPress={() => openDetail(item)}>
@@ -316,7 +196,7 @@ export default function NotificationsScreen(): JSX.Element {
 
             {/* Lista paginata */}
             <FlatList
-                data={pageNotifications}
+                data={notifications}
                 keyExtractor={(item) => item.id_user_news.toString()}
                 renderItem={renderNotification}
                 contentContainerStyle={styles.list}
@@ -362,9 +242,9 @@ export default function NotificationsScreen(): JSX.Element {
                             {selected && (
                                 <Text style={styles.detailSub}>
                                     {selected.sender_name} •{" "}
-                                    {new Date(
-                                        selected.data_publish
-                                    ).toLocaleString("it-IT")}
+                                    {universalDateStringFormat(
+                                        new Date(selected.data_publish)
+                                    )}
                                 </Text>
                             )}
                         </View>

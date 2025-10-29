@@ -19,27 +19,32 @@ const cache: Record<string, unknown> = {};
  * @param fetchFn Async function returning the data
  */
 export function useQuery<TData = unknown, TError = Error>(
-    key: string,
+    key: string[],
     fetchFn: FetchFunction<TData>
 ): UseQueryResult<TData, TError> {
+    const queryKey = key.join("-");
+
     const [data, setData] = useState<TData | null>(
-        () => (cache[key] as TData) || null
+        () => (cache[queryKey] as TData) || null
     );
     const [error, setError] = useState<TError | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(!cache[key]);
+    const [isLoading, setIsLoading] = useState<boolean>(!cache[queryKey]);
 
     useEffect(() => {
         const controller = new AbortController();
 
         // If cached, skip fetching
-        if (cache[key]) return;
+        if (cache[queryKey]) {
+            setData(cache[queryKey] as TData);
+            return;
+        }
 
         setIsLoading(true);
         setError(null);
 
         fetchFn({ signal: controller.signal })
             .then((res) => {
-                cache[key] = res;
+                cache[queryKey] = res;
                 setData(res);
             })
             .catch((err) => {
@@ -54,7 +59,7 @@ export function useQuery<TData = unknown, TError = Error>(
 
         // Cleanup: cancella la fetch se il componente si smonta
         return () => controller.abort();
-    }, [key, fetchFn]);
+    }, [queryKey]);
 
     return { data, error, isLoading };
 }

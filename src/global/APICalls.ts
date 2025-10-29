@@ -107,7 +107,7 @@ export const apiGetCountUserNews = async (
 
         return res.count;
     } catch (error) {
-        console.error(`Error fetch rx news for idUser: ${idUser}`, error);
+        console.error(`Error fetch rx news count for idUser: ${idUser}`, error);
         throw error;
     }
 };
