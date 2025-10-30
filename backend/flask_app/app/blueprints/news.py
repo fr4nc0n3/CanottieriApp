@@ -2,7 +2,7 @@ from re import I
 from flask import Blueprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from flask import Blueprint, jsonify, request
-from .helpers import bad_json, permission_denied, is_admin
+from .helpers import bad_json, missing_parameter, permission_denied, is_admin
 from ..db import (dbCountUserNewsRx, query_db, execute_ops_db, dbUserNewsRx, 
     dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews)
 
@@ -64,6 +64,49 @@ def getUserNewsSended():
     return jsonify(news)
 
 #-------------- PROCEDURES ---------------
+# imposta la/e news dell' utente come lette/non lette
+# TODO
+@api_news.route('/set-user-news-read', methods=['UPDATE'])
+@jwt_required()
+def setNewsRead():
+    identity = get_jwt_identity()
+
+    data = request.json
+
+    if data is None:
+        return bad_json()
+
+    id_user = data.get('id_user', None)
+    id_news = data.get('id_news', None)
+    read = data.get('read', None)
+    # se true allora id_news e read non vengono utilizzate
+    all_readed = data.get('all_readed', None) 
+
+    # controllo utente
+    if id_user is None:
+        return missing_parameter("id_user")
+    elif type(id_user) is not int:
+        return bad_json()
+
+    if(id_user != identity):
+        return permission_denied()
+
+    if all_readed is not None and bool(all_readed):
+        #segna tutte come lette e ritorna
+        return
+
+    if id_news is None:
+        return missing_parameter("id_news")
+    elif type(id_news) is not int:
+        return bad_json()
+    
+    if read is None:
+        return missing_parameter("read")
+    elif type(read) is not bool:
+        return bad_json()
+
+    # aggiorno la news letta/non letta
+
 @api_news.route('/send-news-to-groups', methods=['POST'])
 @jwt_required()
 def sendNewsToGroup():
