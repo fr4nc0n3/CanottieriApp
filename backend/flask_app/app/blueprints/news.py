@@ -4,7 +4,8 @@ from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from flask import Blueprint, jsonify, request
 from .helpers import bad_json, missing_parameter, permission_denied, is_admin
 from ..db import (dbCountUserNewsRx, query_db, execute_ops_db, dbUserNewsRx, 
-    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews)
+    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews, updateAllUserNewsRead, updateUserNewsRead)
+import traceback
 
 api_news = Blueprint("news", __name__)
 
@@ -65,7 +66,6 @@ def getUserNewsSended():
 
 #-------------- PROCEDURES ---------------
 # imposta la/e news dell' utente come lette/non lette
-# TODO
 @api_news.route('/set-user-news-read', methods=['UPDATE'])
 @jwt_required()
 def setNewsRead():
@@ -93,7 +93,15 @@ def setNewsRead():
 
     if all_readed is not None and bool(all_readed):
         #segna tutte come lette e ritorna
-        return
+        try:
+            updateAllUserNewsRead(id_user=id_user)
+        except Exception:
+            return jsonify({"error": traceback.format_exc()}), 500
+
+        return jsonify({
+            "operation": "set all user news read. id_user=" + str(id_user),
+            "status": "ok"
+            }), 200
 
     if id_news is None:
         return missing_parameter("id_news")
@@ -106,6 +114,16 @@ def setNewsRead():
         return bad_json()
 
     # aggiorno la news letta/non letta
+    try:
+        updateUserNewsRead(id_news=id_news, id_user=id_user, is_read=read)
+    except Exception as e:
+        return jsonify({"error": traceback.format_exc()}), 500
+
+    return jsonify({
+        "operation": "set user news read. id_user="
+         + str(id_user) + ", id_news=" + str(id_news),
+        "status": "ok"
+        }), 200
 
 @api_news.route('/send-news-to-groups', methods=['POST'])
 @jwt_required()

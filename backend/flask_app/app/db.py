@@ -229,6 +229,32 @@ def queryInsertUserNews(idNews: int, idUser: int) -> QueryOp:
 
     return {"query": query, "args": tuple([idNews, idUser])}
 
+#imposta una notifica utente come letta/non letta
+def updateUserNewsRead(id_news: int, id_user: int, is_read: bool):
+    is_read_int = 1 if is_read else 0
+
+    execute_ops_db([
+        {
+            "query": (
+                "UPDATE UserNews "
+                "SET is_read = ? "
+                "WHERE id_news = ? AND id_user = ? "
+            ),
+            "args": tuple([is_read_int, id_news, id_user])
+        }])
+
+#imposta tutte le user news di quell' utente come lette
+def updateAllUserNewsRead(id_user: int):
+    execute_ops_db([
+        {
+            "query": (
+                "UPDATE UserNews "
+                "SET is_read = 1 "
+                "WHERE id_user = ? "
+            ),
+            "args": tuple([id_user])
+        }])
+
 def insertWorkout(idUser: int, date: str, description: str):
     query = (
         "INSERT INTO Workout ("
