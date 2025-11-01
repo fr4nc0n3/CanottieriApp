@@ -91,6 +91,13 @@ export const emptyNewsToSend: NewsToSend = {
     message: "",
 };
 
+export type ApiInputUserNewsRead = {
+    id_user: number;
+    id_news?: number;
+    read?: boolean;
+    all_readed?: boolean;
+};
+
 // CRUD allenamento utente
 export type Workout = {
     id: number;

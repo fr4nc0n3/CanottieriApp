@@ -1,4 +1,8 @@
-import { apiGetCountUserNews, apiGetUserNewsReceived } from "@/global/APICalls";
+import {
+    apiGetCountUserNews,
+    apiGetUserNewsReceived,
+    apiSetUserNewsRead,
+} from "@/global/APICalls";
 import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
 import { UserNewsRx } from "@/global/Types";
@@ -29,25 +33,23 @@ export default function NotificationsScreen(): JSX.Element {
     const [rxOffset, setRxOffset] = useState<number>(0);
     const rxLimit = 5;
 
-    const fetchNews = //useCallback(async () => {
-        async () => {
-            const jwt = await getJWT();
-            const idUser = getJWTIdentity(jwt);
-            return apiGetUserNewsReceived(idUser, rxOffset, rxLimit, jwt);
-        };
+    const fetchNews = async () => {
+        const jwt = await getJWT();
+        const idUser = getJWTIdentity(jwt);
+        return apiGetUserNewsReceived(idUser, rxOffset, rxLimit, jwt);
+    };
 
-    const fetchTotalCountNews = //useCallback(async () => {
-        async () => {
-            const jwt = await getJWT();
-            const idUser = getJWTIdentity(jwt);
-            return apiGetCountUserNews(idUser, false, jwt);
-        };
+    const fetchTotalCountNews = async () => {
+        const jwt = await getJWT();
+        const idUser = getJWTIdentity(jwt);
+        return apiGetCountUserNews(idUser, false, jwt);
+    };
 
     const {
         data: rxNotifications,
         error: rxError,
         isLoading: rxIsLoading,
-    } = useQuery<UserNewsRx[]>(["userNewsRx", rxOffset.toString()], fetchNews);
+    } = useQuery<UserNewsRx[]>(["userNewsRx", rxOffset], fetchNews);
 
     const { data: rxTotalCountRaw } = useQuery<number>(
         ["userNewsRxTotalCount"],
@@ -71,38 +73,58 @@ export default function NotificationsScreen(): JSX.Element {
 
     const [selected, setSelected] = useState<UserNewsRx | null>(null);
 
-    //TODO: Calcola il numero massimo di pagine (da ricevere via backend)
     const totalPages = Math.max(1, Math.ceil(rxTotalCount / ITEMS_PER_PAGE));
-
-    //TODO: da ricevere via backend
-    // Lista delle notifiche visibili nella pagina corrente
-    /*const pageNotifications = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        return notifications.slice(start, start + ITEMS_PER_PAGE);
-    }, [notifications, currentPage]);*/
 
     // ==========================
     // Funzioni di aggiornamento stato
     // ==========================
 
-    //TODO: da inviare via backend
     // Segna tutte le notifiche come lette
-    const markAllAsRead = () => {
+    const markAllAsRead = async () => {
+        const jwt = await getJWT();
+        const identity = getJWTIdentity(jwt);
+
+        try {
+            await apiSetUserNewsRead(
+                { id_user: Number(identity), all_readed: true },
+                jwt
+            );
+        } catch (error) {
+            alert(
+                "Si e' verificato un errore durante l' operazione:",
+                "Error: " + error
+            );
+            return;
+        }
+
         setNotifications((prev) =>
             prev.map((n) => ({ ...n, is_read: Number(true) }))
         );
     };
 
-    //TODO: da inviare via backend
     // Toggle read per singola notifica (usato dal modal)
-    const toggleReadFor = (id: number) => {
+    const setReadFor = async (id: number, isRead: boolean) => {
         console.log("notification id toggle read:", id);
+
+        const jwt = await getJWT();
+        const identity = getJWTIdentity(jwt);
+
+        try {
+            await apiSetUserNewsRead(
+                { id_user: Number(identity), id_news: id, read: isRead },
+                jwt
+            );
+        } catch (error) {
+            alert(
+                "Si e' verificato un errore durante l' operazione:",
+                "Error: " + error
+            );
+            return;
+        }
 
         setNotifications((prev) =>
             prev.map((n) =>
-                n.id_user_news === id
-                    ? { ...n, is_read: Number(!n.is_read) }
-                    : n
+                n.id_user_news === id ? { ...n, is_read: Number(isRead) } : n
             )
         );
 
@@ -269,7 +291,10 @@ export default function NotificationsScreen(): JSX.Element {
                                                 : "unchecked"
                                         }
                                         onPress={() =>
-                                            toggleReadFor(selected.id_user_news)
+                                            setReadFor(
+                                                selected.id_user_news,
+                                                !selected.is_read
+                                            )
                                         }
                                     />
                                     <Text>Letta</Text>

@@ -11,6 +11,7 @@ import {
     API_LOGIN,
     API_PLANNINGS,
     API_SEND_NEWS_TO_GROUPS,
+    API_SET_USER_NEWS_READ,
     API_WORKOUT,
     API_WORKOUT_COMMENT,
 } from "./Constants";
@@ -26,6 +27,7 @@ import {
     ApiInputUpdatePlanning,
     ApiInputUpdateWorkout,
     ApiInputUpdateWorkoutComment,
+    ApiInputUserNewsRead,
     ApiOutputCreatePlanning,
     ApiOutputCreateWorkoutComment,
     ApiOutputGetPlannings,
@@ -123,6 +125,26 @@ export const apiSendNewsToGroups = async (news: NewsToSend, jwt: string) => {
     } catch (error) {
         console.error(
             `Error sending news to groups: ${JSON.stringify(news)}`,
+            error
+        );
+        throw error;
+    }
+};
+
+export const apiSetUserNewsRead = async (
+    update: ApiInputUserNewsRead,
+    jwt: string
+) => {
+    try {
+        const req = API_SET_USER_NEWS_READ;
+        return await apiFetchJWTAuth(jwt, req, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+        });
+    } catch (error) {
+        console.error(
+            `Error setting user news read with: ${JSON.stringify(update)}`,
             error
         );
         throw error;

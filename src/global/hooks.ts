@@ -10,7 +10,7 @@ interface UseQueryResult<TData, TError> {
     isLoading: boolean;
 }
 
-const cache: Record<string, unknown> = {};
+//const cache: Record<string, unknown> = {};
 
 /**
  * Minimal useQuery hook
@@ -19,32 +19,35 @@ const cache: Record<string, unknown> = {};
  * @param fetchFn Async function returning the data
  */
 export function useQuery<TData = unknown, TError = Error>(
-    key: string[],
+    key: (string | number)[],
     fetchFn: FetchFunction<TData>
 ): UseQueryResult<TData, TError> {
     const queryKey = key.join("-");
 
     const [data, setData] = useState<TData | null>(
-        () => (cache[queryKey] as TData) || null
+        // () => (cache[queryKey] as TData) || null
+        null
     );
     const [error, setError] = useState<TError | null>(null);
-    const [isLoading, setIsLoading] = useState<boolean>(!cache[queryKey]);
+    const [isLoading, setIsLoading] = useState<boolean>(
+        /*!cache[queryKey]*/ true
+    );
 
     useEffect(() => {
         const controller = new AbortController();
 
         // If cached, skip fetching
-        if (cache[queryKey]) {
+        /*       if (cache[queryKey]) {
             setData(cache[queryKey] as TData);
             return;
-        }
+        }*/
 
         setIsLoading(true);
         setError(null);
 
         fetchFn({ signal: controller.signal })
             .then((res) => {
-                cache[queryKey] = res;
+                //      cache[queryKey] = res;
                 setData(res);
             })
             .catch((err) => {
