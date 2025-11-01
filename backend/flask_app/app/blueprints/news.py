@@ -66,7 +66,7 @@ def getUserNewsSended():
 
 #-------------- PROCEDURES ---------------
 # imposta la/e news dell' utente come lette/non lette
-@api_news.route('/set-user-news-read', methods=['UPDATE'])
+@api_news.route('/set-user-news-read', methods=['PUT'])
 @jwt_required()
 def setNewsRead():
     identity = get_jwt_identity()
@@ -88,7 +88,7 @@ def setNewsRead():
     elif type(id_user) is not int:
         return bad_json()
 
-    if(id_user != identity):
+    if int(id_user) != int(identity):
         return permission_denied()
 
     if all_readed is not None and bool(all_readed):
