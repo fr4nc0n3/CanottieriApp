@@ -1,6 +1,7 @@
 import sqlite3
 from flask import g, current_app
 from typing import List, Optional, Tuple, TypedDict
+import traceback
 
 class QueryOp(TypedDict):
     query: str
@@ -75,7 +76,7 @@ def dbUserAccountTypes(idUser: int):
 def dbUserNewsRx(idUser: int, limit: int, offset: int):
     news = query_db(
         'SELECT un.id AS id_user_news, n.title, n.message, ' +
-        'n.data_publish, n.target_name, un.is_read, u.name AS sender_name ' +
+        'n.data_publish, n.target_name, un.is_read, u.name AS sender_name, un.id_news AS id_news ' +
         'FROM UserNews un, News n, User u ' +
         'WHERE u.id = n.id_user_sender AND un.id_news = n.id AND un.id_user = ? AND n.is_deleted = 0 ' +
         'ORDER BY n.data_publish DESC '
@@ -125,6 +126,13 @@ def dbUserWorkouts(idUser:int, startDate: str, endDate: str):
         , tuple([idUser, startDate, endDate]))
 
     return [dict(w) for w in workouts]
+
+def dbGetUserWorkout(id_workout: int): 
+    workout = query_db('SELECT * FROM Workout ' +
+        'WHERE id = ? ' 
+        , tuple([id_workout]))
+
+    return dict(workout[0])
 
 # ritorna list dict
 def dbWorkoutImages(id_workout: int):
@@ -193,6 +201,57 @@ def insertNews(idUser: int, message: str, title: str, groups: list[str]):
         })
 
     execute_ops_db(query_ops)
+
+def notifyUserForWorkoutComment(conn_db: sqlite3.Connection, id_workout: int):
+    workout = dbGetUserWorkout(id_workout=id_workout)
+    workout_date = workout.get("date", "<errore>")
+    workout_id_user = workout.get("id_user", "0")
+
+    id_user_admin = 1
+    message = "E' stato commentato il tuo allenamento del " + workout_date
+    title = "Commento allenamento del " + workout_date
+    groups = ""
+
+    try:
+        cursor = conn_db.execute(
+                "INSERT INTO News ("
+                "id_user_sender, "
+                "message, "
+                "title, "
+                "data_publish, "
+                "created_at, "
+                "updated_at, "
+                "deleted_at, "
+                "is_deleted, "
+                "target_name"
+                ") VALUES ("
+                "?, ?, ?, date('now'), datetime('now'), datetime('now'), NULL, 0, ?"
+                ")",
+            tuple([id_user_admin, message, title, groups])
+        )
+        new_id = cursor.lastrowid
+
+        if type(new_id) is int:
+            print("insert in user news with id_news=" + str(new_id) + ", workout_id_user=" + str(workout_id_user))
+
+            conn_db.execute(
+                "INSERT INTO UserNews ("
+                "id_news, id_user, created_at"
+                ") VALUES ("
+                "?,"
+                "?,"
+                "datetime('now')"
+                ")", 
+                tuple([new_id, workout_id_user])
+            )
+
+            conn_db.commit()
+        else:
+            conn_db.rollback()
+            raise Exception("new_id non e' un intero")
+
+    except Exception as e:
+        raise
 
 def deleteNews(id: int):
     execute_ops_db([

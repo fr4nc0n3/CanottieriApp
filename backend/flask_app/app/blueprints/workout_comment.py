@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, request
-from ..db import (execute_ops_db, get_db, query_db)
+from ..db import (execute_ops_db, get_db, insertNews, notifyUserForWorkoutComment, query_db)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from .helpers import (bad_json, is_admin, missing_parameter, permission_denied)
 import traceback
@@ -39,6 +39,10 @@ def createWorkoutComment():
 
     try:
         conn = get_db()
+
+        # inserimento notifica commento
+        notifyUserForWorkoutComment(conn_db=conn, id_workout=id_workout)
+
         cursor = conn.execute(
             "INSERT INTO WorkoutComment ("
             "id_user_commentator, id_workout, description"
