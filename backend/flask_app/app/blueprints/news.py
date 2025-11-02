@@ -32,17 +32,17 @@ def getCountUserNews():
     identity = get_jwt_identity()
 
     idUser = request.args.get('id-user', '-1')
-    only_read = request.args.get('only-read', 'false')
+    only_not_read = request.args.get('only-not-read', 'false')
 
     #autenticazione
     if(idUser != identity):
         return permission_denied()
 
     count = 0
-    if only_read == "false":
+    if only_not_read == "false":
         count = dbCountUserNewsRx(int(idUser)) 
-    elif only_read == "true":
-        count = dbCountUserNewsRx(int(idUser), is_read=True)
+    elif only_not_read == "true":
+        count = dbCountUserNewsRx(int(idUser), is_read=False)
     else:
         return jsonify({"Status": "Bad request"}), 400
 
