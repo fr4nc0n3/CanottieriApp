@@ -33,6 +33,7 @@ export const emptyUser: User = {
 
 export type UserNewsRx = {
     id_user_news: number;
+    id_news: number;
     title: string;
     message: string;
     data_publish: string;
@@ -43,6 +44,7 @@ export type UserNewsRx = {
 
 export const emptyUserNewsRx: UserNewsRx = {
     id_user_news: 0,
+    id_news: 0,
     title: "",
     message: "",
     data_publish: "",

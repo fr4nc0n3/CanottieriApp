@@ -103,37 +103,48 @@ export default function NotificationsScreen(): JSX.Element {
     };
 
     // Toggle read per singola notifica (usato dal modal)
-    const setReadFor = async (id: number, isRead: boolean) => {
-        console.log("notification id toggle read:", id);
+    const setReadFor = //async (id: number, isRead: boolean) => {
+        async (userNews: UserNewsRx, isRead: boolean) => {
+            const id = userNews.id_user_news;
 
-        const jwt = await getJWT();
-        const identity = getJWTIdentity(jwt);
+            console.log("notification id toggle read:", id);
 
-        try {
-            await apiSetUserNewsRead(
-                { id_user: Number(identity), id_news: id, read: isRead },
-                jwt
+            const jwt = await getJWT();
+            const identity = getJWTIdentity(jwt);
+
+            try {
+                await apiSetUserNewsRead(
+                    {
+                        id_user: Number(identity),
+                        id_news: userNews.id_news,
+                        read: isRead,
+                    },
+                    jwt
+                );
+            } catch (error) {
+                alert(
+                    "Si e' verificato un errore durante l' operazione:",
+                    "Error: " + error
+                );
+                return;
+            }
+
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.id_user_news === id
+                        ? { ...n, is_read: Number(isRead) }
+                        : n
+                )
             );
-        } catch (error) {
-            alert(
-                "Si e' verificato un errore durante l' operazione:",
-                "Error: " + error
-            );
-            return;
-        }
 
-        setNotifications((prev) =>
-            prev.map((n) =>
-                n.id_user_news === id ? { ...n, is_read: Number(isRead) } : n
-            )
-        );
-
-        console.log("current notification selected:", selected);
-        // Aggiorna anche la selezione attiva se presente
-        if (selected && selected.id_user_news === id) {
-            setSelected((s) => (s ? { ...s, is_read: Number(!s.is_read) } : s));
-        }
-    };
+            console.log("current notification selected:", selected);
+            // Aggiorna anche la selezione attiva se presente
+            if (selected && selected.id_user_news === id) {
+                setSelected((s) =>
+                    s ? { ...s, is_read: Number(!s.is_read) } : s
+                );
+            }
+        };
 
     const isDetailOpened = () => selected !== null;
 
@@ -292,8 +303,10 @@ export default function NotificationsScreen(): JSX.Element {
                                         }
                                         onPress={() =>
                                             setReadFor(
-                                                selected.id_user_news,
+                                                selected,
                                                 !selected.is_read
+                                                //    selected.id_user_news,
+                                                //   !selected.is_read
                                             )
                                         }
                                     />
