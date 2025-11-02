@@ -6,6 +6,9 @@
     Tale backup va salvato nella root del progetto nella cartella "backups", inoltre
     va nominato con la data odierna (es. backup_canottieriapp_19-10-2025.zip)
 
+    NOTA: non e' vero, non ci sono i permessi sul server di produzione per creare file o cartelle
+    in /home
+
 -   Fare build del sito statico cambiando valori in src/.env.
     Per buildare il sito, andare nella cartella src ed eseguire lo script "build:web" situato nel file
     src/package.json, quindi "npm run build:web", questo generera' la cartella src/dist contenente
