@@ -96,15 +96,15 @@ export const apiGetUserNewsReceived = async (
 
 export const apiGetCountUserNews = async (
     idUser: number,
-    only_read: boolean,
+    only_not_read: boolean,
     jwt: string
 ): Promise<number> => {
-    const url_only_read = only_read ? "true" : "false";
+    const url_only_not_read = only_not_read ? "true" : "false";
 
     try {
         const req =
             API_GET_COUNT_USER_NEWS +
-            `?id-user=${idUser}&only-read=${url_only_read}`;
+            `?id-user=${idUser}&only-not-read=${url_only_not_read}`;
         const res = await apiFetchJWTAuth(jwt, req);
 
         return res.count;
