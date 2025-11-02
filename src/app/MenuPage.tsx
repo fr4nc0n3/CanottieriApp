@@ -1,12 +1,14 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { apiGetCountUserNews } from "@/global/APICalls";
+import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
-import { getJWTAccountTypes } from "@/global/Utils";
-import { useRouter } from "expo-router";
+import { getJWTAccountTypes, getJWTIdentity } from "@/global/Utils";
+import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Drawer } from "react-native-paper";
+import { Drawer, Text } from "react-native-paper";
 
 export default function MenuPage() {
     const router = useRouter();
@@ -21,12 +23,39 @@ export default function MenuPage() {
         setIsAdmin(accountTypes.some((type) => type === "admin"));
     };
 
+    const [notReadCountNews, setNotReadCountNews] = useState(0);
+
+    const fetchNotReadCountNews = async () => {
+        const jwt = await getJWT();
+        const idUser = getJWTIdentity(jwt);
+        const count = await apiGetCountUserNews(idUser, true, jwt);
+
+        setNotReadCountNews(count);
+    };
+
+    useFocusEffect(() => {
+        fetchNotReadCountNews();
+    });
+
     useEffect(() => {
         fetchIsAdmin();
     }, []);
 
     return (
         <View style={styles.container}>
+            {notReadCountNews > 0 && (
+                <View style={styles.notificationBannerContainer}>
+                    <Text
+                        style={styles.notificationBannerText}
+                        variant="titleMedium"
+                    >
+                        !! ATTENZIONE !!
+                        {"\n"}
+                        Hai delle notifiche non lette, controlla la sezione.
+                    </Text>
+                </View>
+            )}
+
             <View style={styles.content}>
                 <Drawer.Section style={styles.sidebar}>
                     <Drawer.Item
@@ -113,5 +142,19 @@ const styles = StyleSheet.create({
     sidebar: {
         width: "100%",
         paddingTop: 16,
+    },
+    notificationBannerContainer: {
+        margin: 5,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    notificationBannerText: {
+        borderRadius: 30,
+        backgroundColor: "#FF8C00",
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        color: "#2E2E2E",
+        fontWeight: "bold",
+        textAlign: "center",
     },
 });
