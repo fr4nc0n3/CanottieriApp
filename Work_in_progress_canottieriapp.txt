@@ -1,0 +1,35 @@
+CanottieriApp LAVORO ATTUALE
+
+Obiettivo:
+Nel menu principale, mostrare avvertimento
+che indica di guardare le novita' non ancora visualizzate.
+Ad esempio "Hai delle notifiche non lette, guarda la sezione".
+
+A questo punto l' utente andando sulla nuova voce di menu
+"Notifiche", potra' vedere le notifiche ricevute.
+In questa nuova sezione le notifiche saranno in ordine cronologico
+dalla piu' recente (in alto) alla meno recente (in basso).
+Saranno anche suddivise per pagine. Ogni pagina mostra al max 5
+notifiche.
+Inoltre ogni record grafico di notifica dovra' avere i seguenti
+campi:
+- Titolo
+- Data
+- Chi ha inviato la notifica (utente specifico)
+- Una spunta (non modificabile) che indica se la notifica e' gia' stata letta oppure no
+
+Sempre in questa sezione, in cima alla pagina ci sara'
+un bottone "segna tutte come lette".
+Alla sua pressione verra' richiesta la conferma, ed una volta
+confermato allora tutte le notifiche senza la spunta (della pagina
+corrente ma anche delle altre) saranno spuntate.
+
+Una volta che si clicca su un record grafico di notifica,
+si aprira' un modale formattato in questo modo:
+- Nell' intestazione ci sara': Titolo, Nome utente che ha inviato
+la notifica, la data
+- Nel corpo invece ci sara' il messaggio della notifica
+- Nel footer del modale ci sara' un bottone con scritto chiudi ed
+una spunta che indica se la notifica e' stata letta. L' utente
+potra' spuntare o spuntare tale spunta.
+

@@ -1,0 +1,68 @@
+-- Fase iniziale e prototipazione --
+Inizialmente scriverei il codice minimo per
+avere una prima versione primordiale funzionante.
+
+-- Workflow --
+Plan -> development -> Test -> Release -> Document
+
+-- Pianificazione --
+- Definire cosa fare, in che ordine e perche'
+- Impostare una "milestone" per lo sviluppo di un pacchetto
+di funzionalita'/modifiche
+
+- Divide et impera:
+Suddividere lo sviluppo di una funzionalita' in compiti
+atomici
+
+-- Sviluppo --
+Utilizzare un branch di git "dev" per creare nuovi branch
+di funzionalita', testarli e poi fare successivamente il merge in
+dev, cambiare la versione del software ed altro eventualmente.
+Infine fare il merge nel "main" e fare il deploy
+
+branch dev -> branch funzionalita' -> development -> test -> merge
+in dev -> cambiare versione etc.. -> merge in main -> deploy
+
+- Unit tests ? (Per progetti piccoli, non e' essenziale.
+Solo da un certo punto di complessita' in poi aiuterebbero)
+
+-- Sviluppo di un interfaccia grafica che fa CRUD --
+1) Creare interfaccia grafica con dati finti
+2) Creare struttura database e popolare con dati di esempio
+3) Creare backend per creare API per accedere al database
+4) Modificare interfaccia in modo che usi l' API
+
+-- Documentazione --
+- Utilizzare README file
+    Deve spiegare l' utilizzo del software (flussi principali), eventuale installazione ed avvio ambiente di sviluppo
+
+- Dopo ogni rilascio documentare modifiche
+
+- Utilizzare un CHANGELOG file per tenere traccia diretta
+delle modifiche apportate ad ogni versione rilasciata
+(una sorta di tracciamento git riassuntivo).
+Sopratutto un changelog a parte con le query di modifica struttura database.
+
+- Cartella docs per spiegare struttura software, macro aree del
+codice etc..
+
+-- Dopo ogni ciclo --
+Fare revisione di problemi incontrati nel workflow
+
+-- Aggiungere funzionalita' CRUD --
+- Creare interfaccia di esempio frontend
+- Strutturare database: screenshot schema dopo la modifica, esportazione XML dello schema, 
+modifica delle query strutturali per combaciare a tale modifica. 
+Modificare database con tale struttura. Aggiornare changelog con query nel caso.
+- Creare nel backend delle entita' che corrispondono alle tabelle e creare il pattern DAO
+(Data Access Object) corrispondente, poi definire e creare API che li manipolano per ottenere
+il risultato
+- integration test 
+- Far usufruire il frontend con la nuova API al posto dei dati fittizi
+
+
+
+
+
+
+
