@@ -78,7 +78,6 @@ def create_app():
     # close_connection
     app.teardown_appcontext(close_connection)
 
-    # TODO a questo punto togliere i log manuali dentro le route flask
     # logging ad ogni route API
     app.before_request(log_request)
 
