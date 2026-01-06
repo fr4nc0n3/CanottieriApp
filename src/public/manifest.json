@@ -1,10 +1,10 @@
 {
-    "short_name": "CanottieriApp",
-    "name": "Canottieri App",
+    "short_name": "MY TRAINING",
+    "name": "MY TRAINING",
     "icons": [
         {
-            "src": "favicon.png",
-            "type": "image/png",
+            "src": "icon_app_2.jpeg",
+            "type": "image/jpeg",
             "sizes": "1024x1024"
         }
     ],

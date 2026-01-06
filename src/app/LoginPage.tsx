@@ -39,7 +39,7 @@ export default function LoginPage() {
     return (
         <View style={styles.container}>
             <Image
-                source={require("@/assets/images/icon_app.png")}
+                source={require("@/assets/images/icon_app_2.jpeg")}
                 style={styles.logo}
             />
             <Text variant="titleLarge" style={styles.title}>

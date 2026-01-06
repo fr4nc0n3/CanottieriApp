@@ -40,7 +40,7 @@ export default function RootLayout() {
                                         />
                                     </TouchableOpacity>
                                     <Image
-                                        source={require("@/assets/images/logo_canottieri_pallanza.png")}
+                                        source={require("@/assets/images/icon_app_2.jpeg")}
                                         style={{
                                             height: 50,
                                             width: 50,
@@ -53,7 +53,7 @@ export default function RootLayout() {
                                             fontSize: 16,
                                         }}
                                     >
-                                        Canottieri Pallanza
+                                        MY TRAINING
                                     </Text>
                                     <TouchableOpacity
                                         onPress={() => {
