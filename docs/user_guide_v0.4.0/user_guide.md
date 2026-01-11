@@ -100,3 +100,8 @@ Essa mostra i seguenti dati:
 -   Autore: io modestamente
 -   Privacy policy: non necessaria al momento
 -   API endpoint: dettaglio tecnico che indica a quale percorso URL l' app effettua le richieste per ottenere i dati centralizzati sul server.
+
+## Come scaricare l' app usando Google Chrome (provato per Android)
+
+Aprire google chrome ed andare in alto a sinistra dove si trovano i "3 puntini",
+cliccarci, trovare e cliccare su "Aggiungi a schermata Home", successivamente scegliere l' opzione "Installa", a fine operazione dovreste trovare una nuova icona per l' app sul vostro smartphone
