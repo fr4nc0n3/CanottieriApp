@@ -5,7 +5,12 @@ import { API_GET_USER_INFO } from "@/global/Constants";
 import { deleteJWT, getJWT } from "@/global/jwtStorage";
 import { emptyUser, User } from "@/global/Types";
 import { confirm } from "@/global/UniversalPopups";
-import { getJWTAccountTypes, getJWTIdentity } from "@/global/Utils";
+import {
+    birthdayToFICClassification,
+    birthdayToFICSFClassification,
+    getJWTAccountTypes,
+    getJWTIdentity,
+} from "@/global/Utils";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -60,6 +65,11 @@ export default function ProfiloPage() {
         fetchUser();
     }, []);
 
+    const userFICClass = birthdayToFICClassification(new Date(user.birthday));
+    const userFICSFClass = birthdayToFICSFClassification(
+        new Date(user.birthday)
+    );
+
     if (loading) {
         return <Text>Caricamento ...</Text>;
     }
@@ -81,7 +91,9 @@ export default function ProfiloPage() {
                     )}
                     <View style={styles.infoContainer}>
                         <Text variant="titleMedium">{`${user.name}`}</Text>
-                        <Text style={styles.label}>Data di nascita</Text>
+                        <Text style={styles.label}>
+                            Data di nascita (yyyy-mm-dd)
+                        </Text>
                         <Text variant="bodyMedium">{user.birthday}</Text>
 
                         <Text style={styles.label}>Tipo Account</Text>
@@ -89,9 +101,16 @@ export default function ProfiloPage() {
                             {userAccountTypes.join(", ")}
                         </Chip>
 
-                        <Text style={styles.label}>Scadenza iscrizione</Text>
+                        <Text style={styles.label}>Categoria FIC</Text>
                         <Text variant="bodyMedium">
-                            {user.expiration_sub_date}
+                            primaria: {userFICClass.first ?? "N/A"}, secondaria:{" "}
+                            {userFICClass.secondary ?? "N/A"}, assoluta:{" "}
+                            {userFICClass.absolute ?? "N/A"}
+                        </Text>
+                        <Text style={styles.label}>Categoria FICSF</Text>
+                        <Text variant="bodyMedium">
+                            primaria: {userFICSFClass.first ?? "N/A"}, assoluta:{" "}
+                            {userFICSFClass.absolute ?? "N/A"}
                         </Text>
                     </View>
                 </Card.Content>
