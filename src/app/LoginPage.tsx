@@ -2,12 +2,14 @@ import { apiLogin } from "@/global/APICalls";
 import { saveJWT } from "@/global/jwtStorage";
 import { alert } from "@/global/UniversalPopups";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { View, StyleSheet, Image, Alert } from "react-native";
+import React, { useContext, useState } from "react";
+import { View, StyleSheet, Image } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
+import { UserContext } from "./UserContext/UserContext";
 
 export default function LoginPage() {
     const router = useRouter();
+    const userContext = useContext(UserContext);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -26,6 +28,8 @@ export default function LoginPage() {
 
                 if (jsonRes.token) {
                     await saveJWT(jsonRes.token);
+
+                    userContext?.syncUserInfo();
                     router.dismissTo("/MenuPage");
                 } else {
                     setError("Credenziali errate");

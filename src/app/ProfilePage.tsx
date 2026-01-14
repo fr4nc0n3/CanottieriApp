@@ -10,38 +10,18 @@ import {
     birthdayToFICSFClassification,
     getJWTAccountTypes,
     getJWTIdentity,
+    universalDateStringFormat,
 } from "@/global/Utils";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
+import { UserContext } from "./UserContext/UserContext";
+
+//TODO: usare l' useContext per l' utente (esiste gia')
 
 export default function ProfiloPage() {
-    const [user, setUser] = useState<User>(emptyUser);
-    const [userAccountTypes, setUserAccountTypes] = useState<string[]>([]);
-
-    const [loading, setLoading] = useState<boolean>(true);
-    const [isImageUrl, setIsImageUrl] = useState<boolean>(false);
-
-    const fetchUser = async () => {
-        setLoading(true);
-        try {
-            const jwt = await getJWT();
-            const userId = getJWTIdentity(jwt);
-            const user = await apiGetUserInfo(userId, jwt);
-            setUser(user);
-
-            /*const resImg = await fetch(user.profile_img_url, {
-                method: "HEAD",
-            });
-
-            setIsImageUrl(resImg.ok);*/
-        } catch (error) {
-            alert("Errore ricezione dati");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const userContext = useContext(UserContext);
 
     const logout = async () => {
         await deleteJWT();
@@ -54,25 +34,7 @@ export default function ProfiloPage() {
         }
     };
 
-    useEffect(() => {
-        /* fetch dei tipi di account associati all' utente */
-        (async () => {
-            const jwt = await getJWT();
-            const accountTypes = getJWTAccountTypes(jwt);
-            setUserAccountTypes(accountTypes);
-        })();
-
-        fetchUser();
-    }, []);
-
-    const userFICClass = birthdayToFICClassification(new Date(user.birthday));
-    const userFICSFClass = birthdayToFICSFClassification(
-        new Date(user.birthday)
-    );
-
-    if (loading) {
-        return <Text>Caricamento ...</Text>;
-    }
+    const user = userContext?.userInfo;
 
     return (
         <View style={styles.container}>
@@ -81,36 +43,51 @@ export default function ProfiloPage() {
             </Text>
             <Card style={styles.card}>
                 <Card.Content style={styles.cardContent}>
-                    {isImageUrl ? (
-                        <Avatar.Image
-                            size={100}
-                            source={{ uri: user.profile_img_url }}
-                        />
-                    ) : (
-                        <Avatar.Text size={100} label="N/A" />
-                    )}
+                    <Avatar.Text size={100} label="N/A" />
+
                     <View style={styles.infoContainer}>
-                        <Text variant="titleMedium">{`${user.name}`}</Text>
-                        <Text style={styles.label}>
-                            Data di nascita (yyyy-mm-dd)
+                        <Text variant="titleMedium">{`${
+                            user?.name ?? "N/A"
+                        }`}</Text>
+                        <Text style={styles.label}>Data di nascita</Text>
+                        <Text variant="bodyMedium">
+                            {user?.birthday
+                                ? universalDateStringFormat(user.birthday)
+                                : "N/A"}
                         </Text>
-                        <Text variant="bodyMedium">{user.birthday}</Text>
 
                         <Text style={styles.label}>Tipo Account</Text>
                         <Chip icon="account" style={styles.chip}>
-                            {userAccountTypes.join(", ")}
+                            {user?.accountTypes.join(", ")}
                         </Chip>
 
                         <Text style={styles.label}>Categoria FIC</Text>
                         <Text variant="bodyMedium">
-                            primaria: {userFICClass.first ?? "N/A"}, secondaria:{" "}
-                            {userFICClass.secondary ?? "N/A"}, assoluta:{" "}
-                            {userFICClass.absolute ?? "N/A"}
+                            {user?.FICClassification.first
+                                ? "primaria: " +
+                                  user.FICClassification.first +
+                                  ", "
+                                : ""}
+                            {user?.FICClassification.secondary
+                                ? "secondaria: " +
+                                  user.FICClassification.secondary +
+                                  ", "
+                                : ""}
+                            {user?.FICClassification.absolute
+                                ? "assoluta: " + user.FICClassification.absolute
+                                : ""}
                         </Text>
                         <Text style={styles.label}>Categoria FICSF</Text>
                         <Text variant="bodyMedium">
-                            primaria: {userFICSFClass.first ?? "N/A"}, assoluta:{" "}
-                            {userFICSFClass.absolute ?? "N/A"}
+                            {user?.FICSFClassification.first
+                                ? "primaria: " +
+                                  user.FICSFClassification.first +
+                                  ", "
+                                : ""}
+                            {user?.FICSFClassification.absolute
+                                ? "assoluta: " +
+                                  user.FICSFClassification.absolute
+                                : ""}
                         </Text>
                     </View>
                 </Card.Content>

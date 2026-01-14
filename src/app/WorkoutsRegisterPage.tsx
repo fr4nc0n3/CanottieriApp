@@ -3,11 +3,16 @@ import { apiGetWorkout } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import { Workout } from "@/global/Types";
 import { alert } from "@/global/UniversalPopups";
-import { getJWTIdentity } from "@/global/Utils";
+import {
+    birthdayToFICClassification,
+    birthdayToFICSFClassification,
+    getJWTIdentity,
+} from "@/global/Utils";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { IconButton, Text } from "react-native-paper";
+import { Divider, IconButton, Text } from "react-native-paper";
+import { UserContext } from "./UserContext/UserContext";
 
 //TODO: fare componente che passando i dati come nome/id atleta restituisca
 //TODO: la vista CRUD, nel formato a calendario, per quell' atleta in modo da
@@ -19,6 +24,7 @@ import { IconButton, Text } from "react-native-paper";
  */
 const WorkoutsRegisterPage = () => {
     const router = useRouter();
+    const userContext = useContext(UserContext);
 
     const firstFocusRef = useRef(true);
     const [date, setDate] = useState<Date>(new Date());
@@ -167,9 +173,22 @@ const WorkoutsRegisterPage = () => {
                         }
                     }}
                 />
-                <Text variant="titleMedium" style={{ alignSelf: "center" }}>
-                    Totale allenamenti del mese: {workouts.length}
-                </Text>
+                <View style={{ alignSelf: "center" }}>
+                    <Text variant="titleMedium">
+                        Totale allenamenti del mese: {workouts.length}
+                    </Text>
+                    <Divider style={{ margin: 10 }} />
+                    <Text variant="titleSmall">
+                        Categoria FIC:{" "}
+                        {userContext?.userInfo?.FICClassification.first ??
+                            userContext?.userInfo?.FICClassification.absolute}
+                    </Text>
+                    <Text variant="titleSmall">
+                        Categoria FICSF:{" "}
+                        {userContext?.userInfo?.FICSFClassification.first ??
+                            userContext?.userInfo?.FICSFClassification.absolute}
+                    </Text>
+                </View>
             </ScrollView>
         </>
     );

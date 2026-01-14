@@ -1,5 +1,6 @@
 /* Licensed under the GNU General Public License v3. See LICENSE file for details. */
 
+import HeaderApp from "@/components/HeaderApp";
 import AppThemePaper from "@/global/AppThemePaper";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useRouter } from "expo-router";
@@ -7,6 +8,8 @@ import * as React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { UserContext } from "./UserContext/UserContext";
+import { UserInfoProvider } from "./UserContext/UserProvider";
 
 export default function RootLayout() {
     const router = useRouter();
@@ -14,69 +17,20 @@ export default function RootLayout() {
     return (
         <SafeAreaProvider>
             <PaperProvider theme={AppThemePaper}>
-                <Stack
-                    screenOptions={{
-                        headerBackVisible: false,
-                        header: () => (
-                            <SafeAreaView>
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        justifyContent: "space-around",
-                                        minHeight: 50,
-                                        backgroundColor: "#fff",
-                                    }}
-                                >
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            router.dismissTo("/MenuPage");
-                                        }}
-                                    >
-                                        <Ionicons
-                                            name="menu"
-                                            size={32}
-                                            color="black"
-                                        />
-                                    </TouchableOpacity>
-                                    <Image
-                                        source={require("@/assets/images/icon_app_2.jpeg")}
-                                        style={{
-                                            height: 50,
-                                            width: 50,
-                                            resizeMode: "contain",
-                                        }}
-                                    />
-                                    <Text
-                                        style={{
-                                            fontWeight: "bold",
-                                            fontSize: 16,
-                                        }}
-                                    >
-                                        MY TRAINING
-                                    </Text>
-                                    <TouchableOpacity
-                                        onPress={() => {
-                                            router.dismissTo("/SettingsPage");
-                                        }}
-                                    >
-                                        <Ionicons
-                                            name="settings-outline"
-                                            size={32}
-                                            color="black"
-                                        />
-                                    </TouchableOpacity>
-                                </View>
-                            </SafeAreaView>
-                        ),
-                        headerStyle: { backgroundColor: "#fff" },
-                    }}
-                >
-                    <Stack.Screen
-                        name="LoginPage"
-                        options={{ headerShown: false }}
-                    />
-                </Stack>
+                <UserInfoProvider>
+                    <Stack
+                        screenOptions={{
+                            headerBackVisible: false,
+                            header: () => <HeaderApp />,
+                            headerStyle: { backgroundColor: "#fff" },
+                        }}
+                    >
+                        <Stack.Screen
+                            name="LoginPage"
+                            options={{ headerShown: false }}
+                        />
+                    </Stack>
+                </UserInfoProvider>
             </PaperProvider>
         </SafeAreaProvider>
     );

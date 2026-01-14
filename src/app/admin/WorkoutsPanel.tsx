@@ -12,7 +12,11 @@ import {
 import { getJWT } from "@/global/jwtStorage";
 import { User, Workout, WorkoutComment } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
-import { getJWTIdentity } from "@/global/Utils";
+import {
+    birthdayToFICClassification,
+    birthdayToFICSFClassification,
+    getJWTIdentity,
+} from "@/global/Utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -145,6 +149,19 @@ const WorkoutsPanel = () => {
         showModal();
     };
 
+    const athleteFICClassification = selectedAthlete
+        ? birthdayToFICClassification(new Date(selectedAthlete.birthday))
+        : null;
+    const athleteFICSFClassification = selectedAthlete
+        ? birthdayToFICSFClassification(new Date(selectedAthlete.birthday))
+        : null;
+
+    const athleteFICCategory =
+        athleteFICClassification?.first ?? athleteFICClassification?.absolute;
+    const athleteFICSFCategory =
+        athleteFICSFClassification?.first ??
+        athleteFICSFClassification?.absolute;
+
     return (
         <>
             <Menu
@@ -183,10 +200,21 @@ const WorkoutsPanel = () => {
                         )
                     }
                 />
-                <Text variant="titleLarge" style={style.header}>
-                    Registro allenamenti
-                    {`\natleta: ${selectedAthlete?.name || "N/A"}`}
-                </Text>
+                <View>
+                    <Text variant="titleLarge" style={style.header}>
+                        Registro allenamenti
+                        {`\natleta: ${selectedAthlete?.name || "N/A"}\n`}
+                    </Text>
+                    <Divider />
+                    <Text variant="titleSmall">
+                        {athleteFICCategory
+                            ? "Categoria FIC: " + athleteFICCategory + "\n"
+                            : ""}
+                        {athleteFICSFCategory
+                            ? "Categoria FICSF: " + athleteFICSFCategory
+                            : ""}
+                    </Text>
+                </View>
                 <IconButton
                     icon="arrow-right"
                     onPress={() =>

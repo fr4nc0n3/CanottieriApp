@@ -62,7 +62,7 @@ export enum FICAgeGroup {
     MASTER_OVER_64 = "Master over 64",
 }
 
-type AthleteFICClassification = {
+export type AthleteFICClassification = {
     first: FICAgeGroup | null;
     secondary: FICAgeGroup | null;
     absolute: FICAgeGroup | null;
@@ -142,7 +142,7 @@ export enum FICSFAgeGroup {
     MASTER_M_F = "Master M/F",
 }
 
-type AthleteFICSFClassification = {
+export type AthleteFICSFClassification = {
     first: FICSFAgeGroup | null;
     absolute: FICSFAgeGroup | null;
 };
