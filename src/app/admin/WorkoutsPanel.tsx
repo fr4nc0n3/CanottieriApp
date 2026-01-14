@@ -15,7 +15,6 @@ import { alert, confirm } from "@/global/UniversalPopups";
 import {
     birthdayToFICClassification,
     birthdayToFICSFClassification,
-    getJWTIdentity,
 } from "@/global/Utils";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";

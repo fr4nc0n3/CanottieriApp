@@ -43,7 +43,8 @@ export function UserInfoProvider({ children }: UserInfoProviderProps) {
         } catch (error) {
             alert(
                 "Info utente non caricate",
-                "Non e' stato possibile reperire le informazioni dell' utente"
+                "Non e' stato possibile reperire le informazioni dell' utente: " +
+                    error
             );
         }
     };

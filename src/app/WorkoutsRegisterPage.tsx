@@ -3,11 +3,7 @@ import { apiGetWorkout } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import { Workout } from "@/global/Types";
 import { alert } from "@/global/UniversalPopups";
-import {
-    birthdayToFICClassification,
-    birthdayToFICSFClassification,
-    getJWTIdentity,
-} from "@/global/Utils";
+import { getJWTIdentity } from "@/global/Utils";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";

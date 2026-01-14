@@ -1,20 +1,11 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
-import { apiGetUserInfo } from "@/global/APICalls";
-import { API_GET_USER_INFO } from "@/global/Constants";
-import { deleteJWT, getJWT } from "@/global/jwtStorage";
-import { emptyUser, User } from "@/global/Types";
+import { deleteJWT } from "@/global/jwtStorage";
 import { confirm } from "@/global/UniversalPopups";
-import {
-    birthdayToFICClassification,
-    birthdayToFICSFClassification,
-    getJWTAccountTypes,
-    getJWTIdentity,
-    universalDateStringFormat,
-} from "@/global/Utils";
+import { universalDateStringFormat } from "@/global/Utils";
 import { router } from "expo-router";
-import React, { useContext, useEffect, useState } from "react";
-import { Alert, StyleSheet, View } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, View } from "react-native";
 import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
 
