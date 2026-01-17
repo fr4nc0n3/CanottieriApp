@@ -3,15 +3,22 @@
 import { apiGetCountUserNews } from "@/global/APICalls";
 import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
-import { getJWTAccountTypes, getJWTIdentity } from "@/global/Utils";
+import {
+    getJWTAccountTypes,
+    getJWTIdentity,
+    isSameDayOfYear,
+} from "@/global/Utils";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
-import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Drawer, Text } from "react-native-paper";
+import { UserContext } from "./UserContext/UserContext";
+import HappyBirthday from "@/components/HappyBirthday";
 
 export default function MenuPage() {
     const router = useRouter();
+    const userContext = useContext(UserContext);
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     const [active, setActive] = React.useState("");
@@ -41,20 +48,14 @@ export default function MenuPage() {
         fetchIsAdmin();
     }, []);
 
+    const userBirthday = userContext?.userInfo?.birthday;
+    const isUserBirthday = userBirthday ? isSameDayOfYear(userBirthday) : false;
+
     return (
-        <View style={styles.container}>
-            {notReadCountNews > 0 && (
-                <View style={styles.notificationBannerContainer}>
-                    <Text
-                        style={styles.notificationBannerText}
-                        variant="titleMedium"
-                    >
-                        !! ATTENZIONE !!
-                        {"\n"}
-                        Hai delle notifiche non lette, controlla la sezione.
-                    </Text>
-                </View>
-            )}
+        <ScrollView style={styles.container}>
+            {notReadCountNews > 0 && <NotificationBanner />}
+
+            {isUserBirthday && <HappyBirthday />}
 
             <View style={styles.content}>
                 <Drawer.Section style={styles.sidebar}>
@@ -128,9 +129,19 @@ export default function MenuPage() {
                     </Drawer.Section>
                 )}
             </View>
-        </View>
+        </ScrollView>
     );
 }
+
+const NotificationBanner = () => (
+    <View style={styles.notificationBannerContainer}>
+        <Text style={styles.notificationBannerText} variant="titleMedium">
+            !! ATTENZIONE !!
+            {"\n"}
+            Hai delle notifiche non lette, controlla la sezione.
+        </Text>
+    </View>
+);
 
 const styles = StyleSheet.create({
     container: {

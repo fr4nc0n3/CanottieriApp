@@ -5,7 +5,7 @@ export const decodeJWT = (token: string) => {
         atob(base64)
             .split("")
             .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-            .join("")
+            .join(""),
     );
     return JSON.parse(jsonPayload);
 };
@@ -35,6 +35,15 @@ export const apiGetDateStringFormat = (date: Date) => {
 
 export const sleep = (millis: number) => {
     return new Promise((resolve) => setTimeout(resolve, millis));
+};
+
+//il 29 febbraio risulta solo negli anni bisestili
+export const isSameDayOfYear = (date: Date) => {
+    const today = new Date();
+    return (
+        today.getMonth() === date.getMonth() &&
+        today.getDate() === date.getDate()
+    );
 };
 
 export enum FICAgeGroup {
@@ -112,7 +121,7 @@ const getFICAbsoluteCategory = (age: number): FICAgeGroup | null => {
 };
 
 export const birthdayToFICClassification = (
-    birthday: Date
+    birthday: Date,
 ): AthleteFICClassification => {
     const age = birthdayToSolarYearAge(birthday);
 
@@ -162,7 +171,7 @@ const getFICSFAbsoluteCategory = (age: number): FICSFAgeGroup | null => {
 };
 
 export const birthdayToFICSFClassification = (
-    birthday: Date
+    birthday: Date,
 ): AthleteFICSFClassification => {
     const age = birthdayToSolarYearAge(birthday);
 
