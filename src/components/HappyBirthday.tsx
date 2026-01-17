@@ -7,7 +7,7 @@ const happyMessages: string[] = [
     "Tanti auguri di buon compleanno! 🎂\n Ti auguro un anno ricco di successi",
     "Buon compleanno dall' App! 🥳 ",
     "Buon compleanno di cuore! 💖\n Qui l' IBAN per pagarci la cena:\n IT00 X00A HAHA HA0H AHA0 H0AH AHA :)",
-    "Tanti auguri! 🎁\n Hai ricevuto un buono allenamento 🎫:\n Si', come no 🤣",
+    "Tanti auguri di compleanno! 🎁\n Hai ricevuto un buono allenamento 🎫:\n Si', come no 🤣",
     "Buon compleanno! 🌟\n Salute, amore e felicità oggi e sempre",
 ];
 
@@ -20,12 +20,14 @@ const getRandomHappyBirthday = () => {
     return happyMessages[randomInt(happyMessages.length)];
 };
 
+const happyMessage = getRandomHappyBirthday();
+
 const HappyBirthday = () => {
     return (
         <View style={styles.wrapper}>
             <View style={styles.happyBirthdayContainer}>
                 <Text variant="titleMedium" style={styles.happyBirthdayText}>
-                    {getRandomHappyBirthday()}
+                    {happyMessage}
                 </Text>
             </View>
         </View>
