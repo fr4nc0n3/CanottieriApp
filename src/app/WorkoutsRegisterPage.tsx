@@ -59,14 +59,14 @@ const WorkoutsRegisterPage = () => {
                     year: date.getFullYear(),
                     month: date.getMonth(),
                 },
-                jwt
+                jwt,
             );
 
             setWorkouts(workouts);
         } catch (error) {
             alert(
                 "Errore",
-                "errore durante la ricezione allenamenti: " + error
+                "errore durante la ricezione allenamenti: " + error,
             );
         }
     };
@@ -104,7 +104,7 @@ const WorkoutsRegisterPage = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() - 1)
+                                new Date(cur.getFullYear(), cur.getMonth() - 1),
                         )
                     }
                 />
@@ -116,7 +116,7 @@ const WorkoutsRegisterPage = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() + 1)
+                                new Date(cur.getFullYear(), cur.getMonth() + 1),
                         )
                     }
                 />
@@ -135,8 +135,8 @@ const WorkoutsRegisterPage = () => {
                             Date.UTC(
                                 date.getFullYear(),
                                 date.getMonth(),
-                                pressedDay.dayIdx
-                            )
+                                pressedDay.dayIdx,
+                            ),
                         );
 
                         console.log("pressed date: ", pressedDate);
@@ -156,10 +156,10 @@ const WorkoutsRegisterPage = () => {
                             if (!wkPressed) {
                                 alert(
                                     "Errore:",
-                                    `Errore selezione allenamento con data: ${pressedDate}`
+                                    `Errore selezione allenamento con data: ${pressedDate}`,
                                 );
                                 console.error(
-                                    "error workout pressed not found"
+                                    "error workout pressed not found",
                                 );
                             } else {
                                 openModifyWorkout(pressedDate, wkPressed);
@@ -176,13 +176,15 @@ const WorkoutsRegisterPage = () => {
                     <Divider style={{ margin: 10 }} />
                     <Text variant="titleSmall">
                         Categoria FIC:{" "}
+                        {/*TODO: attenzione che potrebbe comparire: null (assoluta) */}
                         {userContext?.userInfo?.FICClassification.first ??
-                            userContext?.userInfo?.FICClassification.absolute}
+                            `${userContext?.userInfo?.FICClassification.absolute} (assoluta)`}
                     </Text>
                     <Text variant="titleSmall">
                         Categoria FICSF:{" "}
+                        {/*TODO: attenzione che potrebbe comparire: null (assoluta) */}
                         {userContext?.userInfo?.FICSFClassification.first ??
-                            userContext?.userInfo?.FICSFClassification.absolute}
+                            `${userContext?.userInfo?.FICSFClassification.absolute} (assoluta)`}
                     </Text>
                 </View>
             </ScrollView>

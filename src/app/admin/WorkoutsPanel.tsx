@@ -112,7 +112,7 @@ const WorkoutsPanel = () => {
                         year: date.getFullYear(),
                         month: date.getMonth(),
                     },
-                    jwt
+                    jwt,
                 );
             })
             .then((output) => {
@@ -122,7 +122,7 @@ const WorkoutsPanel = () => {
                 alert(
                     "Errore",
                     `errore durante la ricezione allenamenti per l' atleta ${athlete.name}: ` +
-                        error
+                        error,
                 );
             });
     };
@@ -137,7 +137,7 @@ const WorkoutsPanel = () => {
                     id: img.name,
                     uri: apiUriImage(img.name),
                 };
-            })
+            }),
         );
     };
 
@@ -155,11 +155,19 @@ const WorkoutsPanel = () => {
         ? birthdayToFICSFClassification(new Date(selectedAthlete.birthday))
         : null;
 
-    const athleteFICCategory =
-        athleteFICClassification?.first ?? athleteFICClassification?.absolute;
-    const athleteFICSFCategory =
-        athleteFICSFClassification?.first ??
-        athleteFICSFClassification?.absolute;
+    let athleteFICCategory = "";
+    if (athleteFICClassification?.first) {
+        athleteFICCategory = athleteFICClassification.first;
+    } else if (athleteFICClassification?.absolute) {
+        athleteFICCategory = `${athleteFICClassification?.absolute} (assoluta)`;
+    }
+
+    let athleteFICSFCategory = "";
+    if (athleteFICSFClassification?.first) {
+        athleteFICSFCategory = athleteFICSFClassification.first;
+    } else if (athleteFICSFClassification?.absolute) {
+        athleteFICSFCategory = `${athleteFICSFClassification?.absolute} (assoluta)`;
+    }
 
     return (
         <>
@@ -195,7 +203,7 @@ const WorkoutsPanel = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() - 1)
+                                new Date(cur.getFullYear(), cur.getMonth() - 1),
                         )
                     }
                 />
@@ -219,7 +227,7 @@ const WorkoutsPanel = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() + 1)
+                                new Date(cur.getFullYear(), cur.getMonth() + 1),
                         )
                     }
                 />
@@ -237,7 +245,7 @@ const WorkoutsPanel = () => {
                         const pressedDate = new Date(
                             date.getFullYear(),
                             date.getMonth(),
-                            pressedDay.dayIdx
+                            pressedDay.dayIdx,
                         );
 
                         console.log("pressed date: ", pressedDate);
@@ -256,7 +264,7 @@ const WorkoutsPanel = () => {
 
                             if (!wkPressed) {
                                 console.error(
-                                    "error workout pressed not found"
+                                    "error workout pressed not found",
                                 );
                             } else {
                                 openWorkout(pressedDate, wkPressed);
@@ -340,7 +348,7 @@ const WorkoutsPanel = () => {
                         "non verra' salvata alcuna bozza del commento!",
                         () => {
                             closeOpenedWkComment();
-                        }
+                        },
                     );
                 }}
                 onConfirm={async (newDescription: string) => {
@@ -362,7 +370,7 @@ const WorkoutsPanel = () => {
                                 id_workout: openedWorkoutComment.id_workout,
                                 description: newDescription,
                             },
-                            jwt
+                            jwt,
                         );
 
                         //TODO sincronizzazione stato locale
@@ -370,7 +378,8 @@ const WorkoutsPanel = () => {
                     } catch (error) {
                         alert(
                             "Errore",
-                            "Errore durante la creazione del commento: " + error
+                            "Errore durante la creazione del commento: " +
+                                error,
                         );
                     }
 

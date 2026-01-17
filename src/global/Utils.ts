@@ -47,6 +47,7 @@ export const isSameDayOfYear = (date: Date) => {
 };
 
 export enum FICAgeGroup {
+    UNDER_10 = "Under 10",
     ALLIEVI_A = "Allievi A",
     ALLIEVI_B = "Allievi B",
     ALLIEVI_C = "Allievi C",
@@ -80,7 +81,8 @@ export type AthleteFICClassification = {
 // Tabella categoria specifica per fascia di eta'
 const FIC_AGE_RANGES: { min: number; max: number; group: FICAgeGroup }[] = [
     // Giovanili
-    { min: 0, max: 10, group: FICAgeGroup.ALLIEVI_A },
+    { min: 0, max: 9, group: FICAgeGroup.UNDER_10 },
+    { min: 10, max: 10, group: FICAgeGroup.ALLIEVI_A },
     { min: 11, max: 11, group: FICAgeGroup.ALLIEVI_B },
     { min: 12, max: 12, group: FICAgeGroup.ALLIEVI_C },
     { min: 13, max: 14, group: FICAgeGroup.CADETTI },
