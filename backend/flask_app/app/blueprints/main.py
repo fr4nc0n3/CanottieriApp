@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app, send_from_directory
+
+from ..config import APP_CONFIG
 from ..db import (query_db, dbUserAccountTypes)
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (create_access_token) 
@@ -15,7 +17,7 @@ def index():
 # prendendole dalla cartella di sistema
 @api.route('/image/<path:name>')
 def getImage(name: str):
-    folder = current_app.config["IMG_FOLDER"]
+    folder = APP_CONFIG.IMG_FOLDER
 
     print(request.url)
     print("Trying to serve:", os.path.join(folder, name))

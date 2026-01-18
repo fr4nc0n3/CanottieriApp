@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app
+
+from ..config import APP_CONFIG
 from ..db import (
     dbUserWorkouts, updateUserWorkout, deleteUserWorkout, insertWorkoutImage,
     dbWorkoutImages, dbIdUserOfWorkoutImage, deleteImg, get_db )
@@ -130,12 +132,7 @@ def delete_user(workout_id):
 @api_workout.route('/img_workout', methods=['GET'])
 @jwt_required()
 def getImagesWorkout():
-    identity = get_jwt_identity()
-    claims = get_jwt()
-
     print(request.url)
-
-    folder = current_app.config['IMG_FOLDER']
 
     id_workout = request.args.get("id", None)
 
@@ -143,7 +140,6 @@ def getImagesWorkout():
         return jsonify({'message': "Bad request workout id missing"}), 400
 
     images = dbWorkoutImages(int(id_workout))
-    #urls = [("image/" + img) for img in images]
 
     print("images for workout id = ", id_workout, ": ", images)
 
@@ -160,9 +156,9 @@ def createImageWorkout():
     print("request files:", request.files)
 
     # TODO: fare refactoring per controllare che esistano le configurazioni
-    upload_folder = current_app.config['IMG_FOLDER']
-    img_max_width = current_app.config['IMG_MAX_WIDTH']
-    img_max_height = current_app.config['IMG_MAX_HEIGHT']
+    upload_folder = APP_CONFIG.IMG_FOLDER
+    img_max_width = APP_CONFIG.IMG_MAX_WIDTH
+    img_max_height = APP_CONFIG.IMG_MAX_HEIGHT
 
     id_workout = request.form.get('id_workout', None)
 
@@ -204,7 +200,7 @@ def deleteImageWorkout(name):
     identity = get_jwt_identity()
     claims = get_jwt()
 
-    upload_folder = current_app.config['IMG_FOLDER']
+    upload_folder = APP_CONFIG.IMG_FOLDER
 
     #controllo che l' immagine del workout sia del jwt identity
     #che effettua la richiesta

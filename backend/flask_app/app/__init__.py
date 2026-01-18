@@ -1,5 +1,5 @@
 from flask import Flask, request
-from .config import Config
+from .config import APP_CONFIG, FlaskConfig
 from .db import close_connection
 from flask_cors import CORS
 import os
@@ -26,19 +26,20 @@ def log_request():
 def create_app():
     app = Flask(__name__)
 
-    FLASK_ENV = os.getenv("FLASK_ENV", "prod") 
+    print("---------- CONFIG APP ---------- ")
+    for key, value in APP_CONFIG.__dict__.items():
+        print(f"{key}: {value}")
 
-    print("FLASK_ENV:")
-    print(FLASK_ENV)
+    ENV = APP_CONFIG.ENV
 
     #-------- IMPOSTAZIONE CORS ----------
     #per sviluppo
-    if(FLASK_ENV == "dev"):
+    if(ENV == "dev"):
         CORS(app)
 
     # TODO: 
     #per produzione 
-    elif(FLASK_ENV == "prod"): 
+    elif(ENV == "prod"): 
      CORS(app, resources={
         r"/api/*": {
             "origins": ["https://tuo-sito.com"], 
@@ -47,20 +48,20 @@ def create_app():
         }
      })
     else:
-        print("Errore: FLASK_ENV non valido, FLASK_ENV = " + FLASK_ENV)
+        print("Errore: ENV non valido, ENV = " + ENV)
         exit(1)
 
-    # ---------- SETUP App configs ----------
-    config = Config()
+    # ---------- SETUP Flask configs ----------
+    config = FlaskConfig()
 
-    print("config flask: ")
+    print("------------- CONFIG FLASK ------------")
     for key, value in config.__dict__.items():
         print(f"{key}: {value}")
 
     app.config.from_object(config)
 
     #creazione della cartella per le immagini
-    img_folder = app.config['IMG_FOLDER']
+    img_folder = APP_CONFIG.IMG_FOLDER
     os.makedirs(img_folder, exist_ok=True)
 
     #configurazione JWT

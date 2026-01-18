@@ -3,12 +3,14 @@ from flask import g, current_app
 from typing import List, Optional, Tuple, TypedDict
 import traceback
 
+from .config import APP_CONFIG
+
 class QueryOp(TypedDict):
     query: str
     args: tuple
 
 def get_db():
-    DATABASE = current_app.config['DATABASE_PATH']
+    DATABASE = APP_CONFIG.DATABASE_PATH
 
     db = getattr(g, '_database', None)
     if db is None:

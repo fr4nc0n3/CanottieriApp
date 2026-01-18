@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from waitress import serve
 from pathlib import Path
 
+from app.config import initAppConfig
+
 prev_dir = Path(__file__).resolve().parent.parent
 config_file_name = 'flask_app_config.env'
 
@@ -13,6 +15,8 @@ if not config_loaded:
     print("Attenzione il file: " + config_file_name + " non e' stato trovato o non e' leggibile!!")
     print("IMPOSSIBILE AVVIARE L' APPLICAZIONE")
     exit(1)
+
+initAppConfig()
 
 app = create_app()
 
