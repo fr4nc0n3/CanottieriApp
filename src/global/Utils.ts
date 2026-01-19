@@ -46,6 +46,10 @@ export const isSameDayOfYear = (date: Date) => {
     );
 };
 
+export const isValidDate = (date: Date) => {
+    return !isNaN(date.getTime());
+};
+
 export enum FICAgeGroup {
     UNDER_10 = "Under 10",
     ALLIEVI_A = "Allievi A",

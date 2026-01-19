@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { UserContext, UserInfo } from "./UserContext";
 import { apiGetUserInfo } from "@/global/APICalls";
 import {
@@ -9,6 +9,7 @@ import {
 } from "@/global/Utils";
 import { getJWT } from "@/global/jwtStorage";
 import { alert } from "@/global/UniversalPopups";
+import { getUserInfoCache, saveUserInfoCache } from "@/global/userStorage";
 
 interface UserInfoProviderProps {
     children: ReactNode;
@@ -16,6 +17,15 @@ interface UserInfoProviderProps {
 
 export function UserInfoProvider({ children }: UserInfoProviderProps) {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+    const loadUserInfoCache = async () => {
+        const userInfoCache = await getUserInfoCache();
+        setUserInfo(userInfoCache);
+    };
+
+    useEffect(() => {
+        loadUserInfoCache();
+    }, []);
 
     const syncUserInfo = async () => {
         const jwt = await getJWT();
@@ -32,19 +42,22 @@ export function UserInfoProvider({ children }: UserInfoProviderProps) {
             const user = await apiGetUserInfo(identity, jwt);
 
             const birthdayDate = new Date(user.birthday);
-            setUserInfo({
+            const info = {
                 name: user.name,
                 birthday: birthdayDate,
                 accountTypes: getJWTAccountTypes(jwt),
                 FICClassification: birthdayToFICClassification(birthdayDate),
                 FICSFClassification:
                     birthdayToFICSFClassification(birthdayDate),
-            });
+            };
+
+            setUserInfo(info);
+            saveUserInfoCache(info);
         } catch (error) {
             alert(
                 "Info utente non caricate",
                 "Non e' stato possibile reperire le informazioni dell' utente: " +
-                    error
+                    error,
             );
         }
     };
