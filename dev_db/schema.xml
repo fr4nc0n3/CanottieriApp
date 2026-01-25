@@ -279,4 +279,76 @@
 </key>
 <comment>Contiene essenzialmente i commenti che un utente puo' allegare all' allenamento svolto da un altro</comment>
 </table>
+<table x="970" y="388" name="File">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+</row>
+<row name="file_name" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="id_mime_type" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="MimeType" row="id" />
+</row>
+<row name="created_at" null="0" autoincrement="0">
+<datatype>TIMESTAMP</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Tiene traccia dei files salvati sul filesystem</comment>
+</table>
+<table x="1151" y="386" name="MimeType">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+</row>
+<row name="mime_type" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Tipi di file che il sistema supporta</comment>
+</table>
+<table x="775" y="492" name="TrainingCard">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="id_file" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="File" row="id" />
+</row>
+<row name="name_card" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="description" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="deleted_at" null="1" autoincrement="0">
+<datatype>TIMESTAMP</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Schede a supporto degli allenamenti</comment>
+</table>
+<table x="1124" y="520" name="db_schema_version">
+<row name="id" null="0" autoincrement="1">
+<datatype>INTEGER</datatype>
+</row>
+<row name="version" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="description" null="0" autoincrement="0">
+<datatype>MEDIUMTEXT</datatype>
+</row>
+<row name="installed_on" null="0" autoincrement="0">
+<datatype>TIMESTAMP</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Versionamento per questo database</comment>
+</table>
 </sql>
+
