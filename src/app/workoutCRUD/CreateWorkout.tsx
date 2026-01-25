@@ -34,8 +34,8 @@ const CreateWorkout = () => {
         Date.UTC(
             parseInt(wkYear?.toString()),
             parseInt(wkMonth?.toString()),
-            parseInt(wkDate?.toString())
-        )
+            parseInt(wkDate?.toString()),
+        ),
     );
 
     if (isNaN(workoutDate.getTime())) return null; //se la data non e' valida non mostra nulla
@@ -73,7 +73,7 @@ const CreateWorkout = () => {
                     description: description,
                     id_user: identity,
                 },
-                jwt
+                jwt,
             );
 
             const newWorkoutId = json.id;
@@ -166,7 +166,7 @@ const CreateWorkout = () => {
                     //rimuove un immagine dalla lista
                     setImages((cur) => {
                         return cur.filter(
-                            (image) => image.uri !== imageUriModal
+                            (image) => image.uri !== imageUriModal,
                         );
                     });
                 }}

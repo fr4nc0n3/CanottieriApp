@@ -22,7 +22,7 @@ const TrainingCalendarPage = () => {
 
         const plannings = await apiGetPlannings(
             { year: date.getFullYear(), month: date.getMonth() },
-            jwt
+            jwt,
         );
 
         setPlannings(plannings);
@@ -42,7 +42,7 @@ const TrainingCalendarPage = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() - 1)
+                                new Date(cur.getFullYear(), cur.getMonth() - 1),
                         )
                     }
                 />
@@ -54,7 +54,7 @@ const TrainingCalendarPage = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() + 1)
+                                new Date(cur.getFullYear(), cur.getMonth() + 1),
                         )
                     }
                 />
@@ -72,8 +72,8 @@ const TrainingCalendarPage = () => {
                             Date.UTC(
                                 date.getFullYear(),
                                 date.getMonth(),
-                                pressedDay.dayIdx
-                            )
+                                pressedDay.dayIdx,
+                            ),
                         );
 
                         console.log("pressed date: ", pressedDate);
@@ -87,12 +87,12 @@ const TrainingCalendarPage = () => {
                                         pDate.getTime() ===
                                         pressedDate.getTime()
                                     );
-                                }
+                                },
                             );
 
                             if (!planningPressed) {
                                 console.error(
-                                    "errore di programmazione cod. 22"
+                                    "errore di programmazione cod. 22",
                                 );
                                 alert("Qualcosa e' andato storto cod. 22");
                                 return;

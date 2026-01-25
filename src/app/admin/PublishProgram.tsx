@@ -52,7 +52,7 @@ const PublishProgram = () => {
 
         const plannings = await apiGetPlannings(
             { year: date.getFullYear(), month: date.getMonth() },
-            jwt
+            jwt,
         );
 
         setPlannings(plannings);
@@ -79,7 +79,7 @@ const PublishProgram = () => {
         try {
             const { id } = await apiCreatePlanning(
                 { date: dateInput, description: planning.description },
-                jwt
+                jwt,
             );
 
             setPlannings((cur) => {
@@ -114,14 +114,14 @@ const PublishProgram = () => {
         } catch (error) {
             console.error("Error deleting planning:", error);
             alert(
-                "Non e' stato possibile effettuare l' eliminazione: " + error
+                "Non e' stato possibile effettuare l' eliminazione: " + error,
             );
         }
     };
 
     const updatePlanning = async (id: number, description: string) => {
         console.log(
-            `update planning with id=${id}: description=${description}`
+            `update planning with id=${id}: description=${description}`,
         );
 
         const jwt = await getJWT();
@@ -132,8 +132,10 @@ const PublishProgram = () => {
             //modifica dello stato locale
             setPlannings((cur) =>
                 cur.map((planning) =>
-                    planning.id === id ? { ...planning, description } : planning
-                )
+                    planning.id === id
+                        ? { ...planning, description }
+                        : planning,
+                ),
             );
         } catch (error) {
             console.error("Error updating planning:", error);
@@ -151,7 +153,7 @@ const PublishProgram = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() - 1)
+                                new Date(cur.getFullYear(), cur.getMonth() - 1),
                         )
                     }
                 />
@@ -163,7 +165,7 @@ const PublishProgram = () => {
                     onPress={() =>
                         setDate(
                             (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() + 1)
+                                new Date(cur.getFullYear(), cur.getMonth() + 1),
                         )
                     }
                 />
@@ -181,8 +183,8 @@ const PublishProgram = () => {
                             Date.UTC(
                                 date.getFullYear(),
                                 date.getMonth(),
-                                pressedDay.dayIdx
-                            )
+                                pressedDay.dayIdx,
+                            ),
                         );
 
                         console.log("pressed date: ", pressedDate);
@@ -196,12 +198,12 @@ const PublishProgram = () => {
                                         pDate.getTime() ===
                                         pressedDate.getTime()
                                     );
-                                }
+                                },
                             );
 
                             if (!planningPressed) {
                                 console.error(
-                                    "errore di programmazione cod. 22"
+                                    "errore di programmazione cod. 22",
                                 );
                                 alert("Qualcosa e' andato storto cod. 22");
                                 return;
@@ -210,7 +212,7 @@ const PublishProgram = () => {
                             openPlanningUpdate(
                                 planningPressed?.id,
                                 planningPressed?.description,
-                                new Date(planningPressed?.date ?? "")
+                                new Date(planningPressed?.date ?? ""),
                             );
                         } else {
                             openPlanningCreation(pressedDate);
@@ -385,7 +387,7 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                                 () => {
                                     onDeleteClick();
                                     onDismiss();
-                                }
+                                },
                             );
                         }}
                     />

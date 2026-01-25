@@ -96,7 +96,7 @@ export default function ProfiloPage() {
                         confirm(
                             "LOGOUT",
                             "Sei sicuro di voler eseguire il logout?",
-                            logout
+                            logout,
                         );
                     }}
                 >

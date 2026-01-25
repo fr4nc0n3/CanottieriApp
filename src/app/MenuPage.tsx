@@ -1,7 +1,6 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
 import { apiGetCountUserNews } from "@/global/APICalls";
-import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
 import {
     getJWTAccountTypes,
@@ -10,7 +9,7 @@ import {
 } from "@/global/Utils";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Drawer, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
@@ -52,84 +51,98 @@ export default function MenuPage() {
     const isUserBirthday = userBirthday ? isSameDayOfYear(userBirthday) : false;
 
     return (
-        <ScrollView style={styles.container}>
-            {notReadCountNews > 0 && <NotificationBanner />}
+        <>
+            <ScrollView style={styles.container}>
+                {notReadCountNews > 0 && <NotificationBanner />}
 
-            {isUserBirthday && <HappyBirthday />}
+                {isUserBirthday && <HappyBirthday />}
 
-            <View style={styles.content}>
-                <Drawer.Section style={styles.sidebar}>
-                    <Drawer.Item
-                        label="Profilo"
-                        active={active === "profile"}
-                        onPress={() => {
-                            setActive("profile");
-                            router.push("/ProfilePage");
-                        }}
-                        icon="account"
-                    />
-                    <Drawer.Item
-                        label="Notifiche"
-                        active={active === "notifications"}
-                        onPress={() => {
-                            setActive("notifications");
-                            router.push("/NewsPage");
-                        }}
-                        icon="bell"
-                    />
-                </Drawer.Section>
+                <View style={styles.content}>
+                    <Drawer.Section style={styles.sidebar}>
+                        <Drawer.Item
+                            label="Profilo"
+                            active={active === "profile"}
+                            onPress={() => {
+                                setActive("profile");
+                                router.push("/ProfilePage");
+                            }}
+                            icon="account"
+                        />
+                        <Drawer.Item
+                            label="Notifiche"
+                            active={active === "notifications"}
+                            onPress={() => {
+                                setActive("notifications");
+                                router.push("/NewsPage");
+                            }}
+                            icon="bell"
+                        />
+                    </Drawer.Section>
 
-                <Drawer.Section style={styles.sidebar} title="Sezione Atleta">
-                    <Drawer.Item
-                        label="Registro allenamenti"
-                        active={active === "workoutsRegister"}
-                        onPress={() => {
-                            setActive("workoutsRegister");
-                            router.push("/WorkoutsRegisterPage");
-                        }}
-                        icon="calendar"
-                    />
-
-                    <Drawer.Item
-                        label="Calendario allenamenti"
-                        active={active === "trainingCalendar"}
-                        onPress={() => {
-                            setActive("trainingCalendar");
-                            router.push("/TrainingCalendarPage");
-                        }}
-                        icon="dumbbell"
-                    />
-                </Drawer.Section>
-
-                {isAdmin && (
                     <Drawer.Section
                         style={styles.sidebar}
-                        title="Sezione amministratore"
+                        title="Sezione Atleta"
                     >
                         <Drawer.Item
-                            label="Allenamenti atleti"
-                            active={active === "athlete_workouts"}
+                            label="Registro allenamenti"
+                            active={active === "workoutsRegister"}
                             onPress={() => {
-                                setActive("athlete_workouts");
-                                router.push("/admin/WorkoutsPanel");
+                                setActive("workoutsRegister");
+                                router.push("/WorkoutsRegisterPage");
                             }}
-                            icon="view-grid"
+                            icon="calendar"
                         />
-                        {
-                            <Drawer.Item
-                                label="Programma allenamento"
-                                active={active === "publishProgram"}
-                                onPress={() => {
-                                    setActive("publishProgram");
-                                    router.push("/admin/PublishProgram");
-                                }}
-                                icon="upload"
-                            />
-                        }
+
+                        <Drawer.Item
+                            label="Calendario allenamenti"
+                            active={active === "trainingCalendar"}
+                            onPress={() => {
+                                setActive("trainingCalendar");
+                                router.push("/TrainingCalendarPage");
+                            }}
+                            icon="dumbbell"
+                        />
+                        <Drawer.Item
+                            label="Schede"
+                            active={active === "trainingCards"}
+                            onPress={() => {
+                                setActive("trainingCards");
+                                router.push("/TrainingCards");
+                            }}
+                            icon="cards"
+                        />
                     </Drawer.Section>
-                )}
-            </View>
-        </ScrollView>
+
+                    {isAdmin && (
+                        <Drawer.Section
+                            style={styles.sidebar}
+                            title="Sezione amministratore"
+                        >
+                            <Drawer.Item
+                                label="Allenamenti atleti"
+                                active={active === "athlete_workouts"}
+                                onPress={() => {
+                                    setActive("athlete_workouts");
+                                    router.push("/admin/WorkoutsPanel");
+                                }}
+                                icon="view-grid"
+                            />
+                            {
+                                <Drawer.Item
+                                    label="Programma allenamento"
+                                    active={active === "publishProgram"}
+                                    onPress={() => {
+                                        setActive("publishProgram");
+                                        router.push("/admin/PublishProgram");
+                                    }}
+                                    icon="upload"
+                                />
+                            }
+                        </Drawer.Section>
+                    )}
+                </View>
+            </ScrollView>
+        </>
     );
 }
 

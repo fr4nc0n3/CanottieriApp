@@ -53,7 +53,7 @@ export default function NotificationsScreen(): JSX.Element {
 
     const { data: rxTotalCountRaw } = useQuery<number>(
         ["userNewsRxTotalCount"],
-        fetchTotalCountNews
+        fetchTotalCountNews,
     );
 
     const rxTotalCount = rxTotalCountRaw ?? 0;
@@ -87,18 +87,18 @@ export default function NotificationsScreen(): JSX.Element {
         try {
             await apiSetUserNewsRead(
                 { id_user: Number(identity), all_readed: true },
-                jwt
+                jwt,
             );
         } catch (error) {
             alert(
                 "Si e' verificato un errore durante l' operazione:",
-                "Error: " + error
+                "Error: " + error,
             );
             return;
         }
 
         setNotifications((prev) =>
-            prev.map((n) => ({ ...n, is_read: Number(true) }))
+            prev.map((n) => ({ ...n, is_read: Number(true) })),
         );
     };
 
@@ -119,12 +119,12 @@ export default function NotificationsScreen(): JSX.Element {
                         id_news: userNews.id_news,
                         read: isRead,
                     },
-                    jwt
+                    jwt,
                 );
             } catch (error) {
                 alert(
                     "Si e' verificato un errore durante l' operazione:",
-                    "Error: " + error
+                    "Error: " + error,
                 );
                 return;
             }
@@ -133,15 +133,15 @@ export default function NotificationsScreen(): JSX.Element {
                 prev.map((n) =>
                     n.id_user_news === id
                         ? { ...n, is_read: Number(isRead) }
-                        : n
-                )
+                        : n,
+                ),
             );
 
             console.log("current notification selected:", selected);
             // Aggiorna anche la selezione attiva se presente
             if (selected && selected.id_user_news === id) {
                 setSelected((s) =>
-                    s ? { ...s, is_read: Number(!s.is_read) } : s
+                    s ? { ...s, is_read: Number(!s.is_read) } : s,
                 );
             }
         };
@@ -152,7 +152,7 @@ export default function NotificationsScreen(): JSX.Element {
     const openDetail = (item: UserNewsRx) => {
         // Assicuriamoci di agganciare la versione più aggiornata della notifica
         const fresh = notifications.find(
-            (n) => n.id_user_news === item.id_user_news
+            (n) => n.id_user_news === item.id_user_news,
         );
 
         if (!fresh) {
@@ -214,7 +214,7 @@ export default function NotificationsScreen(): JSX.Element {
                         confirm(
                             "Segna tutte come lette",
                             "Sei sicuro di voler segnare tutte le notifiche come lette ?",
-                            () => markAllAsRead()
+                            () => markAllAsRead(),
                         )
                     }
                 >
@@ -276,7 +276,7 @@ export default function NotificationsScreen(): JSX.Element {
                                 <Text style={styles.detailSub}>
                                     {selected.sender_name} •{" "}
                                     {universalDateStringFormat(
-                                        new Date(selected.data_publish)
+                                        new Date(selected.data_publish),
                                     )}
                                 </Text>
                             )}
@@ -304,7 +304,7 @@ export default function NotificationsScreen(): JSX.Element {
                                         onPress={() =>
                                             setReadFor(
                                                 selected,
-                                                !selected.is_read
+                                                !selected.is_read,
                                                 //    selected.id_user_news,
                                                 //   !selected.is_read
                                             )

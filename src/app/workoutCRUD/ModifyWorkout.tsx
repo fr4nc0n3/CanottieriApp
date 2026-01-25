@@ -46,8 +46,8 @@ const ModifyWorkout = () => {
         Date.UTC(
             parseInt(wkYear?.toString()),
             parseInt(wkMonth?.toString()),
-            parseInt(wkDate?.toString())
-        )
+            parseInt(wkDate?.toString()),
+        ),
     );
 
     const [openedComment, setOpenedComment] = useState<boolean>(false);
@@ -90,14 +90,14 @@ const ModifyWorkout = () => {
                 {
                     id_workout: id_workout,
                 },
-                jwt
+                jwt,
             );
 
             console.log(
                 "comments (solo date creazione): " +
                     comments.map((comment) => {
                         return comment.created_at;
-                    })
+                    }),
             );
 
             if (comments && comments.length > 0) {
@@ -124,7 +124,7 @@ const ModifyWorkout = () => {
                         uri: apiUriImage(imgBackend.name),
                         id: imgBackend.name,
                     };
-                })
+                }),
             );
         });
     };
@@ -162,12 +162,12 @@ const ModifyWorkout = () => {
 
                 alert("Eliminato", "L' allenamento e' stato eliminato");
                 router.back();
-            }
+            },
         );
     };
 
     const uploadImageOnline = async (
-        asset: ImagePicker.ImagePickerAsset
+        asset: ImagePicker.ImagePickerAsset,
     ): Promise<string> => {
         console.log("upload asset:", asset);
 

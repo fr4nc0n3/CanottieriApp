@@ -40,7 +40,7 @@ const WorkoutCommentPage = () => {
                 setLoading(true);
                 const comments = await apiGetWorkoutComments(
                     { id_workout: Number(wkId) },
-                    String(jwt)
+                    String(jwt),
                 );
 
                 if (comments && comments.length > 0) {
@@ -72,7 +72,7 @@ const WorkoutCommentPage = () => {
                     id_workout: Number(wkId),
                     description: text,
                 },
-                jwt
+                jwt,
             );
 
             setComment({
@@ -86,7 +86,7 @@ const WorkoutCommentPage = () => {
         } catch (error) {
             alert(
                 "Errore",
-                "errore durante la creazione del commento: " + error
+                "errore durante la creazione del commento: " + error,
             );
         }
     };
@@ -95,7 +95,7 @@ const WorkoutCommentPage = () => {
         if (!comment) {
             alert(
                 "Errore",
-                "si sta provando a modificare un commento non esistente"
+                "si sta provando a modificare un commento non esistente",
             );
             return;
         }
@@ -107,7 +107,7 @@ const WorkoutCommentPage = () => {
                     id: comment.id,
                     description: text,
                 },
-                jwt
+                jwt,
             );
 
             setComment((cur) => {
@@ -117,7 +117,7 @@ const WorkoutCommentPage = () => {
         } catch (error) {
             alert(
                 "Errore",
-                "errore durante la modifica del commento: " + error
+                "errore durante la modifica del commento: " + error,
             );
         }
     };
