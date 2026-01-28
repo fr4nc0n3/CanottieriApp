@@ -1,3 +1,23 @@
+- Richiesta Alessandro Sola:
+Ti riassumo le modifiche da apportare sull’APP:
+
+1-aggiungere una sezione SCHEDE visualizzabile dal profilo ATLETA e modificabile dal profilo ALLENATORE (aggiungere ed eliminare file PDF)
+
+2-abbinare ad ogni utenza anche la rispettiva data di nascita e visualizzare nella pagina PROFILO, REGISTRO ALLENAMENTI e ALLENAMENTI ATLETI anche le categorie FIC e FICSF calcolate automaticamente.
+[18:50, 10/01/2026] Alessandro S: per entrambe le federazioni vale l’anno solare
+[18:50, 10/01/2026] Alessandro S: Indipendentemente da quando compi gli anni
+
+3-dare la possibilità al profilo ALLENATORE di scegliere per ogni giorno del PROGRAMMA ALLENAMENTO, 3 colori per illuminare il calendario a seconda del carico di allenamento:
+50% arancione
+75% verde
+100% azzurro
+(ti mando uno screenshot di un esempio)
+
+4-Form allenamento (attenzione pensare al tracciamento dati)
+
+5-<mia idea> creare un popup che appare ogni tanto nel menu per chiedere
+se ci sono dei feedback o magari usare notifiche messaggi
+
 ---------- TODO ----------
 - Ridurre le chiamate sul server introducendo cache sul client
 

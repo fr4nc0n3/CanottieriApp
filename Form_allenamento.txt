@@ -1,0 +1,32 @@
+Ho ideato una nuova meccanica per inserire i dati riguardanti l' allenamento.
+Stavo pensando a quella funzionalita' per il banner della fatica che mi avevi chiesto in precedenza.
+
+Quindi ho pensato ad una soluzione flessibile sia per me che per te e i ragazzi.
+
+Attualmente quando i ragazzi registrano l' allenamento (guardando i dati attuali), sembrano al quanto spaesati
+su quali informazioni mettere o non mettere, magari perche' vogliono evitare di essere ovvi e
+anche perche' non hanno in mente su quali dati ti sono di interesse (sebbene tu lo abbia gia' specificato tempo fa)
+
+Essenzialmente questo metodo cambia la modalita' di inserimento della descrizione dell' allenamento
+che inseriscono.
+Nella solita pagina di registrazione/modifica allenamento avranno la possibilita' di compilare un form
+con dei dati obbligatori o meno. Che tipo di form? Non ti saprei dire al momento, ho fatto un esempio
+con il video che ti ho passato in allegato, ma i dati in esso sarebbe meglio me li indicassi tu.
+In futuro tra l' altro potresti essere te a creare e personalizzare il form che devono compilare i ragazzi.
+
+Quindi i ragazzi compilano il form e del testo aggiuntivo (come quello attuale), dopo di che
+tu potrai vedere la descrizione dell' allenamento dei ragazzi in questo formato (riferimento ai dati del video):
+
+--------{Form_tipo_1}---------------
+Distanza: 2000m
+SPM (stroke per minute): 22c
+Reps: 5
+Rest: 3min 30sec
+
+Intensita' percepita (da 0 a 10): 7
+--------{Form_Fine}-----------------
+
+Altra descrizione immessa dall' atleta
+come quella attuale
+
+
