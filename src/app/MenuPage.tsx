@@ -107,7 +107,7 @@ export default function MenuPage() {
                             active={active === "trainingCards"}
                             onPress={() => {
                                 setActive("trainingCards");
-                                router.push("/TrainingCards");
+                                router.push("/TrainingCardsPage");
                             }}
                             icon="cards"
                         />
@@ -138,6 +138,18 @@ export default function MenuPage() {
                                     icon="upload"
                                 />
                             }
+                            <Drawer.Item
+                                label="Gestione schede"
+                                active={active === "trainingCardsAdmin"}
+                                onPress={() => {
+                                    setActive("trainingCardsAdmin");
+                                    router.push({
+                                        pathname: "/TrainingCardsPage",
+                                        params: { userType: "admin" },
+                                    });
+                                }}
+                                icon="cards"
+                            />
                         </Drawer.Section>
                     )}
                 </View>

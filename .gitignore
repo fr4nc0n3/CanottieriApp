@@ -5,6 +5,7 @@ __pycache__/
 .env
 *.zip
 backend/img/
+backend/file/
 psws.txt
 init_prod_data.sql
 backup_prods/**

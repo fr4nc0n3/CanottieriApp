@@ -16,11 +16,17 @@ CREATE TABLE File (
 CREATE TABLE TrainingCard (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     id_file INTEGER NOT NULL UNIQUE,
-    name_card TEXT NOT NULL UNIQUE,
+    name_card TEXT NOT NULL,
     description TEXT NOT NULL DEFAULT '',
     deleted_at DATETIME NULL DEFAULT NULL,
 
     FOREIGN KEY (id_file) REFERENCES File(id)
+);
+
+CREATE UNIQUE INDEX idx_uq_name_card_deleted_at
+ON TrainingCard (
+    name_card,
+    IFNULL(deleted_at, '0000-00-00')
 );
 
 CREATE TABLE db_schema_version (

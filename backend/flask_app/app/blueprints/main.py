@@ -24,6 +24,17 @@ def getImage(name: str):
 
     return send_from_directory(folder, name)
 
+# route per servire file tramite il nome,
+# prendendole dalla cartella di sistema
+@api.route('/file/<path:name>')
+def getFile(name: str):
+    folder = APP_CONFIG.FILE_FOLDER
+
+    print(request.url)
+    print("Trying to serve:", os.path.join(folder, name))
+
+    return send_from_directory(folder, name)
+
 # -------------- AUTENTICATIONS -----------
 @api.route('/login', methods=['POST'])
 def login():

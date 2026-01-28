@@ -207,3 +207,13 @@ export type ApiInputUpdateWorkoutComment = {
 
 //non restituisce nulla di che
 export type ApiOutputUpdateWorkoutComment = {};
+
+//training card
+export type ApiOutputGetTrainingCard = {
+    id: number;
+    name_card: string;
+    description: string;
+    file_name: string;
+    created_at: string;
+    mime_type: string;
+};

@@ -10,6 +10,7 @@ from .blueprints.planning import api_planning
 from .blueprints.workout import api_workout
 from .blueprints.main import api
 from .blueprints.workout_comment import api_workout_comment
+from .blueprints.training_card import api_training_card
 from datetime import datetime
 
 def log_request():
@@ -64,6 +65,10 @@ def create_app():
     img_folder = APP_CONFIG.IMG_FOLDER
     os.makedirs(img_folder, exist_ok=True)
 
+    #creazione della cartella per i files
+    file_folder = APP_CONFIG.FILE_FOLDER
+    os.makedirs(file_folder, exist_ok=True)
+
     #configurazione JWT
     jwt = JWTManager(app) 
 
@@ -74,6 +79,7 @@ def create_app():
     app.register_blueprint(api_workout, url_prefix='/api')
     app.register_blueprint(api_workout_comment, url_prefix='/api')
     app.register_blueprint(api_news, url_prefix='/api')
+    app.register_blueprint(api_training_card, url_prefix='/api')
 
     # In questo modo alla fine di ogni api viene chiamato automaticamente
     # close_connection

@@ -14,6 +14,8 @@ import {
     API_SET_USER_NEWS_READ,
     API_WORKOUT,
     API_WORKOUT_COMMENT,
+    API_TRAINING_CARD,
+    API_FILE,
 } from "./Constants";
 import {
     ApiInputCreatePlanning,
@@ -31,6 +33,7 @@ import {
     ApiOutputCreatePlanning,
     ApiOutputCreateWorkoutComment,
     ApiOutputGetPlannings,
+    ApiOutputGetTrainingCard,
     ApiOutputGetWorkout,
     ApiOutputGetWorkoutComment,
     ApiOutputWorkoutImage,
@@ -52,7 +55,7 @@ export const apiGetUsers = async (jwt: string): Promise<User[]> => {
 
 export const apiGetUserNewsSended = async (
     idUser: number,
-    jwt: string
+    jwt: string,
 ): Promise<UserNewsTx[]> => {
     try {
         const req = API_GET_USER_NEWS_SENDED + "?id-user=" + idUser;
@@ -81,7 +84,7 @@ export const apiGetUserNewsReceived = async (
     idUser: number,
     offset: number,
     limit: number,
-    jwt: string
+    jwt: string,
 ): Promise<UserNewsRx[]> => {
     try {
         const req =
@@ -97,7 +100,7 @@ export const apiGetUserNewsReceived = async (
 export const apiGetCountUserNews = async (
     idUser: number,
     only_not_read: boolean,
-    jwt: string
+    jwt: string,
 ): Promise<number> => {
     const url_only_not_read = only_not_read ? "true" : "false";
 
@@ -125,7 +128,7 @@ export const apiSendNewsToGroups = async (news: NewsToSend, jwt: string) => {
     } catch (error) {
         console.error(
             `Error sending news to groups: ${JSON.stringify(news)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -133,7 +136,7 @@ export const apiSendNewsToGroups = async (news: NewsToSend, jwt: string) => {
 
 export const apiSetUserNewsRead = async (
     update: ApiInputUserNewsRead,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_SET_USER_NEWS_READ;
@@ -145,7 +148,7 @@ export const apiSetUserNewsRead = async (
     } catch (error) {
         console.error(
             `Error setting user news read with: ${JSON.stringify(update)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -153,7 +156,7 @@ export const apiSetUserNewsRead = async (
 
 export const apiGetUserInfo = async (
     idUser: number,
-    jwt: string
+    jwt: string,
 ): Promise<User> => {
     try {
         const req = API_GET_USER_INFO + "?id-user=" + idUser;
@@ -167,7 +170,7 @@ export const apiGetUserInfo = async (
 //CRUD allenamento utente
 export const apiCreateWorkout = async (
     workout: ApiInputCreateWorkout,
-    jwt: string
+    jwt: string,
 ): Promise<{ id: number }> => {
     try {
         const req = API_WORKOUT;
@@ -179,7 +182,7 @@ export const apiCreateWorkout = async (
     } catch (error) {
         console.error(
             `Error creating workout: ${JSON.stringify(workout)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -187,7 +190,7 @@ export const apiCreateWorkout = async (
 
 export const apiGetWorkout = async (
     filter: ApiInputGetWorkout,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputGetWorkout> => {
     try {
         const req = `${API_WORKOUT}?id_user=${filter.id_user}&year=${filter.year}&month=${filter.month}`;
@@ -200,7 +203,7 @@ export const apiGetWorkout = async (
 
 export const apiUpdateWorkout = async (
     update: ApiInputUpdateWorkout,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_WORKOUT + "/" + update.id;
@@ -212,7 +215,7 @@ export const apiUpdateWorkout = async (
     } catch (error) {
         console.error(
             `Error updating workout by update with: ${JSON.stringify(update)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -220,7 +223,7 @@ export const apiUpdateWorkout = async (
 
 export const apiDeleteWorkout = async (
     filter: ApiInputDeleteWorkout,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_WORKOUT + "/" + filter.id;
@@ -230,7 +233,7 @@ export const apiDeleteWorkout = async (
     } catch (error) {
         console.error(
             `Error deleting workout with filter: ${JSON.stringify(filter)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -239,7 +242,7 @@ export const apiDeleteWorkout = async (
 //CRUD Plannings
 export const apiCreatePlanning = async (
     planning: ApiInputCreatePlanning,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputCreatePlanning> => {
     try {
         const req = API_PLANNINGS;
@@ -251,7 +254,7 @@ export const apiCreatePlanning = async (
     } catch (error) {
         console.error(
             `Error creating planning: ${JSON.stringify(planning)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -259,7 +262,7 @@ export const apiCreatePlanning = async (
 
 export const apiGetPlannings = async (
     filter: ApiInputGetPlannings,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputGetPlannings> => {
     try {
         const req = `${API_PLANNINGS}?year=${filter.year}&month=${filter.month}`;
@@ -272,7 +275,7 @@ export const apiGetPlannings = async (
 
 export const apiUpdatePlanning = async (
     update: ApiInputUpdatePlanning,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_PLANNINGS + "/" + update.id;
@@ -284,7 +287,7 @@ export const apiUpdatePlanning = async (
     } catch (error) {
         console.error(
             `Error updating planning by update with: ${JSON.stringify(update)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -292,7 +295,7 @@ export const apiUpdatePlanning = async (
 
 export const apiDeletePlanning = async (
     filter: ApiInputDeletePlanning,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_PLANNINGS + "/" + filter.id;
@@ -302,7 +305,7 @@ export const apiDeletePlanning = async (
     } catch (error) {
         console.error(
             `Error deleting planning with filter: ${JSON.stringify(filter)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -311,7 +314,7 @@ export const apiDeletePlanning = async (
 //CRUD Workout comment
 export const apiCreateWorkoutComment = async (
     wkComment: ApiInputCreateWorkoutComment,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputCreateWorkoutComment> => {
     try {
         const req = API_WORKOUT_COMMENT;
@@ -323,7 +326,7 @@ export const apiCreateWorkoutComment = async (
     } catch (error) {
         console.error(
             `Error creating workout comment: ${JSON.stringify(wkComment)}`,
-            error
+            error,
         );
         throw error;
     }
@@ -331,7 +334,7 @@ export const apiCreateWorkoutComment = async (
 
 export const apiGetWorkoutComments = async (
     filter: ApiInputGetWorkoutComment,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputGetWorkoutComment> => {
     try {
         const req = `${API_GET_WORKOUT_COMMENTS}/${filter.id_workout}`;
@@ -339,7 +342,7 @@ export const apiGetWorkoutComments = async (
     } catch (error) {
         console.error(
             `Error fetching workout comments of workout id: ${filter.id_workout}`,
-            error
+            error,
         );
         throw error;
     }
@@ -347,7 +350,7 @@ export const apiGetWorkoutComments = async (
 
 export const apiUpdateWorkoutComment = async (
     update: ApiInputUpdateWorkoutComment,
-    jwt: string
+    jwt: string,
 ) => {
     try {
         const req = API_WORKOUT_COMMENT + "/" + update.id;
@@ -359,9 +362,9 @@ export const apiUpdateWorkoutComment = async (
     } catch (error) {
         console.error(
             `Error updating workout comment by update with: ${JSON.stringify(
-                update
+                update,
             )}`,
-            error
+            error,
         );
         throw error;
     }
@@ -383,12 +386,12 @@ export const apiLogin = async (username: string, psw: string) => {
 
 export const apiGetWorkoutImages = async (
     workoutId: number,
-    jwt: string
+    jwt: string,
 ): Promise<ApiOutputWorkoutImage[]> => {
     try {
         const images = await apiFetchJWTAuth(
             jwt,
-            API_IMG_WORKOUT + "?id=" + workoutId
+            API_IMG_WORKOUT + "?id=" + workoutId,
         );
 
         return images;
@@ -402,7 +405,7 @@ export const apiGetWorkoutImages = async (
 export const apiCreateWorkoutImage = async (
     workoutId: number,
     image: File,
-    jwt: string
+    jwt: string,
 ): Promise<string> => {
     const formData = new FormData();
     formData.append("image", image);
@@ -418,7 +421,7 @@ export const apiCreateWorkoutImage = async (
     } catch (error) {
         console.error(
             `Error creating image for workout id: ${workoutId}`,
-            error
+            error,
         );
         throw error;
     }
@@ -441,11 +444,17 @@ export const apiUriImage = (imageName: string) => {
     return `${API_IMAGE}/${imageName}`;
 };
 
+//ritorna una stringa che puo' essere messa in campi uri
+//in modo da caricare i file online
+export const apiUriFile = (fileName: string) => {
+    return `${API_FILE}/${fileName}`;
+};
+
 //fa una chiamata di fetch con il token salvato in precedenza
 const apiFetchJWTAuth = async (
     jwt: string,
     input: RequestInfo,
-    init?: RequestInit
+    init?: RequestInit,
 ) => {
     if (!init) {
         init = {
@@ -469,7 +478,7 @@ const apiFetch = async (input: RequestInfo, init?: RequestInit) => {
         const res = await Promise.race([
             fetch(input, init),
             new Promise((_, reject) =>
-                setTimeout(() => reject(new Error("fetch timeout")), 20000)
+                setTimeout(() => reject(new Error("fetch timeout")), 20000),
             ),
         ]);
 
@@ -484,6 +493,60 @@ const apiFetch = async (input: RequestInfo, init?: RequestInit) => {
         const json = await res.json();
         return json;
     } catch (error) {
+        throw error;
+    }
+};
+
+//accetta solo pdf al momento
+//ritorna il nome del file creato
+export const apiCreateTrainingCard = async (
+    name: string,
+    description: string,
+    file: File,
+    jwt: string,
+): Promise<string> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", name.toString());
+    formData.append("description", description.toString());
+
+    try {
+        const res = await apiFetchJWTAuth(jwt, API_TRAINING_CARD, {
+            method: "POST",
+            body: formData,
+        });
+
+        return res.store_file_name;
+    } catch (error) {
+        console.error(
+            `Error creating training card: file name -> ${file.name}, file mimetype -> ${file.type}`,
+            error,
+        );
+        throw error;
+    }
+};
+
+export const apiGetTrainingCards = async (
+    jwt: string,
+): Promise<ApiOutputGetTrainingCard[]> => {
+    try {
+        const req = `${API_TRAINING_CARD}`;
+        return await apiFetchJWTAuth(jwt, req, { method: "GET" });
+    } catch (error) {
+        console.error(`Error fetch training cards`, error);
+        throw error;
+    }
+};
+
+export const apiDeleteTrainingCards = async (
+    idCard: number,
+    jwt: string,
+): Promise<ApiOutputGetTrainingCard[]> => {
+    try {
+        const req = `${API_TRAINING_CARD}/${idCard}`;
+        return await apiFetchJWTAuth(jwt, req, { method: "DELETE" });
+    } catch (error) {
+        console.error(`Error delete training cards`, error);
         throw error;
     }
 };
