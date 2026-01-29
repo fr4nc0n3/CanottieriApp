@@ -1,6 +1,6 @@
 from flask import Flask, request
+
 from .config import APP_CONFIG, FlaskConfig
-from .db import close_connection
 from flask_cors import CORS
 import os
 from flask_jwt_extended import JWTManager
@@ -12,6 +12,8 @@ from .blueprints.main import api
 from .blueprints.workout_comment import api_workout_comment
 from .blueprints.training_card import api_training_card
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from .models_sqlalchemy import Base, User as SQLAUser, AccountType as SQLAAccountType, Image as SQLAImage
 
 def log_request():
     print("------ LOG REQUEST ------")
@@ -83,7 +85,7 @@ def create_app():
 
     # In questo modo alla fine di ogni api viene chiamato automaticamente
     # close_connection
-    app.teardown_appcontext(close_connection)
+    #app.teardown_appcontext(close_db_ORM)
 
     # logging ad ogni route API
     app.before_request(log_request)

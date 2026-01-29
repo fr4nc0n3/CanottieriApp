@@ -1,7 +1,9 @@
-from flask import Blueprint, jsonify, request, current_app, send_from_directory
+from flask import Blueprint, jsonify, request, send_from_directory
+
+from backend.flask_app.app.extensions import DB
+from backend.flask_app.app.models_sqlalchemy import User
 
 from ..config import APP_CONFIG
-from ..db import (query_db, dbUserAccountTypes)
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import (create_access_token) 
 import os
@@ -46,16 +48,16 @@ def login():
     password = data.get('password', "")
     
     #Ottenere utente tramite nome
-    user = query_db("SELECT id, password_hash FROM User WHERE name = ?", tuple([username]))
+    user = DB.session.query(User).filter_by(name = username).first()
 
-    if(len(user) <= 0):
+    if(user is None):
         return jsonify({"message": "user_not_found"})
 
-    id = user[0][0]
-    psw_db = user[0][1] #e' hashata nel DB
+    id = user.id
+    psw_db = user.password_hash
 
     #get user account types
-    accountTypes = dbUserAccountTypes(id)
+    accountTypes = [at.AccountType_.type for at in user.UserAccountType]
 
     #verificare che combaci la password hashata
     if(check_password_hash(psw_db, password)):

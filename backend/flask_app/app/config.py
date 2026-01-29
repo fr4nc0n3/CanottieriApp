@@ -13,6 +13,8 @@ class FlaskConfig:
         # imposta la scadenza dei jwt emessi ad 1 giorni
         # di default invece flask_jwt_extended fa solo 15 minuti
         self.JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1) 
+        self.SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.getenv("DATABASE_PATH", "")}"
+        self.SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class AppConfig:
     ENV: str
