@@ -10,7 +10,6 @@ export type User = {
     id: string;
     last_sub_date: string;
     name: string;
-    //password_hash: string; //TODO il backend non deve inviarla
     phone: string;
     profile_img_url: string;
     updated_at: string;

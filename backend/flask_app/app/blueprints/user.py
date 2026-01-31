@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request 
+from flask import Blueprint, jsonify, request
+
+from backend.flask_app.app.query import db_get_users_ 
 from ..db import (query_db, dbUserAccountTypes)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from .helpers import (is_admin, permission_denied)
@@ -15,11 +17,20 @@ def getUsers():
     if(not is_admin(claims)):
         return permission_denied()
 
-    # TODO in futuro non dovrei dare tutte le colonne di user
-    # nemmeno all' admin siccome ci sono delle colonne sensibili come 
-    # la password hashata
-    users = query_db('SELECT * FROM User')
-    return jsonify([dict(u) for u in users])
+    users = db_get_users_()
+
+    # ATTENZIONE: 
+    # rimuovo il campo 'password_hash' 
+    key_to_remove = "password_hash"
+
+    users_no_psw = [
+        {k: v for k, v in item.items() if k != key_to_remove}
+        for item in users
+    ]
+
+    return jsonify(users_no_psw)
+
+#TODO: riprendere da qui refactoring per ORM (ELIMINARE QUESTO TODO)
 
 @api_user.route('/get-user-info', methods=['GET'])
 @jwt_required()

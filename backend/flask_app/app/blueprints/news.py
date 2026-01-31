@@ -3,7 +3,8 @@ from flask import Blueprint
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import getCountUserNewsRx, getUserNewsRx, getUserNewsTx, updateAllUserNewsRead_, updateUserNewsRead_
+from backend.flask_app.app.extensions import DB
+from backend.flask_app.app.query import get_target_id_users_, getCountUserNewsRx_, getUserNewsRx_, getUserNewsTx_, insertNews_, updateAllUserNewsRead_, updateUserNewsRead_
 from .helpers import bad_json, missing_parameter, permission_denied, is_admin
 from ..db import (dbCountUserNewsRx, query_db, execute_ops_db, dbUserNewsRx, 
     dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews, updateAllUserNewsRead, updateUserNewsRead)
@@ -24,7 +25,7 @@ def getUserNews():
     if(idUser != identity):
         return permission_denied()
 
-    news = getUserNewsRx(int(idUser), int(limit), int(offset))
+    news = getUserNewsRx_(int(idUser), int(limit), int(offset))
 
     return jsonify(news)
 
@@ -43,10 +44,10 @@ def getCountUserNews():
     count = 0
     if only_not_read == "false":
        # count = dbCountUserNewsRx(int(idUser)) 
-       count = getCountUserNewsRx(int(idUser))
+       count = getCountUserNewsRx_(int(idUser))
     elif only_not_read == "true":
         #count = dbCountUserNewsRx(int(idUser), is_read=False)
-        count = getCountUserNewsRx(int(idUser), is_read=False)
+        count = getCountUserNewsRx_(int(idUser), is_read=False)
     else:
         return jsonify({"Status": "Bad request"}), 400
 
@@ -65,7 +66,7 @@ def getUserNewsSended():
         return permission_denied()
 
     #news = dbUserNewsTx(int(idUser), limit, int(offset))
-    news = getUserNewsTx(int(idUser), limit, int(offset))
+    news = getUserNewsTx_(int(idUser), limit, int(offset))
 
     return jsonify(news)
 
@@ -131,6 +132,8 @@ def setNewsRead():
         "status": "ok"
         }), 200
 
+#TODO al momento non e' utilizzata dal frontend
+"""
 @api_news.route('/send-news-to-groups', methods=['POST'])
 @jwt_required()
 def sendNewsToGroup():
@@ -154,29 +157,34 @@ def sendNewsToGroup():
         return jsonify({"error": "Bad request"}), 400
 
     #estraggo utenti target
-    query = "SELECT u.id FROM User u, UserAccountType uat, AccountType at " + \
-        "WHERE at.id = uat.id_account_type AND uat.id_user = u.id "
+    #query = "SELECT u.id FROM User u, UserAccountType uat, AccountType at " + \
+    #    "WHERE at.id = uat.id_account_type AND uat.id_user = u.id "
     
-    targetIdUsers = None 
+    #targetIdUsers = None 
 
-    if ("all" not in groups):
-        placeholders = ','.join(['?'] * len(groups))
-        query += f"AND at.type in ({placeholders}) "
-        query += "GROUP BY u.id "
-        targetIdUsers = query_db(query, tuple(groups))
-    else:
-        query += "GROUP BY u.id "
-        targetIdUsers = query_db(query)
+    #if ("all" not in groups):
+    #    placeholders = ','.join(['?'] * len(groups))
+    #    query += f"AND at.type in ({placeholders}) "
+    #    query += "GROUP BY u.id "
+    #    targetIdUsers = query_db(query, tuple(groups))
+    #else:
+    #    query += "GROUP BY u.id "
+    #    targetIdUsers = query_db(query)
 
-    targetIdUsers = [t[0] for t in targetIdUsers]
+    #targetIdUsers = [t[0] for t in targetIdUsers]
+    targetIdUsers = get_target_id_users_(groups)
 
     print("Send to userIds:", targetIdUsers)
 
-    insertNews(idUser, message, title, groups)
+    #insertNews(idUser, message, title, groups)
+    insertNews_(idUser, message, title, groups)
 
     #get last id news
-    lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
-    lastIdNews = lastIdNews[0][0]
+    #lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
+    #lastIdNews = lastIdNews[0][0]
+    lastIdNews = DB.session.execute(
+        DB.text("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
+    ).scalar_one()
 
     print("last id news: ", lastIdNews)
 
@@ -186,6 +194,7 @@ def sendNewsToGroup():
 
     return jsonify({"status": "ok"})
 
+#TODO non utilizzato dal frontend attualmente
 #soft delete di una news
 @api_news.route('/delete-news', methods=['POST'])
 @jwt_required()
@@ -210,3 +219,4 @@ def deleteNews():
     dbDeleteNews(id)
 
     return jsonify({"status": "ok"})
+"""

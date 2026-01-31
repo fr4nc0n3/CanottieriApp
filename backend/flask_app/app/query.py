@@ -1,6 +1,7 @@
+from typing import Any, Dict, List
 from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.models_sqlalchemy import (
-    UserNews, News, User, AccountType, UserAccountType, Workout, Image, t_WorkoutImage
+    File, MimeType, Planning, TrainingCard, UserNews, News, User, AccountType, UserAccountType, Workout, Image, t_WorkoutImage
 )
 from datetime import datetime
 from sqlalchemy import func
@@ -10,7 +11,7 @@ from sqlalchemy import func
 def model_to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
-def getUserNewsRx(idUser: int, limit: int, offset: int):
+def getUserNewsRx_(idUser: int, limit: int, offset: int):
     rows = (
         DB.session.query(
             UserNews.id.label("id_user_news"),
@@ -33,7 +34,7 @@ def getUserNewsRx(idUser: int, limit: int, offset: int):
 
     return [dict(r._mapping) for r in rows]
 
-def getCountUserNewsRx(id_user: int, is_read: bool | None = None):
+def getCountUserNewsRx_(id_user: int, is_read: bool | None = None):
     query = DB.session.query(DB.func.count(UserNews.id)) \
         .filter(UserNews.id_user == id_user)
 
@@ -44,7 +45,7 @@ def getCountUserNewsRx(id_user: int, is_read: bool | None = None):
 
 # ------------------ account types ------------------
 
-def getUserAccountTypes(idUser: int):
+def getUserAccountTypes_(idUser: int):
     rows = (
         DB.session.query(AccountType.type)
         .join(UserAccountType, UserAccountType.id_account_type == AccountType.id)
@@ -56,7 +57,7 @@ def getUserAccountTypes(idUser: int):
 
 # ------------------ news inviate ------------------
 
-def getUserNewsTx(idUser: int, limit: int, offset: int):
+def getUserNewsTx_(idUser: int, limit: int, offset: int):
     rows = (
         DB.session.query(News)
         .filter(
@@ -72,7 +73,7 @@ def getUserNewsTx(idUser: int, limit: int, offset: int):
 
 # ------------------ workouts ------------------
 
-def getUserWorkouts(idUser: int, startDate: str, endDate: str):
+def getUserWorkouts_(idUser: int, startDate: str, endDate: str):
     rows = (
         DB.session.query(Workout)
         .filter(
@@ -85,7 +86,7 @@ def getUserWorkouts(idUser: int, startDate: str, endDate: str):
     return [model_to_dict(w) for w in rows]
 
 
-def getUserWorkout(id_workout: int):
+def getUserWorkout_(id_workout: int):
     w = (
         DB.session.query(Workout)
         .filter(Workout.id == id_workout)
@@ -96,7 +97,7 @@ def getUserWorkout(id_workout: int):
 
 # ------------------ workout images ------------------
 
-def getWorkoutImages(id_workout: int):
+def getWorkoutImages_(id_workout: int):
     rows = (
         DB.session.query(Image)
         .join(t_WorkoutImage, t_WorkoutImage.c.id_image == Image.id)
@@ -107,7 +108,7 @@ def getWorkoutImages(id_workout: int):
     return [model_to_dict(img) for img in rows]
 
 
-def getIdUserOfWorkoutImage(img_name: str):
+def getIdUserOfWorkoutImage_(img_name: str):
     row = (
         DB.session.query(Workout.id_user)
         .join(t_WorkoutImage, t_WorkoutImage.c.id_workout == Workout.id)
@@ -162,7 +163,7 @@ def insertNews_(idUser: int, message: str, title: str, groups: list[str]):
 
 
 def notifyUserForWorkoutComment_(id_workout: int):
-    workout = getUserWorkout(id_workout)
+    workout = getUserWorkout_(id_workout)
     if not workout:
         raise Exception("Workout non trovato")
 
@@ -193,6 +194,114 @@ def notifyUserForWorkoutComment_(id_workout: int):
     DB.session.add(user_news)
     DB.session.commit()
 
+def get_target_id_users_(groups):
+    stmt = (
+       DB.select(User.id)
+        .join(User.UserAccountType)
+        .join(UserAccountType.AccountType_)
+    )
+
+    if "all" not in groups:
+        stmt = stmt.where(AccountType.type.in_(groups))
+
+    stmt = stmt.distinct()
+
+    return DB.session.execute(stmt).scalars().all()
+
+def get_month_plannings_(startDate, endDate):
+    stmt = (
+        DB.select(Planning)
+        .where(Planning.date >= startDate)
+        .where(Planning.date < endDate)
+    )
+
+    result = DB.session.execute(stmt).scalars().all()
+    return [model_to_dict(p) for p in result]
+
+def create_planning_(date, description):
+    planning = Planning(
+        date=date,
+        description=description
+    )
+
+    DB.session.add(planning)
+    DB.session.commit()
+
+    return planning.id
+
+def update_planning_(planning_id, description):
+    stmt = (
+        DB.update(Planning)
+        .where(Planning.id == planning_id)
+        .values(description=description)
+    )
+
+    DB.session.execute(stmt)
+    DB.session.commit()
+
+def delete_planning_(planning_id):
+    planning = DB.session.get(Planning, planning_id)
+
+    if planning is None:
+        return False
+
+    DB.session.delete(planning)
+    DB.session.commit()
+    return True
+
+def get_training_cards_():
+    stmt = (
+        DB.select(
+            TrainingCard.id,
+            TrainingCard.name_card,
+            TrainingCard.description,
+            File.file_name,
+            File.created_at,
+            MimeType.mime_type,
+        )
+        .join(File, File.id == TrainingCard.id_file)
+        .join(MimeType, MimeType.id == File.id_mime_type)
+        .where(TrainingCard.deleted_at.is_(None))
+    )
+
+    result = DB.session.execute(stmt).mappings().all()
+
+    return [dict(row) for row in result]
+
+def db_create_training_card_(store_file_name: str, name: str, description: str) -> int | None:
+    try:
+        file = File(
+            file_name=store_file_name,
+            id_mime_type=1  # application/pdf
+        )
+
+        DB.session.add(file)
+        DB.session.flush()  # ottiene file.id SENZA commit
+
+        training_card = TrainingCard(
+            id_file=file.id,
+            name_card=name,
+            description=description
+        )
+
+        DB.session.add(training_card)
+        DB.session.commit()
+
+        return training_card.id
+    except Exception as e:
+        DB.session.rollback()
+        raise 
+
+def db_soft_delete_training_card_(card_id: int) -> None:
+    stmt = (
+        DB.update(TrainingCard)
+        .where(TrainingCard.id == card_id)
+        .values(deleted_at=func.current_timestamp())
+    )
+
+    DB.session.execute(stmt)
+    DB.session.commit()
+
 def deleteNews_(id: int):
     (
         DB.session.query(News)
@@ -200,6 +309,12 @@ def deleteNews_(id: int):
         .update({"is_deleted": True})
     )
     DB.session.commit()
+
+def db_get_users_() -> List[Dict[str, Any]]:
+    stmt = DB.select(User)
+    users = DB.session.execute(stmt).scalars().all()
+
+    return [model_to_dict(u) for u in users]
 
 # ------------------ images ------------------
 

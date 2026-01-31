@@ -1,4 +1,6 @@
 from flask import Blueprint, jsonify, request
+
+from backend.flask_app.app.query import db_create_training_card_, db_soft_delete_training_card_, get_training_cards_ as db_get_training_cards_
 from ..db import (query_db, execute_ops_db, get_db)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 import datetime
@@ -16,14 +18,7 @@ def get_training_cards():
     identity = get_jwt_identity()
     claims = get_jwt()
 
-    training_cards = query_db(
-        'SELECT c.id, c.name_card, c.description, f.file_name, f.created_at, mime.mime_type '
-        'FROM TrainingCard AS c JOIN File AS f ON f.id = c.id_file '
-        'JOIN MimeType AS mime ON mime.id = f.id_mime_type '
-        'WHERE c.deleted_at IS NULL'
-    )
-
-    return jsonify([dict(c) for c in training_cards])
+    return jsonify(db_get_training_cards_())
 
 @api_training_card.route('/training_card', methods=['POST'])
 @jwt_required()
@@ -42,8 +37,6 @@ def create_planning():
 
     name = request.form.get('name')
     description = request.form.get('description')
-    #file_name = request.form.get('file_name')
-    #mime_type = request.form.get('mime_type')
 
     if not name:
         return jsonify({'error': 'name required'}), 400
@@ -66,42 +59,14 @@ def create_planning():
     store_file_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + file_name 
     store_file_name = secure_filename(store_file_name)
 
-    #TODO bisognerebbe mettere anche un controllo sulla dimensione del pdf
-
-    #TODO testare
     save_path = os.path.join(file_folder, store_file_name)
     file.save(save_path)
 
-    conn = None
     try:
-        conn = get_db()
-        cursor = conn.execute(
-            'INSERT INTO File '
-            ' (file_name, id_mime_type) '
-            'VALUES(?, 1);', # 1 = application/pdf
-            tuple([store_file_name])
-        )
-
-        new_file_id = cursor.lastrowid
-
-        cursor = conn.execute(
-            'INSERT INTO TrainingCard '
-            '(id_file, name_card, description)'
-            'VALUES(?, ?, ?);',
-            tuple([new_file_id, name, description])
-        )
-
-        conn.commit()
-
+        id_card = db_create_training_card_(store_file_name, name, description)
         return jsonify({'store_file_name': store_file_name}), 201
     except Exception as e:
-        if conn:
-            conn.rollback()
-
         return jsonify({'error': str(e)}), 400
-    finally:
-        if conn:
-            conn.close()
 
 @api_training_card.route('/training_card/<int:card_id>', methods=['DELETE'])
 @jwt_required()
@@ -112,10 +77,6 @@ def delete_planning(card_id: int):
     if not is_admin(claims):
         return permission_denied()
 
-    execute_ops_db([{
-        'query':   
-            'UPDATE TrainingCard SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?',
-            'args': tuple([card_id])
-    }])
+    db_soft_delete_training_card_(card_id) 
 
     return jsonify({'status': 'ok'})
