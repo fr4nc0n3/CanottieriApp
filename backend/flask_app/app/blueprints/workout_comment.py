@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request
+
+from backend.flask_app.app.query import db_get_workout_comments, db_insert_workout_comment_, model_to_dict, notifyUserForWorkoutComment_
 from ..db import (execute_ops_db, get_db, insertNews, notifyUserForWorkoutComment, query_db)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from .helpers import (bad_json, is_admin, missing_parameter, permission_denied)
 import traceback
 
 api_workout_comment = Blueprint('workout_comment', __name__)
-
-# TODO riprendere da qui il refactoring ORM (ELIMINARE QUESTO TODO)
 
 # ----------- CRUD Workout Comment ------------ 
 @api_workout_comment.route('workout_comment', methods=["POST"])
@@ -37,49 +37,35 @@ def createWorkoutComment():
     if not is_admin(claims) or str(id_user_commentator) != identity:
         return permission_denied()
 
-    conn = None
-
     try:
-        conn = get_db()
-
         # inserimento notifica commento
-        notifyUserForWorkoutComment(conn_db=conn, id_workout=id_workout)
+        id_comment = db_insert_workout_comment_(id_user_commentator, id_workout, description)
+        notifyUserForWorkoutComment_(id_workout)
 
-        cursor = conn.execute(
-            "INSERT INTO WorkoutComment ("
-            "id_user_commentator, id_workout, description"
-            ") VALUES (?,?,?) ",
-            tuple([id_user_commentator, id_workout, description])
-        )
-        conn.commit()
-        new_id = cursor.lastrowid
-
-        return jsonify({'id': new_id}), 201
+        return jsonify({'id': id_comment}), 201
     except Exception as e:
         traceback.print_exc()
         return jsonify({'error': str(e)}), 400
-    finally:
-        if conn:
-            conn.close()
 
 # ritorna tutti i commenti di un workout passando nell' url l' id di quest' ultimo
 @api_workout_comment.route('workout_comment/of_workout/<int:id_workout>', methods=['GET'])
 @jwt_required()
-def getWorkoutComment(id_workout):
+def getWorkoutComment(id_workout: int):
     identity = get_jwt_identity()
     claims = get_jwt()
 
     print("request.args: ", request.args)
 
-    #TODO non c'e' autenticazione utente (dovrebbe essere disponibile solo per allenatore ed atleta)
-    #workout_comment = dbWorkoutComments(id_workout)
-    try:
-        workout_comments = query_db(
-            "SELECT * FROM WorkoutComment WHERE id_workout = ?",
-            tuple([id_workout])
-        )
+    #TODO continuare refactoring ORM da qui impostando gestione autorizzazione
+    #TODO (ELIMINARE QUESTO TODO)
 
-        return jsonify([dict(w) for w in workout_comments]), 201
+    #TODO non c'e' autenticazione utente (dovrebbe essere disponibile solo per allenatore ed atleta)
+    # id del jwt deve corrispondere all' id dell' utente che ha creato il workout
+    # oppure se il jwt e' di un admin (allenatore)
+    try:
+        workout_comments = db_get_workout_comments(id_workout)
+
+        return jsonify([model_to_dict(w) for w in workout_comments]), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 

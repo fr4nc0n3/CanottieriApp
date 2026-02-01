@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.models_sqlalchemy import (
-    File, MimeType, Planning, TrainingCard, UserNews, News, User, AccountType, UserAccountType, Workout, Image, t_WorkoutImage
+    File, MimeType, Planning, TrainingCard, UserNews, News, User, AccountType, UserAccountType, Workout, Image, WorkoutComment, t_WorkoutImage
 )
 from datetime import datetime
 from sqlalchemy import func
@@ -399,3 +399,24 @@ def insertWorkoutImage_(id_workout: int, image_name: str):
     )
 
     DB.session.commit()
+
+def db_insert_workout_comment_(id_user_commentator: int, id_workout: int, description: str) -> int | None: 
+    comment = WorkoutComment(
+        id_user_commentator=id_user_commentator,
+        id_workout=id_workout,
+        description=description
+    )
+
+    DB.session.add(comment)
+    DB.session.commit()
+
+    return comment.id
+
+def db_get_workout_comments(id_workout: int):
+    stmt = (
+       DB.select(WorkoutComment)
+    )
+
+    stmt = stmt.where(WorkoutComment.id_workout == id_workout)
+
+    return DB.session.execute(stmt).scalars().all()
