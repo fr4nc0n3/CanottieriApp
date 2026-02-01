@@ -9,6 +9,8 @@
     NOTA: non e' vero, non ci sono i permessi sul server di produzione per creare file o cartelle
     in /home, quindi fare backup delle cartelle indicate in /home/canottieriapp
 
+    CARTELLE E FILE DA BACKUPPARE per DATI: img/, file/, CanottieriAppDB.db
+
 - Fare build del sito statico cambiando valori in src/.env.
   Per buildare il sito, andare nella cartella src ed eseguire lo script "build:web" situato nel file
   src/package.json, quindi "npm run build:web", questo generera' la cartella src/dist contenente
@@ -20,8 +22,8 @@
 - Zippare e caricare le cartelle src/dist e src/backend/flask_app in modo da caricarle sul server
   di produzione, rispettivamente, in /home/canottieriapp/dist e /home/canottieriapp/flask_app.
 
-- Aggiornare struttura database produzione, con le sole query strutturali che servono per passare alla
-  nuova versione.
+- Aggiornare struttura database produzione, con le sole query strutturali che servono per passare alla nuova versione (le query di migrazione dalla versione attuale del database fino all' ultima
+  disponibile).
 
 ## Solo se bisogna ripartire da 0 sul server
 
