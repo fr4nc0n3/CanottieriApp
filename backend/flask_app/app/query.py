@@ -11,6 +11,10 @@ from sqlalchemy import func
 def model_to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
+def get_dict_without_field(dictionary: dict, field: str):
+    result = {k: v for k, v in dictionary.items() if k != field}
+    return result
+
 def getUserNewsRx_(idUser: int, limit: int, offset: int):
     rows = (
         DB.session.query(
@@ -45,7 +49,7 @@ def getCountUserNewsRx_(id_user: int, is_read: bool | None = None):
 
 # ------------------ account types ------------------
 
-def getUserAccountTypes_(idUser: int):
+def getUserAccountTypes_(idUser: int) -> List[str]:
     rows = (
         DB.session.query(AccountType.type)
         .join(UserAccountType, UserAccountType.id_account_type == AccountType.id)
@@ -315,6 +319,15 @@ def db_get_users_() -> List[Dict[str, Any]]:
     users = DB.session.execute(stmt).scalars().all()
 
     return [model_to_dict(u) for u in users]
+
+def db_get_user_(id: int) -> User | None:
+    user = (
+        DB.session.query(User)
+        .filter(User.id == id)
+        .first()
+    )
+
+    return user
 
 # ------------------ images ------------------
 

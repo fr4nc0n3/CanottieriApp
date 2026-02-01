@@ -6,6 +6,8 @@ import traceback
 
 api_workout_comment = Blueprint('workout_comment', __name__)
 
+# TODO riprendere da qui il refactoring ORM (ELIMINARE QUESTO TODO)
+
 # ----------- CRUD Workout Comment ------------ 
 @api_workout_comment.route('workout_comment', methods=["POST"])
 @jwt_required()
