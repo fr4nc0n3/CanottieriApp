@@ -1,17 +1,22 @@
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import db_create_training_card_, db_soft_delete_training_card_, get_training_cards_ as db_get_training_cards_
-from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
+from backend.flask_app.app.query import (
+    db_create_training_card_,
+    db_soft_delete_training_card_,
+    get_training_cards_ as db_get_training_cards_,
+)
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import datetime
-from .helpers import (is_admin, missing_parameter, permission_denied)
+from .helpers import is_admin, missing_parameter, permission_denied
 from ..config import APP_CONFIG
 import os
 from werkzeug.utils import secure_filename
 
 api_training_card = Blueprint("training_card", __name__)
 
+
 # ----------- CRUD training card -------------
-@api_training_card.route('/training_card', methods=['GET'])
+@api_training_card.route("/training_card", methods=["GET"])
 @jwt_required()
 def get_training_cards():
     identity = get_jwt_identity()
@@ -19,7 +24,8 @@ def get_training_cards():
 
     return jsonify(db_get_training_cards_())
 
-@api_training_card.route('/training_card', methods=['POST'])
+
+@api_training_card.route("/training_card", methods=["POST"])
 @jwt_required()
 def create_planning():
     identity = get_jwt_identity()
@@ -34,28 +40,30 @@ def create_planning():
     if not is_admin(claims):
         return permission_denied()
 
-    name = request.form.get('name')
-    description = request.form.get('description')
+    name = request.form.get("name")
+    description = request.form.get("description")
 
     if not name:
-        return jsonify({'error': 'name required'}), 400
+        return jsonify({"error": "name required"}), 400
 
     if description is None:
-        return jsonify({'error': 'description required'}), 400
+        return jsonify({"error": "description required"}), 400
 
-    if 'file' not in request.files:
-        return jsonify({'error': 'file required'}), 400
+    if "file" not in request.files:
+        return jsonify({"error": "file required"}), 400
 
-    file = request.files['file']
+    file = request.files["file"]
 
     if file.mimetype != "application/pdf":
-        return jsonify({'error': 'file must be an application/pdf'}), 400
+        return jsonify({"error": "file must be an application/pdf"}), 400
 
     file_name = ""
     if file.filename is not None:
         file_name = file.filename
 
-    store_file_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + file_name 
+    store_file_name = (
+        datetime.datetime.now().strftime("%Y%m%d_%H%M%S") + "_" + file_name
+    )
     store_file_name = secure_filename(store_file_name)
 
     save_path = os.path.join(file_folder, store_file_name)
@@ -63,11 +71,12 @@ def create_planning():
 
     try:
         id_card = db_create_training_card_(store_file_name, name, description)
-        return jsonify({'store_file_name': store_file_name}), 201
+        return jsonify({"store_file_name": store_file_name}), 201
     except Exception as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({"error": str(e)}), 400
 
-@api_training_card.route('/training_card/<int:card_id>', methods=['DELETE'])
+
+@api_training_card.route("/training_card/<int:card_id>", methods=["DELETE"])
 @jwt_required()
 def delete_planning(card_id: int):
     identity = get_jwt_identity()
@@ -76,6 +85,6 @@ def delete_planning(card_id: int):
     if not is_admin(claims):
         return permission_denied()
 
-    db_soft_delete_training_card_(card_id) 
+    db_soft_delete_training_card_(card_id)
 
-    return jsonify({'status': 'ok'})
+    return jsonify({"status": "ok"})

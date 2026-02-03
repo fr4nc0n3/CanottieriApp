@@ -1,19 +1,34 @@
 from typing import Any, Dict, List
 from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.models_sqlalchemy import (
-    File, MimeType, Planning, TrainingCard, UserNews, News, User, AccountType, UserAccountType, Workout, Image, WorkoutComment, t_WorkoutImage
+    File,
+    MimeType,
+    Planning,
+    TrainingCard,
+    UserNews,
+    News,
+    User,
+    AccountType,
+    UserAccountType,
+    Workout,
+    Image,
+    WorkoutComment,
+    t_WorkoutImage,
 )
 from datetime import date, datetime
 from sqlalchemy import func
 
 # ------------------ helper ------------------
 
+
 def model_to_dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+
 
 def get_dict_without_field(dictionary: dict, field: str):
     result = {k: v for k, v in dictionary.items() if k != field}
     return result
+
 
 def getUserNewsRx_(idUser: int, limit: int, offset: int):
     rows = (
@@ -25,7 +40,7 @@ def getUserNewsRx_(idUser: int, limit: int, offset: int):
             News.target_name,
             UserNews.is_read,
             User.name.label("sender_name"),
-            UserNews.id_news
+            UserNews.id_news,
         )
         .join(News, UserNews.id_news == News.id)
         .join(User, User.id == News.id_user_sender)
@@ -38,16 +53,20 @@ def getUserNewsRx_(idUser: int, limit: int, offset: int):
 
     return [dict(r._mapping) for r in rows]
 
+
 def getCountUserNewsRx_(id_user: int, is_read: bool | None = None):
-    query = DB.session.query(DB.func.count(UserNews.id)) \
-        .filter(UserNews.id_user == id_user)
+    query = DB.session.query(DB.func.count(UserNews.id)).filter(
+        UserNews.id_user == id_user
+    )
 
     if is_read is not None:
         query = query.filter(UserNews.is_read == is_read)
 
     return query.scalar()
 
+
 # ------------------ account types ------------------
+
 
 def getUserAccountTypes_(idUser: int) -> List[str]:
     rows = (
@@ -61,13 +80,11 @@ def getUserAccountTypes_(idUser: int) -> List[str]:
 
 # ------------------ news inviate ------------------
 
+
 def getUserNewsTx_(idUser: int, limit: int, offset: int):
     rows = (
         DB.session.query(News)
-        .filter(
-            News.id_user_sender == idUser,
-            News.is_deleted == False
-        )
+        .filter(News.id_user_sender == idUser, News.is_deleted == False)
         .limit(limit)
         .offset(offset)
         .all()
@@ -77,13 +94,12 @@ def getUserNewsTx_(idUser: int, limit: int, offset: int):
 
 # ------------------ workouts ------------------
 
+
 def db_get_user_workout_(idUser: int, startDate: str, endDate: str) -> List[Workout]:
     workouts = (
         DB.session.query(Workout)
         .filter(
-            Workout.id_user == idUser,
-            Workout.date >= startDate,
-            Workout.date < endDate
+            Workout.id_user == idUser, Workout.date >= startDate, Workout.date < endDate
         )
         .all()
     )
@@ -92,15 +108,12 @@ def db_get_user_workout_(idUser: int, startDate: str, endDate: str) -> List[Work
 
 
 def getUserWorkout_(id_workout: int):
-    w = (
-        DB.session.query(Workout)
-        .filter(Workout.id == id_workout)
-        .first()
-    )
+    w = DB.session.query(Workout).filter(Workout.id == id_workout).first()
     return w
 
 
 # ------------------ workout images ------------------
+
 
 def db_get_workout_images_(id_workout: int) -> List[Image]:
     images = (
@@ -113,7 +126,7 @@ def db_get_workout_images_(id_workout: int) -> List[Image]:
     return images
 
 
-#def getIdUserOfWorkoutImage_(img_name: str):
+# def getIdUserOfWorkoutImage_(img_name: str):
 def db_get_id_user_of_workout_image_(img_name: str) -> int:
     workout = (
         DB.session.query(Workout)
@@ -134,13 +147,11 @@ def db_get_id_user_of_workout_image_(img_name: str) -> int:
 
 # ------------------ update/delete workout ------------------
 
+
 def updateUserWorkout_(idWorkout: int, idUser: int, description: str):
     (
         DB.session.query(Workout)
-        .filter(
-            Workout.id == idWorkout,
-            Workout.id_user == idUser
-        )
+        .filter(Workout.id == idWorkout, Workout.id_user == idUser)
         .update({"description": description})
     )
     DB.session.commit()
@@ -149,16 +160,14 @@ def updateUserWorkout_(idWorkout: int, idUser: int, description: str):
 def deleteUserWorkout_(idWorkout: int, idUser: int):
     (
         DB.session.query(Workout)
-        .filter(
-            Workout.id == idWorkout,
-            Workout.id_user == idUser
-        )
+        .filter(Workout.id == idWorkout, Workout.id_user == idUser)
         .delete()
     )
     DB.session.commit()
 
 
 # ------------------ news ------------------
+
 
 def insertNews_(idUser: int, message: str, title: str, groups: list[str]):
     news = News(
@@ -167,7 +176,7 @@ def insertNews_(idUser: int, message: str, title: str, groups: list[str]):
         title=title,
         data_publish=datetime.utcnow(),
         is_deleted=False,
-        target_name=",".join(groups)
+        target_name=",".join(groups),
     )
 
     DB.session.add(news)
@@ -189,28 +198,23 @@ def notifyUserForWorkoutComment_(id_workout: int):
         id_user_sender=1,
         message=message,
         title=title,
-        data_publish=datetime .utcnow(),
+        data_publish=datetime.utcnow(),
         is_deleted=False,
-        target_name=""
+        target_name="",
     )
 
     DB.session.add(news)
     DB.session.flush()
 
-    user_news = UserNews(
-        id_news=news.id,
-        id_user=workout_id_user,
-        is_read=False
-    )
+    user_news = UserNews(id_news=news.id, id_user=workout_id_user, is_read=False)
 
     DB.session.add(user_news)
     DB.session.commit()
 
+
 def get_target_id_users_(groups):
     stmt = (
-       DB.select(User.id)
-        .join(User.UserAccountType)
-        .join(UserAccountType.AccountType_)
+        DB.select(User.id).join(User.UserAccountType).join(UserAccountType.AccountType_)
     )
 
     if "all" not in groups:
@@ -219,6 +223,7 @@ def get_target_id_users_(groups):
     stmt = stmt.distinct()
 
     return DB.session.execute(stmt).scalars().all()
+
 
 def get_month_plannings_(startDate, endDate):
     stmt = (
@@ -230,16 +235,15 @@ def get_month_plannings_(startDate, endDate):
     result = DB.session.execute(stmt).scalars().all()
     return [model_to_dict(p) for p in result]
 
+
 def create_planning_(date, description):
-    planning = Planning(
-        date=date,
-        description=description
-    )
+    planning = Planning(date=date, description=description)
 
     DB.session.add(planning)
     DB.session.commit()
 
     return planning.id
+
 
 def update_planning_(planning_id, description):
     stmt = (
@@ -251,6 +255,7 @@ def update_planning_(planning_id, description):
     DB.session.execute(stmt)
     DB.session.commit()
 
+
 def delete_planning_(planning_id):
     planning = DB.session.get(Planning, planning_id)
 
@@ -260,6 +265,7 @@ def delete_planning_(planning_id):
     DB.session.delete(planning)
     DB.session.commit()
     return True
+
 
 def get_training_cards_():
     stmt = (
@@ -280,20 +286,18 @@ def get_training_cards_():
 
     return [dict(row) for row in result]
 
-def db_create_training_card_(store_file_name: str, name: str, description: str) -> int | None:
+
+def db_create_training_card_(
+    store_file_name: str, name: str, description: str
+) -> int | None:
     try:
-        file = File(
-            file_name=store_file_name,
-            id_mime_type=1  # application/pdf
-        )
+        file = File(file_name=store_file_name, id_mime_type=1)  # application/pdf
 
         DB.session.add(file)
         DB.session.flush()  # ottiene file.id SENZA commit
 
         training_card = TrainingCard(
-            id_file=file.id,
-            name_card=name,
-            description=description
+            id_file=file.id, name_card=name, description=description
         )
 
         DB.session.add(training_card)
@@ -302,7 +306,8 @@ def db_create_training_card_(store_file_name: str, name: str, description: str) 
         return training_card.id
     except Exception as e:
         DB.session.rollback()
-        raise 
+        raise
+
 
 def db_soft_delete_training_card_(card_id: int) -> None:
     stmt = (
@@ -314,13 +319,11 @@ def db_soft_delete_training_card_(card_id: int) -> None:
     DB.session.execute(stmt)
     DB.session.commit()
 
+
 def deleteNews_(id: int):
-    (
-        DB.session.query(News)
-        .filter(News.id == id)
-        .update({"is_deleted": True})
-    )
+    (DB.session.query(News).filter(News.id == id).update({"is_deleted": True}))
     DB.session.commit()
+
 
 def db_get_users_() -> List[Dict[str, Any]]:
     stmt = DB.select(User)
@@ -328,33 +331,26 @@ def db_get_users_() -> List[Dict[str, Any]]:
 
     return [model_to_dict(u) for u in users]
 
+
 def db_get_user_(id: int) -> User | None:
-    user = (
-        DB.session.query(User)
-        .filter(User.id == id)
-        .first()
-    )
+    user = DB.session.query(User).filter(User.id == id).first()
 
     return user
 
+
 # ------------------ images ------------------
 
+
 def db_delete_img_(name: str):
-    (
-        DB.session.query(Image)
-        .filter(Image.name == name)
-        .delete()
-    )
+    (DB.session.query(Image).filter(Image.name == name).delete())
     DB.session.commit()
+
 
 # ------------------ user news ------------------
 
+
 def queryInsertUserNews_(idNews: int, idUser: int):
-    user_news = UserNews(
-        id_news=idNews,
-        id_user=idUser,
-        is_read=False
-    )
+    user_news = UserNews(id_news=idNews, id_user=idUser, is_read=False)
 
     DB.session.add(user_news)
     DB.session.commit()
@@ -363,10 +359,7 @@ def queryInsertUserNews_(idNews: int, idUser: int):
 def updateUserNewsRead_(id_news: int, id_user: int, is_read: bool):
     (
         DB.session.query(UserNews)
-        .filter(
-            UserNews.id_news == id_news,
-            UserNews.id_user == id_user
-        )
+        .filter(UserNews.id_news == id_news, UserNews.id_user == id_user)
         .update({"is_read": is_read})
     )
     DB.session.commit()
@@ -383,12 +376,9 @@ def updateAllUserNewsRead_(id_user: int):
 
 # ------------------ insert workout ------------------
 
+
 def insertWorkout_(idUser: int, date: str, description: str):
-    w = Workout(
-        id_user=idUser,
-        date=date,
-        description=description
-    )
+    w = Workout(id_user=idUser, date=date, description=description)
 
     DB.session.add(w)
     DB.session.commit()
@@ -400,19 +390,19 @@ def db_insert_workout_image_(id_workout: int, image_name: str):
     DB.session.flush()  # otteniamo img.id
 
     DB.session.execute(
-        t_WorkoutImage.insert().values(
-            id_workout=id_workout,
-            id_image=img.id
-        )
+        t_WorkoutImage.insert().values(id_workout=id_workout, id_image=img.id)
     )
 
     DB.session.commit()
 
-def db_insert_workout_comment_(id_user_commentator: int, id_workout: int, description: str) -> int | None: 
+
+def db_insert_workout_comment_(
+    id_user_commentator: int, id_workout: int, description: str
+) -> int | None:
     comment = WorkoutComment(
         id_user_commentator=id_user_commentator,
         id_workout=id_workout,
-        description=description
+        description=description,
     )
 
     DB.session.add(comment)
@@ -420,14 +410,14 @@ def db_insert_workout_comment_(id_user_commentator: int, id_workout: int, descri
 
     return comment.id
 
+
 def db_get_workout_comments_(id_workout: int):
-    stmt = (
-       DB.select(WorkoutComment)
-    )
+    stmt = DB.select(WorkoutComment)
 
     stmt = stmt.where(WorkoutComment.id_workout == id_workout)
 
     return DB.session.execute(stmt).scalars().all()
+
 
 def db_update_workout_comment_(id_wk_comment: int, description: str):
     stmt = (
@@ -438,6 +428,7 @@ def db_update_workout_comment_(id_wk_comment: int, description: str):
 
     DB.session.execute(stmt)
     DB.session.commit()
+
 
 def db_insert_workout_(id_user: int, date: date, description: str) -> int:
     wk = Workout(id_user=id_user, date=date, description=description)
