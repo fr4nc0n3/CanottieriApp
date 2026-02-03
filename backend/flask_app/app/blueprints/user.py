@@ -1,55 +1,74 @@
-from flask import Blueprint, jsonify, request 
-from ..db import (query_db, dbUserAccountTypes)
-from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
-from .helpers import (is_admin, permission_denied)
+from flask import Blueprint, jsonify, request
+
+from backend.flask_app.app.models_sqlalchemy import AccountType
+from backend.flask_app.app.query import (
+    db_get_user_,
+    db_get_users_,
+    get_dict_without_field,
+    getUserAccountTypes_,
+    model_to_dict,
+)
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from .helpers import is_admin, permission_denied
 
 api_user = Blueprint("user", __name__)
 
-#--------- GET DATA ------------
-@api_user.route('/get-users', methods=['GET'])
+USER_PSW_FIELD = "password_hash"
+
+
+# --------- GET DATA ------------
+@api_user.route("/get-users", methods=["GET"])
 @jwt_required()
-def getUsers():
+def get_users():
     identity = get_jwt_identity()
     claims = get_jwt()
 
-    if(not is_admin(claims)):
+    if not is_admin(claims):
         return permission_denied()
 
-    # TODO in futuro non dovrei dare tutte le colonne di user
-    # nemmeno all' admin siccome ci sono delle colonne sensibili come 
-    # la password hashata
-    users = query_db('SELECT * FROM User')
-    return jsonify([dict(u) for u in users])
+    users = db_get_users_()
 
-@api_user.route('/get-user-info', methods=['GET'])
+    # ATTENZIONE:
+    # rimuovo il campo psw
+    users_no_psw = [get_dict_without_field(user, USER_PSW_FIELD) for user in users]
+
+    return jsonify(users_no_psw)
+
+
+@api_user.route("/get-user-info", methods=["GET"])
 @jwt_required()
-def getUserInfo():
+def get_user_info():
     identity = get_jwt_identity()
     claims = get_jwt()
 
     idUser = request.args.get("id-user", "-1")
 
-    if(idUser != identity and not is_admin(claims)):
+    if idUser != identity and not is_admin(claims):
         return permission_denied()
-    
-    user = query_db("SELECT * FROM User WHERE id = ?", tuple([idUser]))
 
-    if(len(user) > 0):
-        return jsonify(dict(user[0]))
+    user = db_get_user_(int(idUser))
+    if user is not None:
+        user_dict = model_to_dict(user)
+        user_no_psw = get_dict_without_field(user_dict, USER_PSW_FIELD)
+
+        return jsonify(user_no_psw)
     else:
-        return jsonify({"message": "user not found"}), 404 
+        return jsonify({"message": "user not found"}), 404
 
-@api_user.route('/get-user-account-types', methods=['GET'])
+
+# NOTA:
+# Non e' utilizzato nel frontend al momento
+@api_user.route("/get-user-account-types", methods=["GET"])
 @jwt_required()
-def getUserAccountTypes():
+def get_user_account_types():
     identity = get_jwt_identity()
     claims = get_jwt()
 
-    idUser = request.args.get('id-user', '-1')
+    idUser = request.args.get("id-user", "-1")
 
-    if(idUser != identity and not is_admin(claims)):
+    if idUser != identity and not is_admin(claims):
         return permission_denied()
 
-    accountTypes = dbUserAccountTypes(int(idUser))
+    accountTypes = getUserAccountTypes_(int(idUser))
 
     return jsonify(accountTypes)

@@ -148,6 +148,7 @@ const WorkoutsPanel = () => {
         showModal();
     };
 
+    //TODO: qui se birthday e' null -> new Date(null) ritorna 01/01/1970
     const athleteFICClassification = selectedAthlete
         ? birthdayToFICClassification(new Date(selectedAthlete.birthday))
         : null;

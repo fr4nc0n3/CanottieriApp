@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
     Card,
     Text,
@@ -122,32 +122,12 @@ const WorkoutCommentPage = () => {
         }
     };
 
-    /*const handleDelete = async () => {
-        const jwt = await getJWT();
-        try {
-            await apiDeleteWorkoutComment(
-                {
-                    id: idComment,
-                },
-                jwt
-            );
-
-            setComment(null);
-            setText("");
-        } catch (error) {
-            alert(
-                "Errore",
-                "errore durante l' eliminazione del commento: " + error
-            );
-        }
-    };*/
-
     return (
         <>
             {
                 //TODO freccienttina per tornare indietro alla pagina del workout
             }
-            <View style={{ flex: 1, padding: 16 }}>
+            <ScrollView style={{ flex: 1, padding: 16 }}>
                 <Card>
                     <Card.Title
                         title={
@@ -187,13 +167,6 @@ const WorkoutCommentPage = () => {
                                         >
                                             Modifica
                                         </Button>
-                                        {/*<Button
-                                        onPress={handleDelete}
-                                        mode="contained"
-                                        buttonColor="red"
-                                    >
-                                        Elimina
-                                    </Button>*/}
                                     </>
                                 ) : (
                                     <>
@@ -240,7 +213,7 @@ const WorkoutCommentPage = () => {
                         )}
                     </Card.Content>
                 </Card>
-            </View>
+            </ScrollView>
             <LoadingModal
                 visible={loading}
                 message={"Ricezione dati commento allenamento ..."}

@@ -4,21 +4,31 @@ from dotenv import load_dotenv
 from waitress import serve
 from pathlib import Path
 
-from app.config import initAppConfig
+from app.config import init_app_config
+from app.models_sqlalchemy import Base, AccountType as SQLAAccountType
+from backend.flask_app.app.extensions import (
+    init_sqlalchemy_database,
+)
 
 prev_dir = Path(__file__).resolve().parent.parent
-config_file_name = 'flask_app_config.env'
+config_file_name = "flask_app_config.env"
 
 config_loaded = load_dotenv(prev_dir / config_file_name)
 
 if not config_loaded:
-    print("Attenzione il file: " + config_file_name + " non e' stato trovato o non e' leggibile!!")
+    print(
+        "Attenzione il file: "
+        + config_file_name
+        + " non e' stato trovato o non e' leggibile!!"
+    )
     print("IMPOSSIBILE AVVIARE L' APPLICAZIONE")
     exit(1)
 
-initAppConfig()
+init_app_config()
 
 app = create_app()
 
+init_sqlalchemy_database(app)
+
 if __name__ == "__main__":
-    serve(app, host='0.0.0.0', port=5000)
+    serve(app, host="0.0.0.0", port=5000)

@@ -42,3 +42,4 @@ INSERT INTO MimeType (mime_type) VALUES ('application/pdf');
 INSERT INTO db_schema_version (version, description) 
 VALUES ('m1', 'Migrazione 1: Creazione tabelle -> TrainingCard, File, MimeType, db_schema_version');
 
+

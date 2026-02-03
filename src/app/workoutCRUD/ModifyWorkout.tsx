@@ -144,28 +144,6 @@ const ModifyWorkout = () => {
         router.back();
     };
 
-    const handleDelete = () => {
-        confirm(
-            "Eliminazione allenamento",
-            "Sei sicuro di voler eliminare l' allenamento in data " +
-                universalDateStringFormat(workoutDate),
-            async () => {
-                const jwt = await getJWT();
-                const id = parseInt(wkId.toString());
-
-                try {
-                    await apiDeleteWorkout({ id }, jwt);
-                } catch (error) {
-                    alert("Errore", "Errore durante la eliminazione");
-                    return;
-                }
-
-                alert("Eliminato", "L' allenamento e' stato eliminato");
-                router.back();
-            },
-        );
-    };
-
     const uploadImageOnline = async (
         asset: ImagePicker.ImagePickerAsset,
     ): Promise<string> => {
