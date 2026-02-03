@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request, current_app
+from sqlalchemy.orm import exc
+
+from backend.flask_app.app.query import db_delete_img_, db_get_id_user_of_workout_image_, db_get_user_workout_, db_get_workout_images_, db_insert_workout_, db_insert_workout_image_, model_to_dict, updateUserWorkout_
 
 from ..config import APP_CONFIG
-from ..db import (
-    dbUserWorkouts, updateUserWorkout, deleteUserWorkout, insertWorkoutImage,
-    dbWorkoutImages, dbIdUserOfWorkoutImage, deleteImg, get_db )
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 import datetime
 import os
@@ -33,26 +33,13 @@ def createWorkout():
     if(idUser != identity):
         return permission_denied()
 
-    conn = None
+    date = datetime.date.fromisoformat(date)
 
     try:
-        # TODO penso che le altre chiamate al db siano un po' limitate
-        conn = get_db()
-        cursor = conn.execute(
-            "INSERT INTO Workout ("
-            "id_user, date, description"
-            ") VALUES (?,?,?) ",
-            tuple([idUser, date, description])
-        )
-        conn.commit()
-        new_id = cursor.lastrowid
-
-        return jsonify({'id': new_id}), 201
+        id_wk = db_insert_workout_(int(idUser), date, description)
+        return jsonify({'id': id_wk}), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-    finally:
-        if conn:
-            conn.close()
 
 @api_workout.route('workout', methods=['GET'])
 @jwt_required()
@@ -92,8 +79,9 @@ def getWorkout():
     else:
         endDate = datetime.date(year, month + 1, 1).isoformat()
 
-    workouts = dbUserWorkouts(int(idUser), startDate, endDate)
-    return jsonify(workouts)
+    workouts = db_get_user_workout_(int(idUser), startDate, endDate)
+
+    return jsonify([model_to_dict(wk) for wk in workouts])
 
 @api_workout.route('workout/<int:workout_id>', methods=['PUT'])
 @jwt_required()
@@ -114,20 +102,11 @@ def update_user(workout_id):
 
     # aggiorno la descrizione controllando anche che l' identity del JWT
     # combaci con l' id_user del workout
-    updateUserWorkout(workout_id, identity, description)
+    updateUserWorkout_(workout_id, identity, description)
 
     return jsonify({"status": "ok"})
 
-@api_workout.route('/workout/<int:workout_id>', methods=['DELETE'])
-@jwt_required()
-def delete_user(workout_id):
-    identity = get_jwt_identity()
-    claims = get_jwt()
-
-    deleteUserWorkout(workout_id, identity)
-
-    return jsonify({"status": "ok"})
-
+#TODO controllo che la richiesta provenga da un utente oppure da un allenatore
 #--- CRD Workout images ---
 @api_workout.route('/img_workout', methods=['GET'])
 @jwt_required()
@@ -139,11 +118,9 @@ def getImagesWorkout():
     if(id_workout is None):
         return jsonify({'message': "Bad request workout id missing"}), 400
 
-    images = dbWorkoutImages(int(id_workout))
+    images = db_get_workout_images_(int(id_workout))
 
-    print("images for workout id = ", id_workout, ": ", images)
-
-    return jsonify(images)
+    return jsonify([model_to_dict(img) for img in images])
 
 @api_workout.route('/img_workout', methods=['POST'])
 @jwt_required()
@@ -155,7 +132,6 @@ def createImageWorkout():
     print("request form:", request.form)
     print("request files:", request.files)
 
-    # TODO: fare refactoring per controllare che esistano le configurazioni
     upload_folder = APP_CONFIG.IMG_FOLDER
     img_max_width = APP_CONFIG.IMG_MAX_WIDTH
     img_max_height = APP_CONFIG.IMG_MAX_HEIGHT
@@ -190,7 +166,7 @@ def createImageWorkout():
     imagePIL.save(save_path, format="JPEG", quality=15, optimize=True)
 
     # registrazione nel database
-    insertWorkoutImage(int(id_workout), img_name)
+    db_insert_workout_image_(int(id_workout), img_name)
 
     return jsonify({"status": "ok", "img_name": img_name})
     
@@ -204,7 +180,7 @@ def deleteImageWorkout(name):
 
     #controllo che l' immagine del workout sia del jwt identity
     #che effettua la richiesta
-    id_user = dbIdUserOfWorkoutImage(name)
+    id_user = db_get_id_user_of_workout_image_(name)
     id_user = str(id_user)
 
     print("id_user:", id_user)
@@ -219,6 +195,6 @@ def deleteImageWorkout(name):
     else:
         print("Il file immagine da eliminare non esiste")
 
-    deleteImg(name) 
+    db_delete_img_(name)
 
     return jsonify({"status": "ok"})

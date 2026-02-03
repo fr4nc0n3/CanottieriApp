@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import json, jsonify
 
 def is_admin(claims: dict):
     return "admin" in claims.get("accountTypes", [])
@@ -11,3 +11,6 @@ def bad_json():
 
 def missing_parameter(param_name: str):
     return jsonify({"message": "Missing parameter: " + param_name}), 400
+
+def resource_not_found(resource_name: str):
+    return jsonify({"message": "Resource not found: " + resource_name}), 400

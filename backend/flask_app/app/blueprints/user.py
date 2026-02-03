@@ -2,7 +2,6 @@ from flask import Blueprint, jsonify, request
 
 from backend.flask_app.app.models_sqlalchemy import AccountType
 from backend.flask_app.app.query import db_get_user_, db_get_users_, get_dict_without_field, getUserAccountTypes_, model_to_dict 
-from ..db import (query_db, dbUserAccountTypes)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 from .helpers import (is_admin, permission_denied)
 
@@ -61,7 +60,6 @@ def getUserAccountTypes():
     if(idUser != identity and not is_admin(claims)):
         return permission_denied()
 
-    #accountTypes = dbUserAccountTypes(int(idUser))
     accountTypes = getUserAccountTypes_(int(idUser))
 
     return jsonify(accountTypes)

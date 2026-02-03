@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import db_get_workout_comments, db_insert_workout_comment_, model_to_dict, notifyUserForWorkoutComment_
-from ..db import (execute_ops_db, get_db, insertNews, notifyUserForWorkoutComment, query_db)
+from backend.flask_app.app.query import db_get_workout_comments_, db_insert_workout_comment_, db_update_workout_comment_, getUserWorkout_, model_to_dict, notifyUserForWorkoutComment_
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
-from .helpers import (bad_json, is_admin, missing_parameter, permission_denied)
+from .helpers import (bad_json, is_admin, missing_parameter, permission_denied, resource_not_found)
 import traceback
 
 api_workout_comment = Blueprint('workout_comment', __name__)
@@ -56,14 +55,19 @@ def getWorkoutComment(id_workout: int):
 
     print("request.args: ", request.args)
 
-    #TODO continuare refactoring ORM da qui impostando gestione autorizzazione
-    #TODO (ELIMINARE QUESTO TODO)
+    id_user = int(identity)
+    workout = getUserWorkout_(id_workout)
 
-    #TODO non c'e' autenticazione utente (dovrebbe essere disponibile solo per allenatore ed atleta)
     # id del jwt deve corrispondere all' id dell' utente che ha creato il workout
     # oppure se il jwt e' di un admin (allenatore)
+    if workout is None:
+        return resource_not_found("workout with id = " + str(id_workout))
+
+    if id_user != workout.id_user and not is_admin(claims):
+        return permission_denied()
+
     try:
-        workout_comments = db_get_workout_comments(id_workout)
+        workout_comments = db_get_workout_comments_(id_workout)
 
         return jsonify([model_to_dict(w) for w in workout_comments]), 201
     except Exception as e:
@@ -89,28 +93,6 @@ def update_user(id):
     if(description is None):
         return missing_parameter('description')
 
-    execute_ops_db([
-        {
-            "query": (
-                "UPDATE WorkoutComment "
-                "SET description = ? "
-                "WHERE id = ?"
-            ), 
-            "args": tuple([description, id])
-        }
-    ])
+    db_update_workout_comment_(id, description)
 
     return jsonify({"status": "ok"})
-
-'''@api_workout_comment.route('/workout_comment/<int:id>', methods=['DELETE'])
-@jwt_required()
-def delete_user(id):
-    identity = get_jwt_identity()
-    claims = get_jwt()
-
-    if not is_admin(claims):
-        return permission_denied()
-
-    deleteWorkoutComment(id)
-
-    return jsonify({"status": "ok"})'''

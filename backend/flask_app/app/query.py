@@ -3,7 +3,7 @@ from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.models_sqlalchemy import (
     File, MimeType, Planning, TrainingCard, UserNews, News, User, AccountType, UserAccountType, Workout, Image, WorkoutComment, t_WorkoutImage
 )
-from datetime import datetime
+from datetime import date, datetime
 from sqlalchemy import func
 
 # ------------------ helper ------------------
@@ -77,8 +77,8 @@ def getUserNewsTx_(idUser: int, limit: int, offset: int):
 
 # ------------------ workouts ------------------
 
-def getUserWorkouts_(idUser: int, startDate: str, endDate: str):
-    rows = (
+def db_get_user_workout_(idUser: int, startDate: str, endDate: str) -> List[Workout]:
+    workouts = (
         DB.session.query(Workout)
         .filter(
             Workout.id_user == idUser,
@@ -87,7 +87,8 @@ def getUserWorkouts_(idUser: int, startDate: str, endDate: str):
         )
         .all()
     )
-    return [model_to_dict(w) for w in rows]
+
+    return workouts
 
 
 def getUserWorkout_(id_workout: int):
@@ -96,32 +97,39 @@ def getUserWorkout_(id_workout: int):
         .filter(Workout.id == id_workout)
         .first()
     )
-    return model_to_dict(w) if w else None
+    return w
 
 
 # ------------------ workout images ------------------
 
-def getWorkoutImages_(id_workout: int):
-    rows = (
+def db_get_workout_images_(id_workout: int) -> List[Image]:
+    images = (
         DB.session.query(Image)
         .join(t_WorkoutImage, t_WorkoutImage.c.id_image == Image.id)
         .filter(t_WorkoutImage.c.id_workout == id_workout)
         .all()
     )
 
-    return [model_to_dict(img) for img in rows]
+    return images
 
 
-def getIdUserOfWorkoutImage_(img_name: str):
-    row = (
-        DB.session.query(Workout.id_user)
+#def getIdUserOfWorkoutImage_(img_name: str):
+def db_get_id_user_of_workout_image_(img_name: str) -> int:
+    workout = (
+        DB.session.query(Workout)
         .join(t_WorkoutImage, t_WorkoutImage.c.id_workout == Workout.id)
         .join(Image, Image.id == t_WorkoutImage.c.id_image)
         .filter(Image.name == img_name)
         .first()
     )
 
-    return row[0] if row else None
+    if workout is None:
+        raise RuntimeError("workout is None")
+
+    if workout.id_user is None:
+        raise RuntimeError("workout.id_user is None")
+
+    return workout.id_user
 
 
 # ------------------ update/delete workout ------------------
@@ -171,8 +179,8 @@ def notifyUserForWorkoutComment_(id_workout: int):
     if not workout:
         raise Exception("Workout non trovato")
 
-    workout_date = workout.get("date", "<errore>")
-    workout_id_user = workout.get("id_user")
+    workout_date = str(workout.date)
+    workout_id_user = str(workout.id_user)
 
     message = f"E' stato commentato il tuo allenamento del {workout_date}"
     title = f"Commento allenamento del {workout_date}"
@@ -181,7 +189,7 @@ def notifyUserForWorkoutComment_(id_workout: int):
         id_user_sender=1,
         message=message,
         title=title,
-        data_publish=datetime.utcnow(),
+        data_publish=datetime .utcnow(),
         is_deleted=False,
         target_name=""
     )
@@ -331,7 +339,7 @@ def db_get_user_(id: int) -> User | None:
 
 # ------------------ images ------------------
 
-def deleteImg_(name: str):
+def db_delete_img_(name: str):
     (
         DB.session.query(Image)
         .filter(Image.name == name)
@@ -386,7 +394,7 @@ def insertWorkout_(idUser: int, date: str, description: str):
     DB.session.commit()
 
 
-def insertWorkoutImage_(id_workout: int, image_name: str):
+def db_insert_workout_image_(id_workout: int, image_name: str):
     img = Image(name=image_name)
     DB.session.add(img)
     DB.session.flush()  # otteniamo img.id
@@ -412,7 +420,7 @@ def db_insert_workout_comment_(id_user_commentator: int, id_workout: int, descri
 
     return comment.id
 
-def db_get_workout_comments(id_workout: int):
+def db_get_workout_comments_(id_workout: int):
     stmt = (
        DB.select(WorkoutComment)
     )
@@ -420,3 +428,24 @@ def db_get_workout_comments(id_workout: int):
     stmt = stmt.where(WorkoutComment.id_workout == id_workout)
 
     return DB.session.execute(stmt).scalars().all()
+
+def db_update_workout_comment_(id_wk_comment: int, description: str):
+    stmt = (
+        DB.update(WorkoutComment)
+        .where(WorkoutComment.id == id_wk_comment)
+        .values(description=description)
+    )
+
+    DB.session.execute(stmt)
+    DB.session.commit()
+
+def db_insert_workout_(id_user: int, date: date, description: str) -> int:
+    wk = Workout(id_user=id_user, date=date, description=description)
+
+    DB.session.add(wk)
+    DB.session.commit()
+
+    if wk.id is None:
+        raise RuntimeError("workout.id non valorizzato dopo commit")
+
+    return wk.id

@@ -1,7 +1,6 @@
 from flask import Blueprint, jsonify, request
 
 from backend.flask_app.app.query import db_create_training_card_, db_soft_delete_training_card_, get_training_cards_ as db_get_training_cards_
-from ..db import (query_db, execute_ops_db, get_db)
 from flask_jwt_extended import (jwt_required, get_jwt_identity, get_jwt)
 import datetime
 from .helpers import (is_admin, missing_parameter, permission_denied)

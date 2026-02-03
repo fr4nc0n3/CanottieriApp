@@ -6,8 +6,6 @@ from flask import Blueprint, jsonify, request
 from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.query import get_target_id_users_, getCountUserNewsRx_, getUserNewsRx_, getUserNewsTx_, insertNews_, updateAllUserNewsRead_, updateUserNewsRead_
 from .helpers import bad_json, missing_parameter, permission_denied, is_admin
-from ..db import (dbCountUserNewsRx, query_db, execute_ops_db, dbUserNewsRx, 
-    dbUserNewsTx, insertNews, queryInsertUserNews, deleteNews as dbDeleteNews, updateAllUserNewsRead, updateUserNewsRead)
 import traceback
 
 api_news = Blueprint("news", __name__)
@@ -43,10 +41,8 @@ def getCountUserNews():
 
     count = 0
     if only_not_read == "false":
-       # count = dbCountUserNewsRx(int(idUser)) 
        count = getCountUserNewsRx_(int(idUser))
     elif only_not_read == "true":
-        #count = dbCountUserNewsRx(int(idUser), is_read=False)
         count = getCountUserNewsRx_(int(idUser), is_read=False)
     else:
         return jsonify({"Status": "Bad request"}), 400
@@ -65,7 +61,6 @@ def getUserNewsSended():
     if(identity != idUser):
         return permission_denied()
 
-    #news = dbUserNewsTx(int(idUser), limit, int(offset))
     news = getUserNewsTx_(int(idUser), limit, int(offset))
 
     return jsonify(news)
@@ -100,7 +95,6 @@ def setNewsRead():
     if all_readed is not None and bool(all_readed):
         #segna tutte come lette e ritorna
         try:
-            #updateAllUserNewsRead(id_user=id_user)
             updateAllUserNewsRead_(id_user=id_user)
         except Exception:
             return jsonify({"error": traceback.format_exc()}), 500
@@ -131,92 +125,3 @@ def setNewsRead():
          + str(id_user) + ", id_news=" + str(id_news),
         "status": "ok"
         }), 200
-
-#TODO al momento non e' utilizzata dal frontend
-"""
-@api_news.route('/send-news-to-groups', methods=['POST'])
-@jwt_required()
-def sendNewsToGroup():
-    identity = get_jwt_identity()
-
-    data = request.json
-
-    if data is None:
-        return bad_json()
-
-    # group e' un array di account type, se contiene "all" allora invia a tutti utenti
-    groups = data.get('groups', None)
-    idUser = data.get('id-user', None) # id user sender
-    title = data.get('title', '')
-    message = data.get('message', None)
-
-    if(idUser != identity):
-        return permission_denied()
-
-    if (groups is None or idUser is None or message is None):
-        return jsonify({"error": "Bad request"}), 400
-
-    #estraggo utenti target
-    #query = "SELECT u.id FROM User u, UserAccountType uat, AccountType at " + \
-    #    "WHERE at.id = uat.id_account_type AND uat.id_user = u.id "
-    
-    #targetIdUsers = None 
-
-    #if ("all" not in groups):
-    #    placeholders = ','.join(['?'] * len(groups))
-    #    query += f"AND at.type in ({placeholders}) "
-    #    query += "GROUP BY u.id "
-    #    targetIdUsers = query_db(query, tuple(groups))
-    #else:
-    #    query += "GROUP BY u.id "
-    #    targetIdUsers = query_db(query)
-
-    #targetIdUsers = [t[0] for t in targetIdUsers]
-    targetIdUsers = get_target_id_users_(groups)
-
-    print("Send to userIds:", targetIdUsers)
-
-    #insertNews(idUser, message, title, groups)
-    insertNews_(idUser, message, title, groups)
-
-    #get last id news
-    #lastIdNews = query_db("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
-    #lastIdNews = lastIdNews[0][0]
-    lastIdNews = DB.session.execute(
-        DB.text("SELECT seq FROM sqlite_sequence WHERE name = 'News'")
-    ).scalar_one()
-
-    print("last id news: ", lastIdNews)
-
-    #inserimento DB UserNews
-    for id in targetIdUsers:
-        execute_ops_db([queryInsertUserNews(lastIdNews, id)])
-
-    return jsonify({"status": "ok"})
-
-#TODO non utilizzato dal frontend attualmente
-#soft delete di una news
-@api_news.route('/delete-news', methods=['POST'])
-@jwt_required()
-def deleteNews():
-    identity = get_jwt_identity()
-    claims = get_jwt()
-
-    # solo admin puo' eliminare news
-    if(not is_admin(claims)):
-        return permission_denied()
-
-    data = request.json
-    if data is None:
-        return bad_json()
-
-    id = data.get('id', None)
-
-    if (id is None):
-        return jsonify({"error": "Bad request"}), 400
-
-    #eliminazione DB News by id
-    dbDeleteNews(id)
-
-    return jsonify({"status": "ok"})
-"""
