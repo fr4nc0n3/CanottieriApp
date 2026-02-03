@@ -38,7 +38,7 @@ class AppConfig:
 APP_CONFIG = AppConfig()
 
 
-def initAppConfig():
+def init_app_config():
     APP_CONFIG.ENV = os.getenv("ENV", "")
     APP_CONFIG.DATABASE_PATH = os.getenv("DATABASE_PATH", "")
     APP_CONFIG.IMG_FOLDER = os.getenv("IMG_FOLDER", "")

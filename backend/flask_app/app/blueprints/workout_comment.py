@@ -24,7 +24,7 @@ api_workout_comment = Blueprint("workout_comment", __name__)
 # ----------- CRUD Workout Comment ------------
 @api_workout_comment.route("workout_comment", methods=["POST"])
 @jwt_required()
-def createWorkoutComment():
+def create_workout_comment():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -68,7 +68,7 @@ def createWorkoutComment():
     "workout_comment/of_workout/<int:id_workout>", methods=["GET"]
 )
 @jwt_required()
-def getWorkoutComment(id_workout: int):
+def get_workout_comment(id_workout: int):
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -95,7 +95,7 @@ def getWorkoutComment(id_workout: int):
 
 @api_workout_comment.route("workout_comment/<int:id>", methods=["PUT"])
 @jwt_required()
-def update_user(id):
+def update_workout_comment(id: int):
     identity = get_jwt_identity()
     claims = get_jwt()
 

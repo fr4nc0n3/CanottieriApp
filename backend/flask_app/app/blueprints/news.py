@@ -21,7 +21,7 @@ api_news = Blueprint("news", __name__)
 
 @api_news.route("/get-user-news-received", methods=["GET"])
 @jwt_required()
-def getUserNews():
+def get_user_news():
     identity = get_jwt_identity()
 
     idUser = request.args.get("id-user", "-1")
@@ -39,7 +39,7 @@ def getUserNews():
 
 @api_news.route("/get-count-user-news", methods=["GET"])
 @jwt_required()
-def getCountUserNews():
+def get_count_user_news():
     identity = get_jwt_identity()
 
     idUser = request.args.get("id-user", "-1")
@@ -62,7 +62,7 @@ def getCountUserNews():
 
 @api_news.route("/get-user-news-sended", methods=["GET"])
 @jwt_required()
-def getUserNewsSended():
+def get_user_news_sended():
     identity = get_jwt_identity()
 
     idUser = request.args.get("id-user", "-1")
@@ -81,7 +81,7 @@ def getUserNewsSended():
 # imposta la/e news dell' utente come lette/non lette
 @api_news.route("/set-user-news-read", methods=["PUT"])
 @jwt_required()
-def setNewsRead():
+def set_news_read():
     identity = get_jwt_identity()
 
     data = request.json

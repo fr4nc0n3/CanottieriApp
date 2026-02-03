@@ -19,7 +19,7 @@ USER_PSW_FIELD = "password_hash"
 # --------- GET DATA ------------
 @api_user.route("/get-users", methods=["GET"])
 @jwt_required()
-def getUsers():
+def get_users():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -37,7 +37,7 @@ def getUsers():
 
 @api_user.route("/get-user-info", methods=["GET"])
 @jwt_required()
-def getUserInfo():
+def get_user_info():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -60,7 +60,7 @@ def getUserInfo():
 # Non e' utilizzato nel frontend al momento
 @api_user.route("/get-user-account-types", methods=["GET"])
 @jwt_required()
-def getUserAccountTypes():
+def get_user_account_types():
     identity = get_jwt_identity()
     claims = get_jwt()
 

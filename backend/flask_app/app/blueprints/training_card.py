@@ -27,7 +27,7 @@ def get_training_cards():
 
 @api_training_card.route("/training_card", methods=["POST"])
 @jwt_required()
-def create_planning():
+def create_training_card():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -78,7 +78,7 @@ def create_planning():
 
 @api_training_card.route("/training_card/<int:card_id>", methods=["DELETE"])
 @jwt_required()
-def delete_planning(card_id: int):
+def delete_training_card(card_id: int):
     identity = get_jwt_identity()
     claims = get_jwt()
 

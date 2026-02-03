@@ -7,5 +7,5 @@ from backend.flask_app.app.models_sqlalchemy import Base
 DB = SQLAlchemy(model_class=Base)
 
 
-def initSQLAlchemyDatabase(app: Flask):
+def init_sqlalchemy_database(app: Flask):
     DB.init_app(app)

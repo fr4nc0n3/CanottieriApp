@@ -25,7 +25,7 @@ api_workout = Blueprint("workout", __name__)
 # ----------- CRUD Workout ------------
 @api_workout.route("workout", methods=["POST"])
 @jwt_required()
-def createWorkout():
+def create_workout():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -54,7 +54,7 @@ def createWorkout():
 
 @api_workout.route("workout", methods=["GET"])
 @jwt_required()
-def getWorkout():
+def get_workout():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -97,7 +97,7 @@ def getWorkout():
 
 @api_workout.route("workout/<int:workout_id>", methods=["PUT"])
 @jwt_required()
-def update_user(workout_id):
+def update_workout(workout_id):
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -123,7 +123,7 @@ def update_user(workout_id):
 # --- CRD Workout images ---
 @api_workout.route("/img_workout", methods=["GET"])
 @jwt_required()
-def getImagesWorkout():
+def get_images_workout():
     print(request.url)
 
     id_workout = request.args.get("id", None)
@@ -138,7 +138,7 @@ def getImagesWorkout():
 
 @api_workout.route("/img_workout", methods=["POST"])
 @jwt_required()
-def createImageWorkout():
+def create_image_workout():
     identity = get_jwt_identity()
     claims = get_jwt()
 
@@ -192,7 +192,7 @@ def createImageWorkout():
 
 @api_workout.route("/img_workout/<string:name>", methods=["DELETE"])
 @jwt_required()
-def deleteImageWorkout(name):
+def delete_image_workout(name):
     identity = get_jwt_identity()
     claims = get_jwt()
 

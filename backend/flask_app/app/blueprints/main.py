@@ -20,7 +20,7 @@ def index():
 # route per servire immagini tramite il nome,
 # prendendole dalla cartella di sistema
 @api.route("/image/<path:name>")
-def getImage(name: str):
+def get_image(name: str):
     folder = APP_CONFIG.IMG_FOLDER
 
     print(request.url)
@@ -32,7 +32,7 @@ def getImage(name: str):
 # route per servire file tramite il nome,
 # prendendole dalla cartella di sistema
 @api.route("/file/<path:name>")
-def getFile(name: str):
+def get_file(name: str):
     folder = APP_CONFIG.FILE_FOLDER
 
     print(request.url)
