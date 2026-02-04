@@ -2,10 +2,10 @@ from flask import Blueprint, jsonify, request
 import traceback
 
 from backend.flask_app.app.query import (
-    create_planning_,
-    delete_planning_,
-    get_month_plannings_,
-    update_planning_,
+    db_create_planning,
+    db_delete_planning,
+    db_get_month_plannings,
+    db_update_planning,
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import datetime
@@ -46,7 +46,7 @@ def get_plannings():
     else:
         endDate = datetime.date(year, month + 1, 1).isoformat()
 
-    month_plannings = get_month_plannings_(startDate, endDate)
+    month_plannings = db_get_month_plannings(startDate, endDate)
 
     return jsonify(month_plannings)
 
@@ -73,7 +73,7 @@ def create_planning():
 
     try:
         date_ = datetime.date.fromisoformat(date)
-        new_id = create_planning_(date_, description)
+        new_id = db_create_planning(date_, description)
 
         return jsonify({"id": new_id}), 201
     except Exception as e:
@@ -96,7 +96,7 @@ def update_planning(planning_id):
     if not description:
         return jsonify({"error": "date and description are required"}), 400
 
-    update_planning_(planning_id, description)
+    db_update_planning(planning_id, description)
 
     return jsonify({"message": "Updated successfully"})
 
@@ -110,6 +110,6 @@ def delete_planning(planning_id):
     if not is_admin(claims):
         return permission_denied()
 
-    delete_planning_(planning_id)
+    db_delete_planning(planning_id)
 
     return jsonify({"status": "ok"})

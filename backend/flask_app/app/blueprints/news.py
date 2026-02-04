@@ -1,19 +1,15 @@
-from re import I
 from flask import Blueprint
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.extensions import DB
 from backend.flask_app.app.query import (
-    get_target_id_users_,
-    getCountUserNewsRx_,
-    getUserNewsRx_,
-    getUserNewsTx_,
-    insertNews_,
-    updateAllUserNewsRead_,
-    updateUserNewsRead_,
+    db_get_count_user_news_rx,
+    db_get_user_news_rx,
+    db_get_user_news_tx,
+    db_update_all_user_news_read,
+    db_update_user_news_read,
 )
-from .helpers import bad_json, missing_parameter, permission_denied, is_admin
+from .helpers import bad_json, missing_parameter, permission_denied
 import traceback
 
 api_news = Blueprint("news", __name__)
@@ -32,7 +28,7 @@ def get_user_news():
     if idUser != identity:
         return permission_denied()
 
-    news = getUserNewsRx_(int(idUser), int(limit), int(offset))
+    news = db_get_user_news_rx(int(idUser), int(limit), int(offset))
 
     return jsonify(news)
 
@@ -51,9 +47,9 @@ def get_count_user_news():
 
     count = 0
     if only_not_read == "false":
-        count = getCountUserNewsRx_(int(idUser))
+        count = db_get_count_user_news_rx(int(idUser))
     elif only_not_read == "true":
-        count = getCountUserNewsRx_(int(idUser), is_read=False)
+        count = db_get_count_user_news_rx(int(idUser), is_read=False)
     else:
         return jsonify({"Status": "Bad request"}), 400
 
@@ -72,7 +68,7 @@ def get_user_news_sended():
     if identity != idUser:
         return permission_denied()
 
-    news = getUserNewsTx_(int(idUser), limit, int(offset))
+    news = db_get_user_news_tx(int(idUser), limit, int(offset))
 
     return jsonify(news)
 
@@ -107,7 +103,7 @@ def set_news_read():
     if all_readed is not None and bool(all_readed):
         # segna tutte come lette e ritorna
         try:
-            updateAllUserNewsRead_(id_user=id_user)
+            db_update_all_user_news_read(id_user=id_user)
         except Exception:
             return jsonify({"error": traceback.format_exc()}), 500
 
@@ -133,7 +129,7 @@ def set_news_read():
 
     # aggiorno la news letta/non letta
     try:
-        updateUserNewsRead_(id_news=id_news, id_user=id_user, is_read=read)
+        db_update_user_news_read(id_news=id_news, id_user=id_user, is_read=read)
     except Exception as e:
         return jsonify({"error": traceback.format_exc()}), 500
 

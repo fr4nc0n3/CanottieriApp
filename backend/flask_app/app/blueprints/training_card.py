@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 
 from backend.flask_app.app.query import (
-    db_create_training_card_,
-    db_soft_delete_training_card_,
-    get_training_cards_ as db_get_training_cards_,
+    db_create_training_card,
+    db_soft_delete_training_card,
+    db_get_training_cards,
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import datetime
@@ -22,7 +22,7 @@ def get_training_cards():
     identity = get_jwt_identity()
     claims = get_jwt()
 
-    return jsonify(db_get_training_cards_())
+    return jsonify(db_get_training_cards())
 
 
 @api_training_card.route("/training_card", methods=["POST"])
@@ -70,7 +70,7 @@ def create_training_card():
     file.save(save_path)
 
     try:
-        id_card = db_create_training_card_(store_file_name, name, description)
+        id_card = db_create_training_card(store_file_name, name, description)
         return jsonify({"store_file_name": store_file_name}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -85,6 +85,6 @@ def delete_training_card(card_id: int):
     if not is_admin(claims):
         return permission_denied()
 
-    db_soft_delete_training_card_(card_id)
+    db_soft_delete_training_card(card_id)
 
     return jsonify({"status": "ok"})

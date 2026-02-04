@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request
 
 from backend.flask_app.app.query import (
-    db_get_workout_comments_,
-    db_insert_workout_comment_,
-    db_update_workout_comment_,
-    getUserWorkout_,
+    db_get_workout_comments,
+    db_insert_workout_comment,
+    db_update_workout_comment,
+    db_get_user_workout,
     model_to_dict,
-    notifyUserForWorkoutComment_,
+    db_notify_user_for_workout_comment,
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from .helpers import (
@@ -52,10 +52,10 @@ def create_workout_comment():
 
     try:
         # inserimento notifica commento
-        id_comment = db_insert_workout_comment_(
+        id_comment = db_insert_workout_comment(
             id_user_commentator, id_workout, description
         )
-        notifyUserForWorkoutComment_(id_workout)
+        db_notify_user_for_workout_comment(id_workout)
 
         return jsonify({"id": id_comment}), 201
     except Exception as e:
@@ -75,7 +75,7 @@ def get_workout_comment(id_workout: int):
     print("request.args: ", request.args)
 
     id_user = int(identity)
-    workout = getUserWorkout_(id_workout)
+    workout = db_get_user_workout(id_workout)
 
     # id del jwt deve corrispondere all' id dell' utente che ha creato il workout
     # oppure se il jwt e' di un admin (allenatore)
@@ -86,7 +86,7 @@ def get_workout_comment(id_workout: int):
         return permission_denied()
 
     try:
-        workout_comments = db_get_workout_comments_(id_workout)
+        workout_comments = db_get_workout_comments(id_workout)
 
         return jsonify([model_to_dict(w) for w in workout_comments]), 201
     except Exception as e:
@@ -113,6 +113,6 @@ def update_workout_comment(id: int):
     if description is None:
         return missing_parameter("description")
 
-    db_update_workout_comment_(id, description)
+    db_update_workout_comment(id, description)
 
     return jsonify({"status": "ok"})
