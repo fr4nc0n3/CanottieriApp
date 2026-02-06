@@ -8,6 +8,7 @@ import React, { useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import { Avatar, Button, Card, Chip, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
+import { COLORS } from "@/global/Colors";
 
 //TODO: usare l' useContext per l' utente (esiste gia')
 
@@ -127,10 +128,10 @@ const styles = StyleSheet.create({
     label: {
         marginTop: 8,
         fontWeight: "bold",
-        color: "#555",
+        color: COLORS.gray200,
     },
     chip: {
-        backgroundColor: "lightblue",
+        backgroundColor: COLORS.lightblue100,
     },
     header: {
         marginBottom: 8,

@@ -1,3 +1,4 @@
+import { COLORS } from "@/global/Colors";
 import React, { useState } from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, Card } from "react-native-paper";
@@ -137,14 +138,14 @@ const styles = StyleSheet.create({
     },
     giornoSettimana: {
         fontWeight: "bold",
-        color: "#6200ee",
+        color: COLORS.purple100,
     },
     selected: {
-        backgroundColor: "#6200ee",
+        backgroundColor: COLORS.purple100,
         borderRadius: 20,
     },
     selectedText: {
-        color: "white",
+        color: COLORS.white100,
         fontWeight: "bold",
     },
 });

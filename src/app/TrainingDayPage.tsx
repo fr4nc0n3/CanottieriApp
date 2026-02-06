@@ -1,5 +1,6 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { COLORS } from "@/global/Colors";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
@@ -39,6 +40,6 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 8,
         borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
+        borderBottomColor: COLORS.white200,
     },
 });

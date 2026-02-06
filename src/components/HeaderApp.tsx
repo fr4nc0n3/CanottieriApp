@@ -3,6 +3,7 @@ import * as React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { COLORS } from "@/global/Colors";
 
 const HeaderApp = () => {
     const router = useRouter();
@@ -15,7 +16,7 @@ const HeaderApp = () => {
                     alignItems: "center",
                     justifyContent: "space-around",
                     minHeight: 50,
-                    backgroundColor: "#fff",
+                    backgroundColor: COLORS.white100,
                 }}
             >
                 <TouchableOpacity

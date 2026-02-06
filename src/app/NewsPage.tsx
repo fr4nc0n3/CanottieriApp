@@ -3,6 +3,7 @@ import {
     apiGetUserNewsReceived,
     apiSetUserNewsRead,
 } from "@/global/APICalls";
+import { COLORS } from "@/global/Colors";
 import { useQuery } from "@/global/hooks";
 import { getJWT } from "@/global/jwtStorage";
 import { UserNewsRx } from "@/global/Types";
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
     },
     detailSub: {
         fontSize: 15,
-        color: "#666",
+        color: COLORS.gray100,
     },
     detailFooter: {
         width: "100%",

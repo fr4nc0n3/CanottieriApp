@@ -5,6 +5,7 @@ import {
     apiGetPlannings,
     apiUpdatePlanning,
 } from "@/global/APICalls";
+import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
 import { ApiOutputGetPlanning } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
@@ -21,7 +22,6 @@ import {
     Button,
     TextInput,
     Modal,
-    MD3Colors,
 } from "react-native-paper";
 
 type Planning = ApiOutputGetPlanning;
@@ -375,7 +375,7 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                     </Button>
                     <IconButton
                         icon="delete"
-                        containerColor="red"
+                        containerColor={COLORS.red100}
                         iconColor="white"
                         mode="contained"
                         onPress={() => {
@@ -406,7 +406,7 @@ const style = StyleSheet.create({
         padding: 5,
     },
     modal: {
-        backgroundColor: "white",
+        backgroundColor: COLORS.white100,
         padding: 20,
         margin: 20,
         borderRadius: 8,

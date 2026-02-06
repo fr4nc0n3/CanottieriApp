@@ -3,6 +3,7 @@
 import FullImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import ImageViewModal from "@/components/ImageViewModal";
 import { apiCreateWorkout, apiCreateWorkoutImage } from "@/global/APICalls";
+import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
 import { alert } from "@/global/UniversalPopups";
 import {
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
-        backgroundColor: "#fff",
+        backgroundColor: COLORS.white100,
         justifyContent: "center",
     },
     dateText: {

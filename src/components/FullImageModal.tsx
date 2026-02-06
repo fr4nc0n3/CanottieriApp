@@ -1,3 +1,4 @@
+import { COLORS } from "@/global/Colors";
 import React, { useState } from "react";
 import {
     View,
@@ -70,7 +71,7 @@ const styles = StyleSheet.create({
         margin: 0,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "white",
+        backgroundColor: COLORS.white100,
     },
     imageWrapper: {
         justifyContent: "center",

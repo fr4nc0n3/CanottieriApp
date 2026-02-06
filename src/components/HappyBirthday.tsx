@@ -1,3 +1,4 @@
+import { COLORS } from "@/global/Colors";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
@@ -43,14 +44,14 @@ const styles = StyleSheet.create({
     },
     happyBirthdayContainer: {
         borderWidth: 1,
-        borderColor: "#FFD700", // oro ✨
+        borderColor: COLORS.gold,
         borderRadius: 24,
-        backgroundColor: "#1d51a7",
+        backgroundColor: COLORS.blue100,
         paddingHorizontal: 18,
         paddingVertical: 12,
 
         // Ombra iOS
-        shadowColor: "#000",
+        shadowColor: COLORS.black100,
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.2,
         shadowRadius: 6,
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     happyBirthdayText: {
-        color: "#f5c907",
+        color: COLORS.yellow100,
         fontWeight: "bold",
         textAlign: "center",
         letterSpacing: 0.5,

@@ -23,6 +23,7 @@ import { getJWT } from "@/global/jwtStorage";
 import { ApiOutputGetTrainingCard } from "@/global/Types";
 import { useLocalSearchParams } from "expo-router";
 import { alert, confirm } from "@/global/UniversalPopups";
+import { COLORS } from "@/global/Colors";
 
 const getFileTypeChar = (mime_type: string): string => {
     switch (mime_type) {
@@ -108,7 +109,7 @@ export default function TrainingCardsPage(): JSX.Element {
                                 {isAdmin && (
                                     <IconButton
                                         icon={"delete"}
-                                        iconColor="red"
+                                        iconColor={COLORS.red100}
                                         style={{ marginHorizontal: 20 }}
                                         size={32}
                                         onPress={() => {
@@ -171,14 +172,14 @@ export default function TrainingCardsPage(): JSX.Element {
                 <IconButton
                     style={{
                         alignSelf: "center",
-                        backgroundColor: "blue",
+                        backgroundColor: COLORS.blue100,
                         margin: 10,
                     }}
                     onPress={() => {
                         addTrainingCard();
                     }}
                     icon={"plus"}
-                    iconColor="white"
+                    iconColor={COLORS.white100}
                     size={32}
                 />
             )}

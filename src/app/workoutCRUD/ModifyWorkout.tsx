@@ -33,6 +33,7 @@ import ImageViewModal from "@/components/ImageViewModal";
 import { WorkoutComment } from "@/global/Types";
 import EditTextModal from "@/components/EditTextModal";
 import TextModal from "@/components/TextModal";
+import { COLORS } from "@/global/Colors";
 
 const ModifyWorkout = () => {
     const router = useRouter();
@@ -273,15 +274,6 @@ const ModifyWorkout = () => {
                         >
                             Applica modifiche
                         </Button>
-
-                        {/*<Button
-                            mode="outlined"
-                            onPress={handleDelete}
-                            style={styles.deleteButton}
-                            textColor="red"
-                        >
-                            Elimina allenamento
-                        </Button>*/}
                     </Card.Content>
                 </Card>
                 <Divider style={{ marginTop: 10 }} />
@@ -330,7 +322,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
         justifyContent: "center",
-        backgroundColor: "#fff",
+        backgroundColor: COLORS.white100,
     },
     dateText: {
         marginBottom: 12,
@@ -344,7 +336,7 @@ const styles = StyleSheet.create({
     },
     deleteButton: {
         marginTop: 16,
-        borderColor: "red",
+        borderColor: COLORS.red100,
     },
 });
 

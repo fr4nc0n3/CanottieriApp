@@ -14,6 +14,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { Drawer, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
 import HappyBirthday from "@/components/HappyBirthday";
+import { COLORS } from "@/global/Colors";
 
 export default function MenuPage() {
     const router = useRouter();
@@ -186,10 +187,10 @@ const styles = StyleSheet.create({
     },
     notificationBannerText: {
         borderRadius: 30,
-        backgroundColor: "#FF8C00",
+        backgroundColor: COLORS.orange100,
         paddingVertical: 10,
         paddingHorizontal: 10,
-        color: "#2E2E2E",
+        color: COLORS.black200,
         fontWeight: "bold",
         textAlign: "center",
     },

@@ -9,6 +9,7 @@ import {
     apiGetWorkoutImages,
     apiUriImage,
 } from "@/global/APICalls";
+import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
 import { User, Workout, WorkoutComment } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
@@ -282,7 +283,7 @@ const WorkoutsPanel = () => {
                     visible={visibleModal}
                     onDismiss={hideModal}
                     contentContainerStyle={{
-                        backgroundColor: "white",
+                        backgroundColor: COLORS.white100,
                         padding: 20,
                         margin: 20,
                         borderRadius: 10,

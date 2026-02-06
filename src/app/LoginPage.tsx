@@ -6,6 +6,7 @@ import React, { useContext, useState } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
+import { COLORS } from "@/global/Colors";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-start",
         padding: 24,
-        backgroundColor: "white",
+        backgroundColor: COLORS.white100,
     },
     title: {
         marginBottom: 24,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         paddingVertical: 6,
     },
     error: {
-        color: "red",
+        color: COLORS.red100,
         marginBottom: 8,
         textAlign: "center",
     },

@@ -10,6 +10,7 @@ import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { UserContext } from "./UserContext/UserContext";
 import { UserInfoProvider } from "./UserContext/UserProvider";
+import { COLORS } from "@/global/Colors";
 
 export default function RootLayout() {
     const router = useRouter();
@@ -22,7 +23,7 @@ export default function RootLayout() {
                         screenOptions={{
                             headerBackVisible: false,
                             header: () => <HeaderApp />,
-                            headerStyle: { backgroundColor: "#fff" },
+                            headerStyle: { backgroundColor: COLORS.white100 },
                         }}
                     >
                         <Stack.Screen

@@ -1,3 +1,4 @@
+import { COLORS } from "@/global/Colors";
 import { StyleSheet } from "react-native";
 import { ActivityIndicator, Modal, Portal, Text } from "react-native-paper";
 
@@ -21,7 +22,7 @@ const LoadingModal: React.FC<LoadingModalProps> = ({ visible, message }) => (
 
 const styles = StyleSheet.create({
     modalContainer: {
-        backgroundColor: "white",
+        backgroundColor: COLORS.white100,
         padding: 20,
         margin: 40,
         borderRadius: 8,

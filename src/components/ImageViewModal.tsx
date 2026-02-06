@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dimensions, View, Image } from "react-native";
 import { IconButton, Modal, Portal } from "react-native-paper";
 import { confirm } from "@/global/UniversalPopups";
+import { COLORS } from "@/global/Colors";
 
 interface ImageViewModalProps {
     visible: boolean;
@@ -41,7 +42,7 @@ const ImageViewModal: React.FC<ImageViewModalProps> = ({
                 visible={visible}
                 onDismiss={() => closeModal()}
                 contentContainerStyle={{
-                    backgroundColor: "white",
+                    backgroundColor: COLORS.white100,
                     alignItems: "center",
                     justifyContent: "center",
                     padding: 20,
@@ -96,7 +97,7 @@ const ImageViewModal: React.FC<ImageViewModalProps> = ({
                                 () => {
                                     onDelete();
                                     closeModal();
-                                }
+                                },
                             );
                         }}
                     />
