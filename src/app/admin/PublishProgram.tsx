@@ -174,41 +174,27 @@ const PublishProgram = () => {
                 <Calendar
                     year={date.getFullYear()}
                     month={date.getMonth()}
-                    markedDayIdxs={plannings.map((planning) => {
+                    calendarDays={plannings.map((planning) => {
                         const date = new Date(planning.date);
-                        return date.getDate();
+                        return {
+                            monthDate: date.getDate(),
+                            color: COLORS.purple100,
+                        };
                     })}
-                    onPressDayIdx={(pressedDay) => {
+                    onPressDay={(monthDate, month, year) => {
                         const pressedDate = new Date(
-                            Date.UTC(
-                                date.getFullYear(),
-                                date.getMonth(),
-                                pressedDay.dayIdx,
-                            ),
+                            Date.UTC(year, month, monthDate),
                         );
 
                         console.log("pressed date: ", pressedDate);
 
-                        if (pressedDay.isMarked) {
-                            //prendo planning in base alla data selezionata
-                            const planningPressed = plannings.find(
-                                (planning) => {
-                                    const pDate = new Date(planning.date);
-                                    return (
-                                        pDate.getTime() ===
-                                        pressedDate.getTime()
-                                    );
-                                },
-                            );
+                        //prendo planning in base alla data selezionata
+                        const planningPressed = plannings.find((planning) => {
+                            const pDate = new Date(planning.date);
+                            return pDate.getTime() === pressedDate.getTime();
+                        });
 
-                            if (!planningPressed) {
-                                console.error(
-                                    "errore di programmazione cod. 22",
-                                );
-                                alert("Qualcosa e' andato storto cod. 22");
-                                return;
-                            }
-
+                        if (planningPressed) {
                             openPlanningUpdate(
                                 planningPressed?.id,
                                 planningPressed?.description,

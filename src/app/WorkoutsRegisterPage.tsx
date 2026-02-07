@@ -9,6 +9,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Divider, IconButton, Text } from "react-native-paper";
 import { UserContext } from "./UserContext/UserContext";
+import { COLORS } from "@/global/Colors";
 
 //TODO: fare componente che passando i dati come nome/id atleta restituisca
 //TODO: la vista CRUD, nel formato a calendario, per quell' atleta in modo da
@@ -125,45 +126,31 @@ const WorkoutsRegisterPage = () => {
                 <Calendar
                     year={date.getFullYear()}
                     month={date.getMonth()}
-                    markedDayIdxs={[
+                    calendarDays={[
                         ...workouts.map((wk) => {
-                            return new Date(wk.date).getDate();
+                            return {
+                                monthDate: new Date(wk.date).getDate(),
+                                color: COLORS.purple100,
+                            };
                         }),
                     ]}
-                    onPressDayIdx={(pressedDay) => {
+                    onPressDay={(monthDate, month, year) => {
                         const pressedDate = new Date(
-                            Date.UTC(
-                                date.getFullYear(),
-                                date.getMonth(),
-                                pressedDay.dayIdx,
-                            ),
+                            Date.UTC(year, month, monthDate),
                         );
 
-                        console.log("pressed date: ", pressedDate);
+                        const wkPressed = workouts.find((wk) => {
+                            const wkDate = new Date(wk.date);
+                            return (
+                                wkDate.getFullYear() ===
+                                    pressedDate.getFullYear() &&
+                                wkDate.getMonth() === pressedDate.getMonth() &&
+                                wkDate.getDate() === pressedDate.getDate()
+                            );
+                        });
 
-                        if (pressedDay.isMarked) {
-                            const wkPressed = workouts.find((wk) => {
-                                const wkDate = new Date(wk.date);
-                                return (
-                                    wkDate.getFullYear() ===
-                                        pressedDate.getFullYear() &&
-                                    wkDate.getMonth() ===
-                                        pressedDate.getMonth() &&
-                                    wkDate.getDate() === pressedDate.getDate()
-                                );
-                            });
-
-                            if (!wkPressed) {
-                                alert(
-                                    "Errore:",
-                                    `Errore selezione allenamento con data: ${pressedDate}`,
-                                );
-                                console.error(
-                                    "error workout pressed not found",
-                                );
-                            } else {
-                                openModifyWorkout(pressedDate, wkPressed);
-                            }
+                        if (wkPressed) {
+                            openModifyWorkout(pressedDate, wkPressed);
                         } else {
                             openCreateWorkout(pressedDate);
                         }

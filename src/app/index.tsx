@@ -21,7 +21,7 @@ export default function Index() {
     const userContext = useContext(UserContext);
 
     const [loginStatus, setLoginStatus] = useState<LoginStatus>(
-        LoginStatus.loading
+        LoginStatus.loading,
     );
 
     const checkLogged = async () => {

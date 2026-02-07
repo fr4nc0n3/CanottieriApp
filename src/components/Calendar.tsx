@@ -1,5 +1,6 @@
 import { COLORS } from "@/global/Colors";
-import React, { useState } from "react";
+import { isToday } from "@/global/Utils";
+import React from "react";
 import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Text, Card } from "react-native-paper";
 
@@ -21,31 +22,31 @@ const monthNames = [
 ];
 
 export type CalendarDay = {
-    dayIdx: number;
-    isMarked: boolean;
+    monthDate: number;
+    color?: React.CSSProperties["color"];
 };
 
 interface CalendarProps {
     year: number;
     month: number;
-    markedDayIdxs: number[];
-    onPressDayIdx: (calendarDay: CalendarDay) => void;
+    calendarDays: CalendarDay[];
+    onPressDay: (monthDate: number, month: number, year: number) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = (props) => {
     const year = props.year;
     const month = props.month;
-    const markedDayIdxs = props.markedDayIdxs;
+    const calendarDays = props.calendarDays;
 
     // Prendi il giorno della settimana del 1° del mese (0=Dom, 1=Lun, ...)
     const firstWeekDay: number = new Date(year, month, 1).getDay();
-    // Conta i giorni nel mese corrente
     const nDayMonth: number = new Date(year, month + 1, 0).getDate();
 
     // la settimana inizia da lunedi' in italia ed i valori di firstWeekDay: Dom = 0, Lun = 1 ...
     const firstWeekDayIta = firstWeekDay === 0 ? 6 : firstWeekDay - 1;
 
     // Genera l'array con i giorni da mostrare
+    // dove c'e' null significa che quello e' solo padding
     const daysArray: (CalendarDay | null)[] = [];
 
     // Aggiunge spazi vuoti per allineare il primo giorno nel calendario
@@ -56,8 +57,8 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     // Aggiunge i numeri dei giorni
     for (let i = 1; i <= nDayMonth; i++) {
         daysArray.push({
-            dayIdx: i,
-            isMarked: markedDayIdxs.some((idx) => idx === i),
+            monthDate: i,
+            color: calendarDays.find((cDay) => cDay.monthDate === i)?.color,
         });
     }
 
@@ -86,27 +87,41 @@ const Calendar: React.FC<CalendarProps> = (props) => {
                 {/* Giorni */}
                 <View style={styles.grid}>
                     {daysArray.map((day, index) => {
-                        const isSelected = day?.isMarked;
+                        const isDayToday = day
+                            ? isToday(day.monthDate, month, year)
+                            : false;
+
                         return (
                             <TouchableOpacity
                                 key={index}
                                 style={[
                                     styles.cell,
-                                    isSelected ? styles.selected : {},
+                                    day?.color
+                                        ? {
+                                              backgroundColor: day.color,
+                                          }
+                                        : {},
                                 ]}
                                 disabled={!day}
                                 onPress={
                                     day
-                                        ? () => props.onPressDayIdx(day)
+                                        ? () =>
+                                              props.onPressDay(
+                                                  day.monthDate,
+                                                  month,
+                                                  year,
+                                              )
                                         : () => {}
                                 }
                             >
                                 <Text
                                     style={
-                                        isSelected ? styles.selectedText : {}
+                                        //TODO migliorabile
+                                        day?.color ? styles.selectedText : {}
                                     }
                                 >
-                                    {day?.dayIdx || ""}
+                                    {day?.monthDate || ""}
+                                    {isDayToday ? "*" : ""}
                                 </Text>
                             </TouchableOpacity>
                         );
@@ -135,15 +150,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginVertical: 4,
         textAlign: "center",
+        borderRadius: 20,
     },
     giornoSettimana: {
         fontWeight: "bold",
         color: COLORS.purple100,
     },
-    selected: {
+    /*selected: {
         backgroundColor: COLORS.purple100,
         borderRadius: 20,
-    },
+    },*/
     selectedText: {
         color: COLORS.white100,
         fontWeight: "bold",

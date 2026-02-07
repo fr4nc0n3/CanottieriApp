@@ -238,39 +238,29 @@ const WorkoutsPanel = () => {
                 <Calendar
                     year={date.getFullYear()}
                     month={date.getMonth()}
-                    markedDayIdxs={[
+                    calendarDays={[
                         ...workouts.map((wk) => {
-                            return new Date(wk.date).getDate();
+                            return {
+                                monthDate: new Date(wk.date).getDate(),
+                                color: COLORS.purple100,
+                            };
                         }),
                     ]}
-                    onPressDayIdx={(pressedDay) => {
-                        const pressedDate = new Date(
-                            date.getFullYear(),
-                            date.getMonth(),
-                            pressedDay.dayIdx,
-                        );
+                    onPressDay={(monthDate, month, year) => {
+                        const pressedDate = new Date(year, month, monthDate);
 
-                        console.log("pressed date: ", pressedDate);
+                        const wkPressed = workouts.find((wk) => {
+                            const wkDate = new Date(wk.date);
+                            return (
+                                wkDate.getFullYear() ===
+                                    pressedDate.getFullYear() &&
+                                wkDate.getMonth() === pressedDate.getMonth() &&
+                                wkDate.getDate() === pressedDate.getDate()
+                            );
+                        });
 
-                        if (pressedDay.isMarked) {
-                            const wkPressed = workouts.find((wk) => {
-                                const wkDate = new Date(wk.date);
-                                return (
-                                    wkDate.getFullYear() ===
-                                        pressedDate.getFullYear() &&
-                                    wkDate.getMonth() ===
-                                        pressedDate.getMonth() &&
-                                    wkDate.getDate() === pressedDate.getDate()
-                                );
-                            });
-
-                            if (!wkPressed) {
-                                console.error(
-                                    "error workout pressed not found",
-                                );
-                            } else {
-                                openWorkout(pressedDate, wkPressed);
-                            }
+                        if (wkPressed) {
+                            openWorkout(pressedDate, wkPressed);
                         }
                     }}
                 />

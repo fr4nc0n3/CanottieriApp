@@ -50,6 +50,23 @@ export const isValidDate = (date: Date) => {
     return !isNaN(date.getTime());
 };
 
+/**
+ *
+ * @param day
+ * @param month tra 0 e 11
+ * @param year
+ * @returns
+ */
+export const isToday = (day: number, month: number, year: number): boolean => {
+    const today = new Date();
+
+    return (
+        day === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+    );
+};
+
 export enum FICAgeGroup {
     UNDER_10 = "Under 10",
     ALLIEVI_A = "Allievi A",
