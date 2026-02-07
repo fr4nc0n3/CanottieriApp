@@ -78,18 +78,11 @@ const TrainingCalendarPage = () => {
 
                         console.log("pressed date: ", pressedDate);
 
-                        //if (pressedDay.isMarked) {
                         //prendo planning in base alla data selezionata
                         const planningPressed = plannings.find((planning) => {
                             const pDate = new Date(planning.date);
                             return pDate.getTime() === pressedDate.getTime();
                         });
-
-                        /*if (!planningPressed) {
-                            console.error("errore di programmazione cod. 22");
-                            alert("Qualcosa e' andato storto cod. 22");
-                            return;
-                        }*/
 
                         if (planningPressed) {
                             router.push({
@@ -100,7 +93,6 @@ const TrainingCalendarPage = () => {
                                 },
                             });
                         }
-                        //}
                     }}
                 />
             </ScrollView>

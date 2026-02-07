@@ -23,6 +23,7 @@ import {
     TextInput,
     Modal,
 } from "react-native-paper";
+import { createPlanning } from "../TrainingCalendarPage_/CRUD";
 
 type Planning = ApiOutputGetPlanning;
 
@@ -62,37 +63,15 @@ const PublishProgram = () => {
         fetchMonthPlannings(date);
     }, [date]);
 
-    //crea planning
-    const createPlanning = async (planning: {
-        date: Date;
-        description: string;
-    }) => {
-        console.log(`Create planning: `, planning);
-
-        const jwt = await getJWT();
-
-        //sarebbe meglio se le chiamate api richiederebbero Date e poi lo convertiscano a stringa in tale formato
-        //it-IT prima di spedire al backend
-        const dateInput = apiGetDateStringFormat(planning.date);
-        const currentDateStr = apiGetDateStringFormat(new Date());
-
+    const addPlanning = async (date: Date, description: string) => {
         try {
-            const { id } = await apiCreatePlanning(
-                { date: dateInput, description: planning.description },
-                jwt,
-            );
+            const newPlanning = await createPlanning({
+                date: date,
+                description: description,
+            });
 
             setPlannings((cur) => {
-                return [
-                    ...cur,
-                    {
-                        id: id,
-                        date: dateInput,
-                        description: planning.description,
-                        created_at: currentDateStr,
-                        updated_at: currentDateStr,
-                    },
-                ];
+                return [...cur, newPlanning];
             });
         } catch (error) {
             console.error("Error create planning:", error);
@@ -216,7 +195,7 @@ const PublishProgram = () => {
                         return;
                     }
 
-                    createPlanning({ date: planningCreation, description });
+                    addPlanning(planningCreation, description);
                 }}
             />
             <ModifyPlanningModal
