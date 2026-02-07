@@ -9,8 +9,7 @@ import { getJWT } from "@/global/jwtStorage";
 import { UserNewsRx } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
 import { getJWTIdentity, universalDateStringFormat } from "@/global/Utils";
-import { useRouter } from "expo-router";
-import React, { JSX, useCallback, useEffect, useMemo, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import {
     Appbar,

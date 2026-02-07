@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView } from "react-native";
 import {
     Card,
     Text,
@@ -16,11 +16,7 @@ import {
 } from "@/global/APICalls";
 import type { WorkoutComment } from "@/global/Types";
 import { getJWT } from "@/global/jwtStorage";
-import {
-    apiGetDateStringFormat,
-    getJWTIdentity,
-    universalDateStringFormat,
-} from "@/global/Utils";
+import { getJWTIdentity, universalDateStringFormat } from "@/global/Utils";
 import { alert } from "@/global/UniversalPopups";
 import LoadingModal from "@/components/LoadingModal";
 

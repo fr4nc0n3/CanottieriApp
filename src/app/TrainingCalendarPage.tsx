@@ -5,7 +5,6 @@ import { apiGetPlannings } from "@/global/APICalls";
 import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
 import { ApiOutputGetPlanning } from "@/global/Types";
-import { alert } from "@/global/UniversalPopups";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";

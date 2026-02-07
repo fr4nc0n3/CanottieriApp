@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Dimensions } from "react-native";
+import { View, StyleSheet } from "react-native";
 import {
     TextInput,
     Button,
     Card,
     Text,
     Divider,
-    Portal,
-    Modal,
     IconButton,
 } from "react-native-paper";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { confirm, alert } from "@/global/UniversalPopups";
+import { alert } from "@/global/UniversalPopups";
 import {
     apiCreateWorkoutImage,
     apiDeleteImage,
-    apiDeleteWorkout,
     apiGetWorkoutComments,
     apiGetWorkoutImages,
     apiUpdateWorkout,
@@ -25,13 +22,9 @@ import { getJWT } from "@/global/jwtStorage";
 import ImageGrid, { ImageItemGrid } from "@/components/FullImageGrid";
 import * as ImagePicker from "expo-image-picker";
 import LoadingModal from "@/components/LoadingModal";
-import {
-    apiGetDateStringFormat,
-    universalDateStringFormat,
-} from "@/global/Utils";
+import { universalDateStringFormat } from "@/global/Utils";
 import ImageViewModal from "@/components/ImageViewModal";
 import { WorkoutComment } from "@/global/Types";
-import EditTextModal from "@/components/EditTextModal";
 import TextModal from "@/components/TextModal";
 import { COLORS } from "@/global/Colors";
 

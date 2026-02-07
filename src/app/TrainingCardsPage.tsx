@@ -1,20 +1,10 @@
 import { universalDateStringFormat } from "@/global/Utils";
 import React, { JSX, useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Platform } from "react-native";
-import {
-    Appbar,
-    Avatar,
-    Button,
-    Card,
-    Checkbox,
-    Icon,
-    IconButton,
-    TouchableRipple,
-} from "react-native-paper";
+import { Appbar, Card, IconButton, TouchableRipple } from "react-native-paper";
 import * as DocumentPicker from "expo-document-picker";
 import {
     apiCreateTrainingCard,
-    apiDeleteImage,
     apiDeleteTrainingCards,
     apiGetTrainingCards,
     apiUriFile,

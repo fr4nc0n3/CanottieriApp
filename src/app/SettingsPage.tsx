@@ -3,7 +3,7 @@
 import { API_ENDPOINT } from "@/global/Constants";
 import ExpoConstants from "expo-constants";
 import React from "react";
-import { Alert, Linking, Platform, ScrollView } from "react-native";
+import { Linking, Platform, ScrollView } from "react-native";
 import { Divider, List, Text } from "react-native-paper";
 
 //TODO magari aggiungere un email di contatto (ancora da creare) per feedback
