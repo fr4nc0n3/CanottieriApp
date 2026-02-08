@@ -23,6 +23,8 @@ export default function MenuPage() {
 
     const [active, setActive] = React.useState("");
 
+    //TODO: sto metodo puo' essere semplificato siccome
+    //TODO: accountTypes e' gia' salvato in userContext
     const fetchIsAdmin = async () => {
         const jwt = await getJWT();
         const accountTypes = getJWTAccountTypes(jwt);
@@ -134,7 +136,10 @@ export default function MenuPage() {
                                     active={active === "publishProgram"}
                                     onPress={() => {
                                         setActive("publishProgram");
-                                        router.push("/admin/PublishProgram");
+                                        router.push({
+                                            pathname: "/TrainingCalendarPage",
+                                            params: { userType: "admin" },
+                                        });
                                     }}
                                     icon="upload"
                                 />
