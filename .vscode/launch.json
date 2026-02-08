@@ -22,6 +22,14 @@
             ],
             "jinja": true,
             "autoStartBrowser": false
+        },
+        {
+            "type": "chrome",
+            "request": "attach",
+            "name": "Attach Expo Web",
+            "port": 9222,
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true
         }
     ]
 }
