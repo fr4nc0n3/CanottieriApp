@@ -124,6 +124,34 @@ const TrainingCalendarPage = () => {
         }
     };
 
+    const handlePressDate = (pressedDate: Date) => {
+        //prendo planning in base alla data selezionata
+        const planningPressed = plannings.find((planning) => {
+            const pDate = new Date(planning.date);
+            return pDate.getTime() === pressedDate.getTime();
+        });
+
+        //TODO: refactoring della gestione
+        //TODO: es. se admin -> handlePressedAdmin(pressed)
+        if (planningPressed && isAdmin) {
+            openPlanningUpdate(
+                planningPressed?.id,
+                planningPressed?.description,
+                new Date(planningPressed?.date ?? ""),
+            );
+        } else if (!planningPressed && isAdmin) {
+            openPlanningCreation(pressedDate);
+        } else if (planningPressed && !isAdmin) {
+            router.push({
+                pathname: "/TrainingDayPage",
+                params: {
+                    date: planningPressed.date,
+                    description: planningPressed.description,
+                },
+            });
+        }
+    };
+
     return (
         <>
             <View
@@ -166,33 +194,7 @@ const TrainingCalendarPage = () => {
                         const pressedDate = new Date(
                             Date.UTC(year, month, monthDate),
                         );
-
-                        console.log("pressed date: ", pressedDate);
-
-                        //prendo planning in base alla data selezionata
-                        const planningPressed = plannings.find((planning) => {
-                            const pDate = new Date(planning.date);
-                            return pDate.getTime() === pressedDate.getTime();
-                        });
-
-                        //TODO
-                        if (planningPressed && isAdmin) {
-                            openPlanningUpdate(
-                                planningPressed?.id,
-                                planningPressed?.description,
-                                new Date(planningPressed?.date ?? ""),
-                            );
-                        } else if (!planningPressed && isAdmin) {
-                            openPlanningCreation(pressedDate);
-                        } else if (planningPressed && !isAdmin) {
-                            router.push({
-                                pathname: "/TrainingDayPage",
-                                params: {
-                                    date: planningPressed.date,
-                                    description: planningPressed.description,
-                                },
-                            });
-                        }
+                        handlePressDate(pressedDate);
                     }}
                 />
             </ScrollView>
