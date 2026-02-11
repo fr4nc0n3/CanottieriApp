@@ -3,6 +3,7 @@ import datetime
 
 from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, Integer, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.sql.sqltypes import NullType
 
 class Base(DeclarativeBase):
     pass
@@ -46,6 +47,19 @@ class Planning(Base):
     created_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     updated_at: Mapped[datetime.datetime] = mapped_column(DateTime, nullable=False, server_default=text('CURRENT_TIMESTAMP'))
     id: Mapped[Optional[int]] = mapped_column(Integer, primary_key=True)
+
+
+t_PlanningFilled = Table(
+    'PlanningFilled', Base.metadata,
+    Column('id', Integer),
+    Column('date', Date),
+    Column('description', Text),
+    Column('created_at', DateTime),
+    Column('updated_at', DateTime),
+    Column('is_race', NullType),
+    Column('is_training', NullType),
+    Column('training_intensity_perc', Integer)
+)
 
 
 class User(Base):
@@ -123,8 +137,8 @@ class PlanningTraining(Planning):
         CheckConstraint('intensity_percentage BETWEEN 0 AND 100'),
     )
 
-    intensity_percentage: Mapped[int] = mapped_column(Integer, nullable=False)
     planning_id: Mapped[Optional[int]] = mapped_column(ForeignKey('Planning.id', ondelete='CASCADE'), primary_key=True)
+    intensity_percentage: Mapped[Optional[int]] = mapped_column(Integer)
 
 
 class UserAccountType(Base):

@@ -14,9 +14,10 @@ from backend.flask_app.app.models_sqlalchemy import (
     Image,
     WorkoutComment,
     t_WorkoutImage,
+    t_PlanningFilled,
 )
 from datetime import date, datetime
-from sqlalchemy import func
+from sqlalchemy import func, select
 
 # ------------------ helper ------------------
 
@@ -237,8 +238,15 @@ def db_get_month_plannings(start_date: str, end_date: str) -> List[Planning]:
     return month_plannings
 
 
-def db_get_planning_filled(Planning):
-    pass
+def db_get_planning_filled(planning: Planning) -> dict:
+    stmt = select(t_PlanningFilled).where(t_PlanningFilled.c.id == planning.id)
+
+    planning_filled = DB.session.execute(stmt).mappings().first()
+
+    if planning_filled is None:
+        raise RuntimeError("planning_filled is None")
+
+    return dict(planning_filled)
 
 
 def db_create_planning(date: date, description: str) -> int:

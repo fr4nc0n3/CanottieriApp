@@ -5,6 +5,7 @@ from backend.flask_app.app.query import (
     db_create_planning,
     db_delete_planning,
     db_get_month_plannings,
+    db_get_planning_filled,
     db_update_planning,
     model_to_dict,
 )
@@ -48,9 +49,9 @@ def get_plannings():
         endDate = datetime.date(year, month + 1, 1).isoformat()
 
     month_plannings = db_get_month_plannings(startDate, endDate)
+    month_plannings_filled = [db_get_planning_filled(p) for p in month_plannings]
 
-    api_result = [model_to_dict(p) for p in month_plannings]
-    return jsonify(api_result)
+    return jsonify(month_plannings_filled)
 
 
 @api_planning.route("/plannings", methods=["POST"])
