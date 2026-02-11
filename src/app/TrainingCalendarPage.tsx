@@ -24,6 +24,32 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 
 type Planning = ApiOutputGetPlanning;
 
+const getPlanningColor = (planning: Planning): React.CSSProperties["color"] => {
+    if (planning.is_race) return COLORS.fucsia100;
+    if (planning.is_training && planning.training_intensity_perc)
+        return getTrainingIntensityColor(planning.training_intensity_perc);
+
+    return COLORS.purple100;
+};
+
+const getTrainingIntensityColor = (
+    intensityPercentage: number,
+): React.CSSProperties["color"] => {
+    if (intensityPercentage >= 100) {
+        return COLORS.red100;
+    }
+
+    if (intensityPercentage >= 75 && intensityPercentage < 100) {
+        return COLORS.orange100;
+    }
+
+    if (intensityPercentage >= 50 && intensityPercentage < 75) {
+        return COLORS.green100;
+    }
+
+    return COLORS.green100;
+};
+
 const TrainingCalendarPage = () => {
     const router = useRouter();
     const { userType } = useLocalSearchParams();
@@ -187,7 +213,7 @@ const TrainingCalendarPage = () => {
                         const date = new Date(planning.date);
                         return {
                             monthDate: date.getDate(),
-                            color: COLORS.purple100,
+                            color: getPlanningColor(planning),
                         };
                     })}
                     onPressDay={(monthDate, month, year) => {

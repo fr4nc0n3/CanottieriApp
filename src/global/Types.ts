@@ -169,6 +169,9 @@ export type ApiOutputGetPlanning = {
     description: string;
     created_at: string;
     updated_at: string;
+    is_race: number; //0 false, 1 true
+    is_training: number; //0 false, 1 true
+    training_intensity_perc: number; //tra 0 e 100
 };
 
 export type ApiOutputGetPlannings = ApiOutputGetPlanning[];
