@@ -226,15 +226,19 @@ def db_get_target_id_users(groups: List[str]) -> Sequence[Any]:
     return DB.session.execute(stmt).scalars().all()
 
 
-def db_get_month_plannings(start_date: str, end_date: str) -> List[Dict[Any, Any]]:
-    stmt = (
-        DB.select(Planning)
-        .where(Planning.date >= start_date)
-        .where(Planning.date < end_date)
+def db_get_month_plannings(start_date: str, end_date: str) -> List[Planning]:
+    month_plannings = (
+        DB.session.query(Planning)
+        .filter(Planning.date >= start_date)
+        .filter(Planning.date < end_date)
+        .all()
     )
 
-    result = DB.session.execute(stmt).scalars().all()
-    return [model_to_dict(p) for p in result]
+    return month_plannings
+
+
+def db_get_planning_filled(Planning):
+    pass
 
 
 def db_create_planning(date: date, description: str) -> int:

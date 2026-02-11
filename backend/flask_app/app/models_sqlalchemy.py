@@ -1,11 +1,12 @@
 from typing import Optional
 import datetime
 
-from sqlalchemy import Column, Date, DateTime, ForeignKey, Integer, Table, Text, UniqueConstraint, text
+from sqlalchemy import CheckConstraint, Column, Date, DateTime, ForeignKey, Integer, Table, Text, UniqueConstraint, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
     pass
+
 
 class AccountType(Base):
     __tablename__ = 'AccountType'
@@ -108,6 +109,22 @@ class News(Base):
 
     User_: Mapped[Optional['User']] = relationship('User', back_populates='News')
     UserNews: Mapped[list['UserNews']] = relationship('UserNews', back_populates='News_')
+
+
+class PlanningRace(Planning):
+    __tablename__ = 'PlanningRace'
+
+    planning_id: Mapped[Optional[int]] = mapped_column(ForeignKey('Planning.id', ondelete='CASCADE'), primary_key=True)
+
+
+class PlanningTraining(Planning):
+    __tablename__ = 'PlanningTraining'
+    __table_args__ = (
+        CheckConstraint('intensity_percentage BETWEEN 0 AND 100'),
+    )
+
+    intensity_percentage: Mapped[int] = mapped_column(Integer, nullable=False)
+    planning_id: Mapped[Optional[int]] = mapped_column(ForeignKey('Planning.id', ondelete='CASCADE'), primary_key=True)
 
 
 class UserAccountType(Base):

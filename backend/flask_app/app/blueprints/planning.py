@@ -6,6 +6,7 @@ from backend.flask_app.app.query import (
     db_delete_planning,
     db_get_month_plannings,
     db_update_planning,
+    model_to_dict,
 )
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import datetime
@@ -48,7 +49,8 @@ def get_plannings():
 
     month_plannings = db_get_month_plannings(startDate, endDate)
 
-    return jsonify(month_plannings)
+    api_result = [model_to_dict(p) for p in month_plannings]
+    return jsonify(api_result)
 
 
 @api_planning.route("/plannings", methods=["POST"])
