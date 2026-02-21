@@ -9,7 +9,7 @@ class FlaskConfig:
 
         # serve a limitare le dimensioni delle richieste da servire
         # ad esempio se l' utente prova a caricare un PDF di 100MB
-        self.MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
+        self.MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB
 
         # imposta la scadenza dei jwt emessi ad 1 giorni
         # di default invece flask_jwt_extended fa solo 15 minuti
