@@ -18,11 +18,19 @@ import {
     Button,
     TextInput,
     Modal,
+    Checkbox,
+    Menu,
 } from "react-native-paper";
 import { createPlanning } from "./TrainingCalendarPage_/CRUD";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import SelectMonthBar from "@/components/SelectMonthBar";
 
 type Planning = ApiOutputGetPlanning;
+type PlanningType = {
+    isRace?: boolean;
+    isTraining?: boolean;
+    trainingIntensityPerc?: number | null;
+};
 
 const getPlanningColor = (planning: Planning): React.CSSProperties["color"] => {
     if (planning.is_race) return COLORS.fucsia100;
@@ -91,7 +99,11 @@ const TrainingCalendarPage = () => {
         fetchMonthPlannings(date);
     }, [date]);
 
-    const addPlanning = async (date: Date, description: string) => {
+    const addPlanning = async (
+        date: Date,
+        description: string,
+        type: PlanningType,
+    ) => {
         try {
             const newPlanning = await createPlanning({
                 date: date,
@@ -178,33 +190,23 @@ const TrainingCalendarPage = () => {
         }
     };
 
+    const nextMonth = () => {
+        setDate((cur) => new Date(cur.getFullYear(), cur.getMonth() + 1));
+    };
+
+    const prevMonth = () => {
+        setDate((cur) => new Date(cur.getFullYear(), cur.getMonth() - 1));
+    };
+
     return (
         <>
-            <View
-                style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
-                <IconButton
-                    icon="arrow-left"
-                    onPress={() =>
-                        setDate(
-                            (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() - 1),
-                        )
-                    }
-                />
-                <Text variant="titleLarge" style={style.header}>
-                    Programma
-                </Text>
-                <IconButton
-                    icon="arrow-right"
-                    onPress={() =>
-                        setDate(
-                            (cur) =>
-                                new Date(cur.getFullYear(), cur.getMonth() + 1),
-                        )
-                    }
-                />
-            </View>
+            <SelectMonthBar
+                middleTitle="Programma"
+                onChangeMonth={(event) => {
+                    if (event === "back") prevMonth();
+                    else nextMonth();
+                }}
+            />
             <ScrollView style={style.container}>
                 <Calendar
                     year={date.getFullYear()}
@@ -228,20 +230,20 @@ const TrainingCalendarPage = () => {
                 visible={isPlanningCreationOpen()}
                 onDismiss={() => closePlanningCreation()}
                 planningDate={planningCreation ?? new Date("")}
-                onCreateClick={(description) => {
+                onCreateClick={(description, planningType) => {
                     if (!planningCreation) {
                         alert("Errore data programmazione");
                         return;
                     }
 
-                    addPlanning(planningCreation, description);
+                    addPlanning(planningCreation, description, planningType);
                 }}
             />
             <ModifyPlanningModal
                 visible={isPlanningUpdateOpen()}
                 onDismiss={() => closePlanningUpdate()}
                 planningDate={planningUpdate?.date ?? new Date("")}
-                onUpdateClick={(description) => {
+                onUpdateClick={(description, planningType) => {
                     if (!planningUpdate) {
                         alert("Errore data programmazione");
                         return;
@@ -250,6 +252,8 @@ const TrainingCalendarPage = () => {
                     updatePlanning(planningUpdate.id, description);
                 }}
                 initialDescription={planningUpdate?.description ?? ""}
+                //TODO
+                initialPlanningType={{}}
                 onDeleteClick={() => {
                     planningUpdate && deletePlanning(planningUpdate.id);
                 }}
@@ -262,7 +266,7 @@ interface CreatePlanningModalProps {
     visible: boolean;
     onDismiss: () => void;
     planningDate: Date;
-    onCreateClick: (description: string) => void;
+    onCreateClick: (description: string, type: PlanningType) => void;
 }
 
 const CreatePlanningModal: React.FC<CreatePlanningModalProps> = ({
@@ -272,6 +276,11 @@ const CreatePlanningModal: React.FC<CreatePlanningModalProps> = ({
     onCreateClick,
 }) => {
     const [description, setDescription] = useState<string>("");
+    const [planningType, setPlanningType] = useState<PlanningType>({
+        isRace: false,
+        isTraining: true,
+        trainingIntensityPerc: null,
+    });
 
     return (
         <Portal>
@@ -283,6 +292,12 @@ const CreatePlanningModal: React.FC<CreatePlanningModalProps> = ({
                 <Text variant="titleLarge">
                     Programmazione del {planningDate.toLocaleDateString()}
                 </Text>
+                <PlanningTypeHeader
+                    planningType={planningType}
+                    onChange={(newPlanningType: PlanningType) => {
+                        setPlanningType(newPlanningType);
+                    }}
+                />
                 <Text variant="titleMedium" style={{ marginBottom: 5 }}>
                     Inserisci descrizione:
                 </Text>
@@ -304,7 +319,7 @@ const CreatePlanningModal: React.FC<CreatePlanningModalProps> = ({
                     <Button
                         mode="contained"
                         onPress={() => {
-                            onCreateClick(description);
+                            onCreateClick(description, planningType);
                             setDescription("");
                             onDismiss();
                         }}
@@ -317,28 +332,113 @@ const CreatePlanningModal: React.FC<CreatePlanningModalProps> = ({
     );
 };
 
+type PlanningTypeHeaderProps = {
+    planningType: PlanningType;
+    onChange: (newPlanningType: PlanningType) => void;
+};
+
+const PlanningTypeHeader = ({
+    planningType,
+    onChange,
+}: PlanningTypeHeaderProps) => {
+    const [menuVisible, setMenuVisible] = useState<boolean>(false);
+
+    return (
+        <View
+            style={{
+                flexDirection: "row",
+                alignItems: "center",
+            }}
+        >
+            <Text>Allenamento: </Text>
+            <Checkbox
+                status={planningType.isTraining ? "checked" : "unchecked"}
+                onPress={() =>
+                    onChange({
+                        ...planningType,
+                        isRace: false,
+                        isTraining: true,
+                    })
+                }
+            />
+            {planningType.isTraining && (
+                <>
+                    <Text>Intensita{"'"} allenamento: </Text>
+                    <Menu
+                        visible={menuVisible}
+                        onDismiss={() => setMenuVisible(false)}
+                        anchor={
+                            <Button
+                                mode="outlined"
+                                onPress={() => setMenuVisible(true)}
+                            >
+                                {planningType.trainingIntensityPerc
+                                    ? `${planningType.trainingIntensityPerc}%`
+                                    : "Seleziona"}
+                            </Button>
+                        }
+                    >
+                        {[null, 25, 50, 75, 100].map((percentage) => (
+                            <Menu.Item
+                                key={percentage}
+                                onPress={() => {
+                                    setMenuVisible(false);
+                                    onChange({
+                                        ...planningType,
+                                        trainingIntensityPerc: percentage,
+                                    });
+                                }}
+                                title={percentage ? `${percentage}%` : ""}
+                            />
+                        ))}
+                    </Menu>
+                </>
+            )}
+            <Text style={{ marginLeft: 8 }}>Gara: </Text>
+            <Checkbox
+                status={planningType.isRace ? "checked" : "unchecked"}
+                onPress={() =>
+                    onChange({
+                        ...planningType,
+                        isRace: true,
+                        isTraining: false,
+                        trainingIntensityPerc: null,
+                    })
+                }
+            />
+        </View>
+    );
+};
+
 interface ModifyPlanningModalProps {
     visible: boolean;
     onDismiss: () => void;
     planningDate: Date;
     initialDescription: string;
-    onUpdateClick: (description: string) => void;
+    initialPlanningType: PlanningType;
+    onUpdateClick: (description: string, planningType: PlanningType) => void;
     onDeleteClick: () => void;
 }
 
-const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
+const ModifyPlanningModal = ({
     visible,
     onDismiss,
     planningDate,
     initialDescription,
+    initialPlanningType,
     onUpdateClick,
     onDeleteClick,
-}) => {
+}: ModifyPlanningModalProps) => {
     const [description, setDescription] = useState<string>("");
+    const [planningType, setPlanningType] = useState<PlanningType>({});
 
     useEffect(() => {
         setDescription(initialDescription);
     }, [initialDescription]);
+
+    useEffect(() => {
+        setPlanningType(initialPlanningType);
+    }, [initialPlanningType]);
 
     return (
         <Portal>
@@ -350,6 +450,12 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                 <Text variant="titleLarge">
                     Programmazione del {planningDate.toLocaleDateString()}
                 </Text>
+                <PlanningTypeHeader
+                    planningType={planningType}
+                    onChange={(newPlanningType) => {
+                        setPlanningType(newPlanningType);
+                    }}
+                />
                 <Text variant="titleMedium" style={{ marginBottom: 5 }}>
                     Modifica descrizione:
                 </Text>
@@ -371,7 +477,7 @@ const ModifyPlanningModal: React.FC<ModifyPlanningModalProps> = ({
                     <Button
                         mode="contained"
                         onPress={() => {
-                            onUpdateClick(description);
+                            onUpdateClick(description, planningType);
                             onDismiss();
                         }}
                     >
