@@ -7,7 +7,7 @@ import type { PropsWithChildren } from "react";
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
     return (
-        <html lang="en">
+        <html lang="it" translate="no">
             <head>
                 <meta charSet="utf-8" />
                 <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -15,6 +15,7 @@ export default function Root({ children }: PropsWithChildren) {
                     name="viewport"
                     content="width=device-width, initial-scale=1, shrink-to-fit=no"
                 />
+                <meta name="google" content="notranslate" />
 
                 {/* Link the PWA manifest file. */}
                 <link rel="manifest" href="/manifest.json" />
