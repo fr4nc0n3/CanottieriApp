@@ -6,7 +6,7 @@ import {
 } from "@/global/APICalls";
 import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
-import { ApiOutputGetPlanning } from "@/global/Types";
+import { ApiOutputGetPlanning, PlanningType } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
 import { universalDateStringFormat } from "@/global/Utils";
 import { useEffect, useState } from "react";
@@ -26,11 +26,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import SelectMonthBar from "@/components/SelectMonthBar";
 
 type Planning = ApiOutputGetPlanning;
-type PlanningType = {
-    isRace?: boolean;
-    isTraining?: boolean;
-    trainingIntensityPerc?: number | null;
-};
 
 const getPlanningColor = (planning: Planning): React.CSSProperties["color"] => {
     if (planning.is_race) return COLORS.fucsia100;
@@ -77,11 +72,16 @@ const TrainingCalendarPage = () => {
         id: number;
         description: string;
         date: Date;
+        type: PlanningType;
     } | null>(null);
 
     const isPlanningUpdateOpen = () => planningUpdate !== null;
-    const openPlanningUpdate = (id: number, description: string, date: Date) =>
-        setPlanningUpdate({ id, description, date });
+    const openPlanningUpdate = (
+        id: number,
+        description: string,
+        date: Date,
+        type: PlanningType,
+    ) => setPlanningUpdate({ id, description, date, type });
     const closePlanningUpdate = () => setPlanningUpdate(null);
 
     const fetchMonthPlannings = async (date: Date) => {
@@ -108,6 +108,7 @@ const TrainingCalendarPage = () => {
             const newPlanning = await createPlanning({
                 date: date,
                 description: description,
+                type: type,
             });
 
             setPlannings((cur) => {
@@ -138,7 +139,11 @@ const TrainingCalendarPage = () => {
         }
     };
 
-    const updatePlanning = async (id: number, description: string) => {
+    const updatePlanning = async (
+        id: number,
+        description: string,
+        type: PlanningType,
+    ) => {
         console.log(
             `update planning with id=${id}: description=${description}`,
         );
@@ -146,13 +151,20 @@ const TrainingCalendarPage = () => {
         const jwt = await getJWT();
 
         try {
-            await apiUpdatePlanning({ id, description }, jwt);
+            await apiUpdatePlanning({ id, description, type }, jwt);
 
             //modifica dello stato locale
             setPlannings((cur) =>
                 cur.map((planning) =>
                     planning.id === id
-                        ? { ...planning, description }
+                        ? {
+                              ...planning,
+                              description,
+                              is_race: type.isRace ? 1 : 0,
+                              is_training: type.isTraining ? 1 : 0,
+                              training_intensity_perc:
+                                  type.trainingIntensityPerc ?? 0,
+                          }
                         : planning,
                 ),
             );
@@ -176,6 +188,12 @@ const TrainingCalendarPage = () => {
                 planningPressed?.id,
                 planningPressed?.description,
                 new Date(planningPressed?.date ?? ""),
+                {
+                    isRace: planningPressed.is_race === 1,
+                    isTraining: planningPressed.is_training === 1,
+                    trainingIntensityPerc:
+                        planningPressed.training_intensity_perc,
+                },
             );
         } else if (!planningPressed && isAdmin) {
             openPlanningCreation(pressedDate);
@@ -249,11 +267,20 @@ const TrainingCalendarPage = () => {
                         return;
                     }
 
-                    updatePlanning(planningUpdate.id, description);
+                    updatePlanning(
+                        planningUpdate.id,
+                        description,
+                        planningType,
+                    );
                 }}
                 initialDescription={planningUpdate?.description ?? ""}
-                //TODO
-                initialPlanningType={{}}
+                initialPlanningType={
+                    planningUpdate?.type ?? {
+                        isRace: false,
+                        isTraining: false,
+                        trainingIntensityPerc: null,
+                    }
+                }
                 onDeleteClick={() => {
                     planningUpdate && deletePlanning(planningUpdate.id);
                 }}

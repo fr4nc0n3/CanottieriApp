@@ -68,15 +68,30 @@ def create_planning():
     data = request.get_json()
     date = data.get("date")
     description = data.get("description")
+    planningType = data.get("planningType")
+    isRace = planningType.get("isRace")
+    isTraining = planningType.get("isTraining")
+    trainingIntensityPerc = planningType.get("trainingIntensityPerc")
 
     print("json: ", data)
 
     if not date or not description:
         return jsonify({"error": "date and description are required"}), 400
 
+    if trainingIntensityPerc and (
+        trainingIntensityPerc < 0 or trainingIntensityPerc > 100
+    ):
+        return jsonify({"error": "training intensity percentage is not valid"})
+
     try:
         date_ = datetime.date.fromisoformat(date)
-        new_id = db_create_planning(date_, description)
+        new_id = db_create_planning(
+            date_,
+            description,
+            is_race=isRace,
+            is_training=isTraining,
+            training_intensity_perc=trainingIntensityPerc,
+        )
 
         return jsonify({"id": new_id}), 201
     except Exception as e:
@@ -95,11 +110,21 @@ def update_planning(planning_id):
 
     data = request.get_json()
     description = data.get("description")
+    type_ = data.get("type")
+    isRace = type_.get("isRace")
+    isTraining = type_.get("isTraining")
+    trainingIntensityPerc = type_.get("trainingIntensityPerc")
 
     if not description:
         return jsonify({"error": "date and description are required"}), 400
 
-    db_update_planning(planning_id, description)
+    db_update_planning(
+        planning_id,
+        description,
+        is_race=isRace,
+        is_training=isTraining,
+        training_intensity_perc=trainingIntensityPerc,
+    )
 
     return jsonify({"message": "Updated successfully"})
 

@@ -1,12 +1,13 @@
 import { apiCreatePlanning } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import { apiGetDateStringFormat } from "@/global/Utils";
-import { ApiOutputGetPlanning } from "@/global/Types";
+import { ApiOutputGetPlanning, PlanningType } from "@/global/Types";
 
 //crea planning
 export const createPlanning = async (planning: {
     date: Date;
     description: string;
+    type: PlanningType;
 }): Promise<ApiOutputGetPlanning> => {
     console.log(`Create planning: `, planning);
 
@@ -18,7 +19,11 @@ export const createPlanning = async (planning: {
     const currentDateStr = apiGetDateStringFormat(new Date());
 
     const { id } = await apiCreatePlanning(
-        { date: dateInput, description: planning.description },
+        {
+            date: dateInput,
+            description: planning.description,
+            planningType: planning.type,
+        },
         jwt,
     );
 
@@ -28,5 +33,8 @@ export const createPlanning = async (planning: {
         description: planning.description,
         created_at: currentDateStr,
         updated_at: currentDateStr,
+        is_race: planning.type.isRace ? 1 : 0,
+        is_training: planning.type.isTraining ? 1 : 0,
+        training_intensity_perc: planning.type.trainingIntensityPerc ?? 0,
     };
 };

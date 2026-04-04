@@ -138,10 +138,17 @@ export type ApiOutputWorkoutImage = {
     created_at: string;
 };
 
+export type PlanningType = {
+    isRace?: boolean;
+    isTraining?: boolean;
+    trainingIntensityPerc?: number | null;
+};
+
 //CRUD Planning
 export type ApiInputCreatePlanning = {
     date: string;
     description: string;
+    planningType: PlanningType;
 };
 
 export type ApiOutputCreatePlanning = {
@@ -157,6 +164,7 @@ export type ApiInputUpdatePlanning = {
     id: number;
     //date: string;
     description: string;
+    type: PlanningType;
 };
 
 export type ApiInputDeletePlanning = {

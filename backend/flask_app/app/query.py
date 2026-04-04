@@ -4,6 +4,8 @@ from backend.flask_app.app.models_sqlalchemy import (
     File,
     MimeType,
     Planning,
+    PlanningRace,
+    PlanningTraining,
     TrainingCard,
     UserNews,
     News,
@@ -17,7 +19,7 @@ from backend.flask_app.app.models_sqlalchemy import (
     t_PlanningFilled,
 )
 from datetime import date, datetime
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select, inspect
 
 # ------------------ helper ------------------
 
@@ -249,19 +251,94 @@ def db_get_planning_filled(planning: Planning) -> dict:
     return dict(planning_filled)
 
 
-def db_create_planning(date: date, description: str) -> int:
-    planning = Planning(date=date, description=description)
+def db_create_planning(
+    date: date,
+    description: str,
+    is_race: bool,
+    is_training: bool,
+    training_intensity_perc: int,
+) -> int:
+    p: Planning | None = None
 
-    DB.session.add(planning)
+    if is_race:
+        p = PlanningRace(date=date, description=description)
+    elif is_training:
+        p = PlanningTraining(
+            date=date,
+            description=description,
+            intensity_percentage=training_intensity_perc,
+        )
+
+    DB.session.add(p)
     DB.session.commit()
 
-    if planning.id is None:
+    if p is None or p.id is None:
         raise RuntimeError("planning.id is None")
 
-    return planning.id
+    return p.id
 
 
-def db_update_planning(planning_id: int, description: str) -> None:
+def db_update_planning(
+    planning_id: int,
+    description: str,
+    is_race: bool,
+    is_training: bool,
+    training_intensity_perc: int,
+) -> None:
+    planning_training = DB.session.get(PlanningTraining, planning_id)
+    planning_race = DB.session.get(PlanningRace, planning_id)
+    planning = DB.session.get(Planning, planning_id)
+
+    if planning is None:
+        return
+
+    # se e' gara e non esiste un planning gara, allora deve aggiungere un record di planning race
+    if is_race:
+        if planning_race is None:
+            DB.session.execute(DB.insert(PlanningRace).values(planning_id=planning_id))
+    # se non e' gara elimina il planning gara
+    else:
+        if planning_race is not None:
+            subq = select(PlanningRace.planning_id).where(
+                PlanningRace.planning_id == planning_id
+            )
+            DB.session.execute(
+                DB.delete(PlanningRace).where(PlanningRace.planning_id.in_(subq))
+            )
+
+    # se e' allenamento e non esiste un planning allenamento, allora deve aggiungere un record
+    # planning allenamento con training_intensity_perc
+    if is_training:
+        if planning_training is None:
+            DB.session.execute(
+                DB.insert(PlanningTraining).values(
+                    planning_id=planning_id,
+                    intensity_percentage=training_intensity_perc,
+                )
+            )
+        else:
+            subq = select(PlanningTraining.planning_id).where(
+                PlanningTraining.planning_id == planning_id
+            )
+
+            DB.session.execute(
+                DB.update(PlanningTraining)
+                .where(PlanningTraining.planning_id.in_(subq))
+                .values(intensity_percentage=training_intensity_perc)
+            )
+
+    # se non e' allenamento, allora elimina il record allenamento
+    else:
+        if planning_training is not None:
+            subq = select(PlanningTraining.planning_id).where(
+                PlanningTraining.planning_id == planning_id
+            )
+            DB.session.execute(
+                DB.delete(PlanningTraining).where(
+                    PlanningTraining.planning_id.in_(subq)
+                )
+            )
+
     stmt = (
         DB.update(Planning)
         .where(Planning.id == planning_id)
