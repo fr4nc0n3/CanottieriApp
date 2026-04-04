@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, current_app
 from sqlalchemy.orm import exc
 
-from backend.flask_app.app.query import (
+from flask_app.app.query import (
     db_delete_img,
     db_get_id_user_of_workout_image,
     db_get_user_workout,

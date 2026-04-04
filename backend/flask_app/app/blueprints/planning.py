@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 import traceback
 
-from backend.flask_app.app.query import (
+from flask_app.app.query import (
     db_create_planning,
     db_delete_planning,
     db_get_month_plannings,

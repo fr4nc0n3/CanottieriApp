@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import (
+from flask_app.app.query import (
     db_get_workout_comments,
     db_insert_workout_comment,
     db_update_workout_comment,

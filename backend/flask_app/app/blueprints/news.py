@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import (
+from flask_app.app.query import (
     db_get_count_user_news_rx,
     db_get_user_news_rx,
     db_get_user_news_tx,

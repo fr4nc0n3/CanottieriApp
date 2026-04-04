@@ -6,7 +6,7 @@ from pathlib import Path
 
 from app.config import init_app_config
 from app.models_sqlalchemy import Base, AccountType as SQLAAccountType
-from backend.flask_app.app.extensions import (
+from flask_app.app.extensions import (
     init_sqlalchemy_database,
 )
 

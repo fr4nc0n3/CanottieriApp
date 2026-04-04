@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.models_sqlalchemy import AccountType
-from backend.flask_app.app.query import (
+from flask_app.app.models_sqlalchemy import AccountType
+from flask_app.app.query import (
     db_get_user,
     db_get_users,
     get_dict_without_field,

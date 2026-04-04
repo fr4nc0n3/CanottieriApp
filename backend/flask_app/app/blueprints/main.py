@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request, send_from_directory
 
-from backend.flask_app.app.extensions import DB
-from backend.flask_app.app.models_sqlalchemy import User
+from flask_app.app.extensions import DB
+from flask_app.app.models_sqlalchemy import User
 
 from ..config import APP_CONFIG
 from werkzeug.security import check_password_hash

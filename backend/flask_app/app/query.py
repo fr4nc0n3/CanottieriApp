@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Sequence
-from backend.flask_app.app.extensions import DB
-from backend.flask_app.app.models_sqlalchemy import (
+from flask_app.app.extensions import DB
+from flask_app.app.models_sqlalchemy import (
     File,
     MimeType,
     Planning,

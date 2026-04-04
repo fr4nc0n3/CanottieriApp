@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from backend.flask_app.app.query import (
+from flask_app.app.query import (
     db_create_training_card,
     db_soft_delete_training_card,
     db_get_training_cards,
