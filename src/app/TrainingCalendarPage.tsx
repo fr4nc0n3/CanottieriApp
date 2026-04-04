@@ -24,33 +24,21 @@ import {
 import { createPlanning } from "./TrainingCalendarPage_/CRUD";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import SelectMonthBar from "@/components/SelectMonthBar";
+import {
+    getNothingColor,
+    getRaceColor,
+    getTrainingIntensityColor,
+} from "./TrainingCalendarPage_/Utils";
+import { LegendModal } from "./TrainingCalendarPage_/LegendModal";
 
 type Planning = ApiOutputGetPlanning;
 
 const getPlanningColor = (planning: Planning): React.CSSProperties["color"] => {
-    if (planning.is_race) return COLORS.fucsia100;
+    if (planning.is_race) return getRaceColor();
     if (planning.is_training && planning.training_intensity_perc)
         return getTrainingIntensityColor(planning.training_intensity_perc);
 
-    return COLORS.purple100;
-};
-
-const getTrainingIntensityColor = (
-    intensityPercentage: number,
-): React.CSSProperties["color"] => {
-    if (intensityPercentage >= 100) {
-        return COLORS.red100;
-    }
-
-    if (intensityPercentage >= 75 && intensityPercentage < 100) {
-        return COLORS.orange100;
-    }
-
-    if (intensityPercentage >= 50 && intensityPercentage < 75) {
-        return COLORS.green100;
-    }
-
-    return COLORS.green100;
+    return getNothingColor();
 };
 
 const TrainingCalendarPage = () => {
@@ -63,6 +51,9 @@ const TrainingCalendarPage = () => {
 
     const [date, setDate] = useState<Date>(new Date()); //data del mese di riferimento
     const [planningCreation, setPlanningCreation] = useState<Date | null>(null);
+    const [isLegendVisible, setIsLegendVisible] = useState<boolean>(false);
+    const showLegend = () => setIsLegendVisible(true);
+    const hideLegend = () => setIsLegendVisible(false);
 
     const isPlanningCreationOpen = () => planningCreation !== null;
     const openPlanningCreation = (date: Date) => setPlanningCreation(date);
@@ -225,6 +216,13 @@ const TrainingCalendarPage = () => {
                     else nextMonth();
                 }}
             />
+            <Button
+                mode="contained"
+                style={{ width: "35%", alignSelf: "center" }}
+                onPress={() => showLegend()}
+            >
+                Legenda
+            </Button>
             <ScrollView style={style.container}>
                 <Calendar
                     year={date.getFullYear()}
@@ -283,6 +281,12 @@ const TrainingCalendarPage = () => {
                 }
                 onDeleteClick={() => {
                     planningUpdate && deletePlanning(planningUpdate.id);
+                }}
+            />
+            <LegendModal
+                visible={isLegendVisible}
+                onDismiss={() => {
+                    hideLegend();
                 }}
             />
         </>

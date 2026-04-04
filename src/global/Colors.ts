@@ -15,4 +15,5 @@ export const COLORS = {
     lightblue100: "#add8e6",
     fucsia100: "#FF00FF",
     green100: "#2ECC71",
+    green200: "#9ce9c7",
 } satisfies Record<string, React.CSSProperties["color"]>;
