@@ -1,6 +1,7 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
 import { COLORS } from "@/global/Colors";
+import { universalDateStringFormat } from "@/global/Utils";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { IconButton, Text } from "react-native-paper";
@@ -8,7 +9,9 @@ import { IconButton, Text } from "react-native-paper";
 export default function TrainingDayPage() {
     const router = useRouter();
     const { date: d, description: descr } = useLocalSearchParams();
-    const date = d?.toString();
+    const date = d?.toString()
+        ? universalDateStringFormat(new Date(d.toString()))
+        : "<N/A>";
     const description = descr?.toString();
 
     return (
@@ -20,7 +23,7 @@ export default function TrainingDayPage() {
                     onPress={() => router.back()}
                 />
                 <Text variant="titleLarge">
-                    Allenamento giornaliero del {date ?? "<N/A>"}
+                    Allenamento giornaliero del {date}
                 </Text>
             </View>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
