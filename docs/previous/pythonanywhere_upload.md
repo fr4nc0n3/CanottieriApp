@@ -1,10 +1,15 @@
 # Upload su pythonanywhere
 
-- Fare backup compresso della cartella /home/canottieriapp/prod_run sul server di produzione
+- Fare backup compresso della cartella /home/canottieriapp sul server di produzione
   di pythonanywhere.com. Questo fara' in modo di salvare il database, la cartella con le
-  immagini, quella con i file, le flask config, il backend ed il frontend.
+  immagini, il backend ed il frontend.
   Tale backup va salvato nella root del progetto nella cartella "backups", inoltre
   va nominato con la data odierna (es. backup_canottieriapp_19-10-2025.zip)
+
+    NOTA: non e' vero, non ci sono i permessi sul server di produzione per creare file o cartelle
+    in /home, quindi fare backup delle cartelle indicate in /home/canottieriapp
+
+    CARTELLE E FILE DA BACKUPPARE per DATI: img/, file/, CanottieriAppDB.db
 
 - Fare build del sito statico cambiando valori in src/.env.
   Per buildare il sito, andare nella cartella src ed eseguire lo script "build:web" situato nel file
@@ -14,11 +19,11 @@
 
     NOTA: si puo' provare il sito compilato con "npx serve ./dist" eseguito nella cartella src
 
+- Zippare e caricare le cartelle src/dist e src/backend/flask_app in modo da caricarle sul server
+  di produzione, rispettivamente, in /home/canottieriapp/dist e /home/canottieriapp/flask_app.
+
 - Aggiornare struttura database produzione, con le sole query strutturali che servono per passare alla nuova versione (le query di migrazione dalla versione attuale del database fino all' ultima
   disponibile).
-
-- Fare una copia del backup fatto all' inizio e sostituire in essa il nuovo frontend, backend e tutto il resto, successivamente rinominare sul server la cartella /home/canottieriapp/prod_run in /home/canottieriapp/prod_run.[la data] e quindi caricare la cartella locale sul server nella posizione /home/canottieriapp/prod_run (per fare cio' sara' necessario zippare e unzippare le cartelle siccome il
-  server permette il solo caricamento e scaricamento di files)
 
 ## Solo se bisogna ripartire da 0 sul server
 
