@@ -11,7 +11,7 @@ export const COLORS = {
     gold: "#FFD700",
     yellow100: "#f5c907",
     blue100: "#1d51a7",
-    red100: "#BA2426",
+    red100: "#FF0000",
     lightblue100: "#add8e6",
     fucsia100: "#FF00FF",
     green100: "#2ECC71",
