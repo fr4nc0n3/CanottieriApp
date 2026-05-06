@@ -14,6 +14,8 @@ import { ApiOutputGetTrainingCard } from "@/global/Types";
 import { useLocalSearchParams } from "expo-router";
 import { alert, confirm } from "@/global/UniversalPopups";
 import { COLORS } from "@/global/Colors";
+import PdfViewer from "@/components/PdfViewer";
+import PdfViewerModal from "@/components/PdfViewer";
 
 const getFileTypeChar = (mime_type: string): string => {
     switch (mime_type) {
@@ -44,11 +46,9 @@ export default function TrainingCardsPage(): JSX.Element {
         syncTrainingCards();
     }, []);
 
-    const renderNotification = ({
-        item,
-    }: {
-        item: ApiOutputGetTrainingCard;
-    }) => {
+    const [uriPdf, setUriPdf] = useState<string | null>(null);
+
+    const renderCard = ({ item }: { item: ApiOutputGetTrainingCard }) => {
         const deleteCard = async () => {
             const jwt = await getJWT();
             try {
@@ -70,32 +70,31 @@ export default function TrainingCardsPage(): JSX.Element {
             );
         };
 
+        const openCard = () => {
+            //solo per web
+            if (Platform.OS !== "web") {
+                console.log(
+                    "Non e' possibile aprire uri file: ambiente non web",
+                );
+                return;
+            }
+
+            setUriPdf(apiUriFile(item.file_name));
+        };
+
         return (
-            <TouchableRipple onPress={() => {}}>
+            <TouchableRipple
+                onPress={() => {
+                    openCard();
+                }}
+            >
                 <Card style={styles.card}>
                     <Card.Title
                         title={`${item.name_card}`}
                         subtitle={`${getFileTypeChar(item.mime_type)} ${item.mime_type.toUpperCase()} - Creato: ${universalDateStringFormat(new Date(item.created_at))}`}
                         right={() => (
                             <View style={{ flexDirection: "row" }}>
-                                <IconButton
-                                    icon={"download"}
-                                    onPress={() => {
-                                        //solo per web
-                                        if (Platform.OS !== "web") {
-                                            console.log(
-                                                "Non e' possibile aprire uri file: ambiente non web",
-                                            );
-                                            return;
-                                        }
-
-                                        window.open(
-                                            apiUriFile(item.file_name),
-                                            "_blank",
-                                        );
-                                    }}
-                                    size={32}
-                                />
+                                <IconButton icon={"download"} size={32} />
                                 {isAdmin && (
                                     <IconButton
                                         icon={"delete"}
@@ -151,37 +150,44 @@ export default function TrainingCardsPage(): JSX.Element {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Appbar / Header */}
-            <Appbar.Header>
-                <Appbar.Content title="Schede" />
-                <Appbar.Action icon="cards" accessibilityLabel="Schede" />
-            </Appbar.Header>
+        <>
+            <View style={styles.container}>
+                {/* Appbar / Header */}
+                <Appbar.Header>
+                    <Appbar.Content title="Schede" />
+                    <Appbar.Action icon="cards" accessibilityLabel="Schede" />
+                </Appbar.Header>
 
-            {isAdmin && (
-                <IconButton
-                    style={{
-                        alignSelf: "center",
-                        backgroundColor: COLORS.blue100,
-                        margin: 10,
-                    }}
-                    onPress={() => {
-                        addTrainingCard();
-                    }}
-                    icon={"plus"}
-                    iconColor={COLORS.white100}
-                    size={32}
+                {isAdmin && (
+                    <IconButton
+                        style={{
+                            alignSelf: "center",
+                            backgroundColor: COLORS.blue100,
+                            margin: 10,
+                        }}
+                        onPress={() => {
+                            addTrainingCard();
+                        }}
+                        icon={"plus"}
+                        iconColor={COLORS.white100}
+                        size={32}
+                    />
+                )}
+
+                {/* Lista paginata */}
+                <FlatList
+                    data={trainingCards}
+                    keyExtractor={(card) => card.id.toString()}
+                    renderItem={renderCard}
+                    contentContainerStyle={styles.list}
                 />
-            )}
-
-            {/* Lista paginata */}
-            <FlatList
-                data={trainingCards}
-                keyExtractor={(card) => card.id.toString()}
-                renderItem={renderNotification}
-                contentContainerStyle={styles.list}
+            </View>
+            <PdfViewerModal
+                visible={!!uriPdf}
+                onDismiss={() => setUriPdf(null)}
+                pdfUrl={uriPdf}
             />
-        </View>
+        </>
     );
 }
 
