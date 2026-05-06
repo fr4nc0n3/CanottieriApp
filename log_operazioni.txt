@@ -1,3 +1,11 @@
+-- 06/06/2026 --
+Caricamento per visualizzazione PDF (il server puo' metterci un po' per inviarlo al browser)
+
+-- 05/06/2026 --
+Visualizzatore PDF per schede allenamento
+
+...
+
 -- 30/10/2025 --
 Creazione API per segnare le notifiche come lette
 
