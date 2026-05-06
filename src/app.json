@@ -2,7 +2,7 @@
     "expo": {
         "name": "MY TRAINING",
         "slug": "MY TRAINING",
-        "version": "0.8.1",
+        "version": "0.9.0",
         "orientation": "portrait",
         "icon": "./assets/images/icon_app_2.jpeg",
         "scheme": "mytraining",
