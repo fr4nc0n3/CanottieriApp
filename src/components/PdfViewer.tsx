@@ -7,6 +7,32 @@ type PdfViewerModalProps = {
     onDismiss: () => void;
 };
 
+type PdfLoaderProps = {
+    pdfUrl: string;
+};
+
+const PdfLoader = ({ pdfUrl }: PdfLoaderProps) => {
+    return (
+        <View
+            style={{
+                flex: 1,
+                position: "relative",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
+            {/* In questo modo mostra "caricamento" finche' il tag embed non ha caricato
+             la risorsa URL, dopo di che il suo contenuto copre la scritta*/}
+            <Text variant="titleLarge">Caricamento PDF...</Text>
+            <embed
+                src={pdfUrl}
+                type="application/pdf"
+                style={{ ...styles.iframe, zIndex: 99, position: "absolute" }}
+            />
+        </View>
+    );
+};
+
 export default function PdfViewerModal({
     pdfUrl,
     visible,
@@ -15,11 +41,7 @@ export default function PdfViewerModal({
     const renderPdf = () => {
         if (Platform.OS === "web") {
             return pdfUrl ? (
-                <embed
-                    src={pdfUrl}
-                    type="application/pdf"
-                    style={styles.iframe}
-                />
+                <PdfLoader pdfUrl={pdfUrl} />
             ) : (
                 <Text>Nessun URL da mostrare</Text>
             );
