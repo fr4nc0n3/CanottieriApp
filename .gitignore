@@ -9,3 +9,4 @@ backend/file/
 psws.txt
 init_prod_data.sql
 backup_prods/**
+deploy/
