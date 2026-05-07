@@ -94,5 +94,6 @@ const styles = StyleSheet.create({
     iframe: {
         width: "100%",
         height: "100%",
+        backgroundColor: "white",
     },
 });
