@@ -1,5 +1,6 @@
 import { Platform, View, StyleSheet } from "react-native";
 import { Portal, Modal, IconButton, Text, Divider } from "react-native-paper";
+import { useState } from "react";
 
 type PdfViewerModalProps = {
     pdfUrl: string | null;
@@ -12,22 +13,21 @@ type PdfLoaderProps = {
 };
 
 const PdfLoader = ({ pdfUrl }: PdfLoaderProps) => {
+    const [loading, setLoading] = useState<boolean>(true);
+
     return (
         <View
             style={{
                 flex: 1,
-                position: "relative",
                 alignItems: "center",
                 justifyContent: "center",
             }}
         >
-            {/* In questo modo mostra "caricamento" finche' il tag embed non ha caricato
-             la risorsa URL, dopo di che il suo contenuto copre la scritta*/}
-            <Text variant="titleLarge">Caricamento PDF...</Text>
-            <embed
+            {loading && <Text variant="titleLarge">Caricamento di PDF...</Text>}
+            <iframe
                 src={pdfUrl}
-                type="application/pdf"
-                style={{ ...styles.iframe, zIndex: 99, position: "absolute" }}
+                style={styles.iframe}
+                onLoad={() => setLoading(false)}
             />
         </View>
     );
@@ -54,6 +54,19 @@ export default function PdfViewerModal({
         );
     };
 
+    const downloadPdf = () => {
+        if (!pdfUrl) return;
+        if (Platform.OS !== "web") {
+            console.warn("Download non supportato su questa piattaforma");
+            return;
+        }
+
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "";
+        link.click();
+    };
+
     return (
         <Portal>
             <Modal
@@ -63,7 +76,18 @@ export default function PdfViewerModal({
             >
                 <View style={styles.header}>
                     <Text variant="titleMedium">Visualizzatore PDF</Text>
-                    <IconButton icon="close" size={24} onPress={onDismiss} />
+                    <View style={{ flexDirection: "row", marginHorizontal: 5 }}>
+                        <IconButton
+                            icon="download"
+                            size={24}
+                            onPress={downloadPdf}
+                        />
+                        <IconButton
+                            icon="close"
+                            size={24}
+                            onPress={onDismiss}
+                        />
+                    </View>
                 </View>
                 <Divider />
 
@@ -94,6 +118,5 @@ const styles = StyleSheet.create({
     iframe: {
         width: "100%",
         height: "100%",
-        backgroundColor: "white",
     },
 });
