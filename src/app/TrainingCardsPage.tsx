@@ -94,7 +94,7 @@ export default function TrainingCardsPage(): JSX.Element {
                         subtitle={`${getFileTypeChar(item.mime_type)} ${item.mime_type.toUpperCase()} - Creato: ${universalDateStringFormat(new Date(item.created_at))}`}
                         right={() => (
                             <View style={{ flexDirection: "row" }}>
-                                <IconButton icon={"download"} size={32} />
+                                <IconButton icon={"open-in-new"} size={32} />
                                 {isAdmin && (
                                     <IconButton
                                         icon={"delete"}
