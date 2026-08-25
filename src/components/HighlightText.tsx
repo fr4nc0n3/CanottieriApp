@@ -25,6 +25,7 @@ export function HighlightText({ text }: HighlightTextProps) {
                     part.startsWith("**") && part.endsWith("**");
 
                 if (highlighted) {
+                    const text = part.slice(2, -2);
                     return (
                         <Text
                             key={index}
@@ -33,7 +34,7 @@ export function HighlightText({ text }: HighlightTextProps) {
                                 fontWeight: "bold",
                             }}
                         >
-                            {part}
+                            {text}
                         </Text>
                     );
                 }
