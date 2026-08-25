@@ -5,7 +5,7 @@ type HighlightTextProps = {
     text: string;
 };
 
-export const HIGHLIGHT_REGEX = /(\*\*.*?\*\*)/g;
+export const HIGHLIGHT_REGEX = /(\*\*.*?\*\*)/gs;
 export const HIGHLIGHT_TEXT_HELP = (
     <HighlightText
         text={
