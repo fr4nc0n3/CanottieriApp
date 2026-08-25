@@ -30,6 +30,7 @@ import {
     getTrainingIntensityColor,
 } from "./TrainingCalendarPage_/Utils";
 import { LegendModal } from "./TrainingCalendarPage_/LegendModal";
+import { HelpModal } from "./TrainingCalendarPage_/HelpModal";
 
 type Planning = ApiOutputGetPlanning;
 
@@ -54,6 +55,9 @@ const TrainingCalendarPage = () => {
     const [isLegendVisible, setIsLegendVisible] = useState<boolean>(false);
     const showLegend = () => setIsLegendVisible(true);
     const hideLegend = () => setIsLegendVisible(false);
+    const [isHelpVisible, setIsHelpVisible] = useState<boolean>(false);
+    const showHelp = () => setIsHelpVisible(true);
+    const hideHelp = () => setIsHelpVisible(false);
 
     const isPlanningCreationOpen = () => planningCreation !== null;
     const openPlanningCreation = (date: Date) => setPlanningCreation(date);
@@ -216,13 +220,30 @@ const TrainingCalendarPage = () => {
                     else nextMonth();
                 }}
             />
-            <Button
-                mode="contained"
-                style={{ width: "35%", alignSelf: "center" }}
-                onPress={() => showLegend()}
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    gap: 5,
+                }}
             >
-                Legenda
-            </Button>
+                <Button
+                    mode="contained"
+                    style={{ width: "35%" }}
+                    onPress={() => showLegend()}
+                >
+                    Legenda
+                </Button>
+                {isAdmin && (
+                    <Button
+                        mode="contained"
+                        style={{ width: "35%" }}
+                        onPress={() => showHelp()}
+                    >
+                        Help (Admin)
+                    </Button>
+                )}
+            </View>
             <ScrollView style={style.container}>
                 <Calendar
                     year={date.getFullYear()}
@@ -287,6 +308,12 @@ const TrainingCalendarPage = () => {
                 visible={isLegendVisible}
                 onDismiss={() => {
                     hideLegend();
+                }}
+            />
+            <HelpModal
+                visible={isHelpVisible}
+                onDismiss={() => {
+                    hideHelp();
                 }}
             />
         </>

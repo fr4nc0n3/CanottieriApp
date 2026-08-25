@@ -1,5 +1,6 @@
 //Licensed under the GNU General Public License v3. See LICENSE file for details.
 
+import { HighlightText } from "@/components/HighlightText";
 import { COLORS } from "@/global/Colors";
 import { universalDateStringFormat } from "@/global/Utils";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -28,7 +29,7 @@ export default function TrainingDayPage() {
             </View>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
                 <Text variant="bodyLarge" style={{ lineHeight: 24 }}>
-                    {description ?? ""}
+                    {description ? <HighlightText text={description} /> : ""}
                 </Text>
             </ScrollView>
         </>
