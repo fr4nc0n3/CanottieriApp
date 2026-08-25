@@ -1,5 +1,7 @@
 # Upload su pythonanywhere
 
+NOTA: ricorda di aggiornare la versione in app.json dopo le modifiche
+
 - Fare backup compresso della cartella /home/canottieriapp/prod_run sul server di produzione
   di pythonanywhere.com. Questo fara' in modo di salvare il database, la cartella con le
   immagini, quella con i file, le flask config, il backend ed il frontend.
