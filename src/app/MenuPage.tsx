@@ -3,9 +3,9 @@
 import { apiGetCountUserNews } from "@/global/APICalls";
 import { getJWT } from "@/global/jwtStorage";
 import {
-    getJWTAccountTypes,
-    getJWTIdentity,
-    isSameDayOfYear,
+  getJWTAccountTypes,
+  getJWTIdentity,
+  isSameDayOfYear,
 } from "@/global/Utils";
 import { useFocusEffect, useRouter } from "expo-router";
 import * as React from "react";
@@ -17,186 +17,183 @@ import HappyBirthday from "@/components/HappyBirthday";
 import { COLORS } from "@/global/Colors";
 
 export default function MenuPage() {
-    const router = useRouter();
-    const userContext = useContext(UserContext);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const router = useRouter();
+  const userContext = useContext(UserContext);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
-    const [active, setActive] = React.useState("");
+  const [active, setActive] = React.useState("");
 
-    //TODO: sto metodo puo' essere semplificato siccome
-    //TODO: accountTypes e' gia' salvato in userContext
-    const fetchIsAdmin = async () => {
-        const jwt = await getJWT();
-        const accountTypes = getJWTAccountTypes(jwt);
+  //TODO: sto metodo puo' essere semplificato siccome
+  //TODO: accountTypes e' gia' salvato in userContext
+  const fetchIsAdmin = async () => {
+    const jwt = await getJWT();
+    const accountTypes = getJWTAccountTypes(jwt);
 
-        setIsAdmin(accountTypes.some((type) => type === "admin"));
-    };
+    setIsAdmin(accountTypes.some((type) => type === "admin"));
+  };
 
-    const [notReadCountNews, setNotReadCountNews] = useState(0);
+  const [notReadCountNews, setNotReadCountNews] = useState(0);
 
-    const fetchNotReadCountNews = async () => {
-        const jwt = await getJWT();
-        const idUser = getJWTIdentity(jwt);
-        const count = await apiGetCountUserNews(idUser, true, jwt);
+  const fetchNotReadCountNews = async () => {
+    const jwt = await getJWT();
+    const idUser = getJWTIdentity(jwt);
+    const count = await apiGetCountUserNews(idUser, true, jwt);
 
-        setNotReadCountNews(count);
-    };
+    setNotReadCountNews(count);
+  };
 
-    useFocusEffect(() => {
-        fetchNotReadCountNews();
-    });
+  useFocusEffect(() => {
+    fetchNotReadCountNews();
+  });
 
-    useEffect(() => {
-        fetchIsAdmin();
-    }, []);
+  useEffect(() => {
+    fetchIsAdmin();
+  }, []);
 
-    const userBirthday = userContext?.userInfo?.birthday;
-    const isUserBirthday = userBirthday ? isSameDayOfYear(userBirthday) : false;
+  const userBirthday = userContext?.userInfo?.birthday;
+  const isUserBirthday = userBirthday ? isSameDayOfYear(userBirthday) : false;
 
-    return (
-        <>
-            <ScrollView style={styles.container}>
-                {notReadCountNews > 0 && <NotificationBanner />}
+  return (
+    <>
+      <ScrollView style={styles.container}>
+        {notReadCountNews > 0 && <NotificationBanner />}
 
-                {isUserBirthday && <HappyBirthday />}
+        {isUserBirthday && <HappyBirthday />}
 
-                <View style={styles.content}>
-                    <Drawer.Section style={styles.sidebar}>
-                        <Drawer.Item
-                            label="Profilo"
-                            active={active === "profile"}
-                            onPress={() => {
-                                setActive("profile");
-                                router.push("/ProfilePage");
-                            }}
-                            icon="account"
-                        />
-                        <Drawer.Item
-                            label="Notifiche"
-                            active={active === "notifications"}
-                            onPress={() => {
-                                setActive("notifications");
-                                router.push("/NewsPage");
-                            }}
-                            icon="bell"
-                        />
-                    </Drawer.Section>
+        <View style={styles.content}>
+          <Drawer.Section style={styles.sidebar}>
+            <Drawer.Item
+              label="Profilo"
+              active={active === "profile"}
+              onPress={() => {
+                setActive("profile");
+                router.push("/ProfilePage");
+              }}
+              icon="account"
+            />
+            <Drawer.Item
+              label="Notifiche"
+              active={active === "notifications"}
+              onPress={() => {
+                setActive("notifications");
+                router.push("/NewsPage");
+              }}
+              icon="bell"
+            />
+          </Drawer.Section>
 
-                    <Drawer.Section
-                        style={styles.sidebar}
-                        title="Sezione Atleta"
-                    >
-                        <Drawer.Item
-                            label="Registro allenamenti"
-                            active={active === "workoutsRegister"}
-                            onPress={() => {
-                                setActive("workoutsRegister");
-                                router.push("/WorkoutsRegisterPage");
-                            }}
-                            icon="calendar"
-                        />
+          <Drawer.Section style={styles.sidebar} title="Sezione Atleta">
+            <Drawer.Item
+              label="Registro allenamenti"
+              active={active === "workoutsRegister"}
+              onPress={() => {
+                setActive("workoutsRegister");
+                router.push("/WorkoutsRegisterPage");
+              }}
+              icon="calendar"
+            />
 
-                        <Drawer.Item
-                            label="Calendario allenamenti"
-                            active={active === "trainingCalendar"}
-                            onPress={() => {
-                                setActive("trainingCalendar");
-                                router.push("/TrainingCalendarPage");
-                            }}
-                            icon="dumbbell"
-                        />
-                        <Drawer.Item
-                            label="Schede"
-                            active={active === "trainingCards"}
-                            onPress={() => {
-                                setActive("trainingCards");
-                                router.push("/TrainingCardsPage");
-                            }}
-                            icon="cards"
-                        />
-                    </Drawer.Section>
+            <Drawer.Item
+              label="Calendario allenamenti"
+              active={active === "trainingCalendar"}
+              onPress={() => {
+                setActive("trainingCalendar");
+                router.push("/TrainingCalendarPage");
+              }}
+              icon="dumbbell"
+            />
+            <Drawer.Item
+              label="Schede"
+              active={active === "trainingCards"}
+              onPress={() => {
+                setActive("trainingCards");
+                router.push("/TrainingCardsPage");
+              }}
+              icon="cards"
+            />
+          </Drawer.Section>
 
-                    {isAdmin && (
-                        <Drawer.Section
-                            style={styles.sidebar}
-                            title="Sezione amministratore"
-                        >
-                            <Drawer.Item
-                                label="Allenamenti atleti"
-                                active={active === "athlete_workouts"}
-                                onPress={() => {
-                                    setActive("athlete_workouts");
-                                    router.push("/admin/WorkoutsPanel");
-                                }}
-                                icon="view-grid"
-                            />
-                            {
-                                <Drawer.Item
-                                    label="Programma allenamento"
-                                    active={active === "publishProgram"}
-                                    onPress={() => {
-                                        setActive("publishProgram");
-                                        router.push({
-                                            pathname: "/TrainingCalendarPage",
-                                            params: { userType: "admin" },
-                                        });
-                                    }}
-                                    icon="upload"
-                                />
-                            }
-                            <Drawer.Item
-                                label="Gestione schede"
-                                active={active === "trainingCardsAdmin"}
-                                onPress={() => {
-                                    setActive("trainingCardsAdmin");
-                                    router.push({
-                                        pathname: "/TrainingCardsPage",
-                                        params: { userType: "admin" },
-                                    });
-                                }}
-                                icon="cards"
-                            />
-                        </Drawer.Section>
-                    )}
-                </View>
-            </ScrollView>
-        </>
-    );
+          {isAdmin && (
+            <Drawer.Section
+              style={styles.sidebar}
+              title="Sezione amministratore"
+            >
+              <Drawer.Item
+                label="Allenamenti atleti"
+                active={active === "athlete_workouts"}
+                onPress={() => {
+                  setActive("athlete_workouts");
+                  router.push("/admin/WorkoutsPanel");
+                }}
+                icon="view-grid"
+              />
+              {
+                <Drawer.Item
+                  label="Programma allenamento"
+                  active={active === "publishProgram"}
+                  onPress={() => {
+                    setActive("publishProgram");
+                    router.push({
+                      pathname: "/TrainingCalendarPage",
+                      params: { userType: "admin" },
+                    });
+                  }}
+                  icon="upload"
+                />
+              }
+              <Drawer.Item
+                label="Gestione schede"
+                active={active === "trainingCardsAdmin"}
+                onPress={() => {
+                  setActive("trainingCardsAdmin");
+                  router.push({
+                    pathname: "/TrainingCardsPage",
+                    params: { userType: "admin" },
+                  });
+                }}
+                icon="cards"
+              />
+            </Drawer.Section>
+          )}
+        </View>
+      </ScrollView>
+    </>
+  );
 }
 
 const NotificationBanner = () => (
-    <View style={styles.notificationBannerContainer}>
-        <Text style={styles.notificationBannerText} variant="titleMedium">
-            !! ATTENZIONE !!
-            {"\n"}
-            Hai delle notifiche non lette, controlla la sezione.
-        </Text>
-    </View>
+  <View style={styles.notificationBannerContainer}>
+    <Text style={styles.notificationBannerText} variant="titleMedium">
+      !! ATTENZIONE !!
+      {"\n"}
+      Hai delle notifiche non lette, controlla la sezione.
+    </Text>
+  </View>
 );
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    content: {
-        flex: 1,
-    },
-    sidebar: {
-        width: "100%",
-        paddingTop: 16,
-    },
-    notificationBannerContainer: {
-        margin: 5,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    notificationBannerText: {
-        borderRadius: 30,
-        backgroundColor: COLORS.orange100,
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        color: COLORS.black200,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
+  container: {
+    flex: 1,
+  },
+  content: {
+    flex: 1,
+  },
+  sidebar: {
+    width: "100%",
+    paddingTop: 16,
+  },
+  notificationBannerContainer: {
+    margin: 5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  notificationBannerText: {
+    borderRadius: 30,
+    backgroundColor: COLORS.orange100,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    color: COLORS.black200,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
