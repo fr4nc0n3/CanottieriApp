@@ -1,0 +1,11 @@
+0) Utilizzo branch dev
+0.1) Accertarsi di usare endpoint locale (e non quello ufficiale pubblicato)
+1) Creare grafica ignorando qualita' codice
+1.1) Riorganizzazione codice
+2) Migrazione DB
+3) Creazione API backend 
+4) Connessione frontend - backend
+5) Test
+5.5) Merge dev into main + checkout main
+6) Aggiornamento versione
+7) Rilascio

@@ -1,0 +1,7 @@
+28/09/2026 [inizio -> 21:34, fine -> 22:05]
+- Specifiche per funzionalita': feedback sforzo allenamento:
+    l' atleta deve poter indicare la percentuale di sforzo
+    relativo ad un allenamento tra le percentuali: 25%, 50%, 75%, 100%
+    in modo analogo a come l' allenatore indica la percentuale del carico di allenamento.
+
+- Iniziato a creare nuova interfaccia grafica per feedback sforzo allenamento
