@@ -16,7 +16,14 @@ import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import { TextInput, Button, Card, Text } from "react-native-paper";
+import {
+    TextInput,
+    Button,
+    Card,
+    Text,
+    Menu,
+    Divider,
+} from "react-native-paper";
 
 // Il componente accetta una data tramite props
 const CreateWorkout = () => {
@@ -108,9 +115,48 @@ const CreateWorkout = () => {
                                 justifyContent: "space-between",
                             }}
                         >
-                            <Text variant="titleLarge">
-                                Crea nuovo allenamento
-                            </Text>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Text variant="titleLarge">
+                                    Crea nuovo allenamento
+                                </Text>
+                                <View style={{ minWidth: 15 }} />
+
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <Text>Intensita{"'"} allenamento: </Text>
+                                    <Menu
+                                        visible={false}
+                                        anchor={
+                                            <Button mode="outlined">
+                                                Seleziona
+                                            </Button>
+                                        }
+                                    >
+                                        {[null, 25, 50, 75, 100].map(
+                                            (percentage) => (
+                                                <Menu.Item
+                                                    key={percentage}
+                                                    onPress={() => {}}
+                                                    title={
+                                                        percentage
+                                                            ? `${percentage}%`
+                                                            : ""
+                                                    }
+                                                />
+                                            ),
+                                        )}
+                                    </Menu>
+                                </View>
+                            </View>
                             <Button
                                 icon="image"
                                 mode="contained"
