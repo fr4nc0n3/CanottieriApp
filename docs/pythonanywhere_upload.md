@@ -10,7 +10,7 @@ NOTA: ricorda di aggiornare la versione in app.json dopo le modifiche
 
 - Fare build del sito statico cambiando valori in src/.env.
   Per buildare il sito, andare nella cartella src ed eseguire lo script "build:web" situato nel file
-  src/package.json, quindi "npm run build:web", questo generera' la cartella src/dist contenente
+  src/package.json, quindi "npm run build:web", questo generera' la cartella src/dist contenente (nel caso eliminare la cartella dist vecchia)
   tutti i file del sito (html, css, js) ed il service worker necessario per invalidare la cache
   sui client utenti (altrimenti non si aggiornano dopo la pubblicazione della nuova versione)
 
