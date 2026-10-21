@@ -8,7 +8,7 @@ import { COLORS } from "@/global/Colors";
 import { getJWT } from "@/global/jwtStorage";
 import { ApiOutputGetPlanning, PlanningType } from "@/global/Types";
 import { alert, confirm } from "@/global/UniversalPopups";
-import { universalDateStringFormat } from "@/global/Utils";
+import { isBeforeToday, universalDateStringFormat } from "@/global/Utils";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
@@ -87,7 +87,13 @@ const TrainingCalendarPage = () => {
             jwt,
         );
 
-        setPlannings(plannings);
+        if (!isAdmin) {
+            setPlannings(
+                plannings.filter((p) => !isBeforeToday(new Date(p.date))),
+            );
+        } else {
+            setPlannings(plannings);
+        }
     };
 
     useEffect(() => {

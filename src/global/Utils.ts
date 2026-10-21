@@ -67,6 +67,24 @@ export const isToday = (day: number, month: number, year: number): boolean => {
     );
 };
 
+export const isBeforeToday = (date: Date): boolean => {
+    if (!isValidDate(date)) {
+        console.error("data non valida:", date);
+        return true;
+    }
+
+    const inputDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+    );
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return inputDate < today;
+};
+
 export enum FICAgeGroup {
     UNDER_10 = "Under 10",
     ALLIEVI_A = "Allievi A",
